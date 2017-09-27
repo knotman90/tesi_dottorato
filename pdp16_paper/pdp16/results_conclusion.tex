@@ -1,0 +1,110 @@
+\section{Experimental results}
+\label{sect:experiments}
+In order to ensure the correctness of the parallelization the output of each
+parallel version were matched against the corrensponding serial output. 
+
+
+
+\subsection{Hardware}
+\label{sec:hardware}
+Three  devices were adopted for testing different CUDA version of the
+model, the high-end GTX 980, Tesla K40 and a GT 635M,a low-end mobile chip(see
+table \ref{tab:adoptedHW} for further details).
+
+ \begin{table}
+	\centering
+	\begin{tabular}{|l |l |l| l|l|}
+	\hline
+	Name & Compute Capability & RAM &
+	SM-Clock & \# cores\\
+	\hline
+	GT 653M & \(2.1\) & \(1024\)MB  & $675$ MHz  & 635\\
+	GTX 980& \(5.5\) & \(4096\)MB  & $1216$ MHz & 2048 \\
+	TESLA K40& \(5.2\) & \(12288\)MB  & $875$ MHz & 2880 \\
+	\hline
+	\end{tabular}
+	\caption{Hardware utilized for experiments}
+	\label{tab:adoptedHW}
+\end{table}
+a low end
+mobile chip and a high-end GPU GT 635M, compute capability 2.1and GTX 980
+
+\subsection{Timings}
+See table \ref{tab:naive} and \ref{tab:ifdiv}.
+\begin{table}
+	\centering
+	\begin{tabular}{|l |l |l| l|}
+	\hline
+	\# birds & Sequential & GTX 980 & GT
+	635M
+	\\
+	\hline
+	
+	1024  & \(559.9\) & $29.1$ & $10.5$ \\
+	5120  & \(920.8\) & $574.4$ & $51.7$ \\
+	10240 &  $37147.9$ & 2241.6 & 109.0 \\
+	15360  & \(37147.9\) & $5004.7$ & $235.2$ \\
+	20480  & 148925.1 & 8868.9 & $312.5$ \\
+	40960  & - & - & $1023.8$ \\
+	81920  & - & - & $3663.5$ \\
+	163840  & - & - & $14877.4$ \\
+	327680  & - & - & $58003.0$ \\
+	\hline
+	\end{tabular}
+	\caption{Timing (in seconds) for the Parallel CUDA Na\"ive implementation}
+	\label{tab:naive}
+\end{table}
+
+
+\begin{table}
+	\centering
+	\begin{tabular}{|l |l |l| l|}
+	\hline
+	\# birds & Sequential & GTX 980 & GT
+	635M
+	\\
+	\hline
+	
+	1024  & \(559.9\) & $19.9$ & $7.9$ \\
+	5120  & \(920.8\) & $366.3$ & $34.6$ \\
+	10240 &  $37147.9$ & 1398.7 & 96.5 \\
+	15360  & \(37147.9\) & $3110.0$ & $154.9$ \\
+	20480  & 148925.1 & 5522.0 & $280.8$ \\
+	40960  & - & - & $825.4$ \\
+	81920  & - & - & $3307.2$ \\
+	163840  & - & - & $13565.9$ \\
+	327680  & - & - & $54113.4$ \\
+	\hline
+	\end{tabular}
+	\caption{Timing (in seconds) for the Parallel CUDA Na\"ive implementation}
+	\label{tab:ifdiv}
+\end{table}
+
+
+\section{Conclusion}
+In conclusion, the work shows that the use of the CUDA
+technology can be effective to cut computational costs also in multi agent
+modeling.
+
+\subsection{Future development}
+Although Reynold’s model is very good, but we also need future im-
+provement in order to make simulation as well as in the real world.
+Adding some parameters are needed in order to mimic how bird fly.
+v s is stall velocity, in which a minimum bird’s velocity. If a bird fly
+with velocity lower than its stall velocity, the bird will stall. v c is the
+normal velocity of bird. Bird always tends to fly with v c when it fly in
+group. Since a bird can not fly in vertical way, it is necessary to add
+a parameter to represent this limitation. Θ max is the maximum angle
+of bird can reach, if a bird try to fly more than this limitation, it will
+stall. Wing’s length (l w ) and width (l d ) are also interesting to consider.
+Different wing’s length and width will give behavior when fly.
+
+In CUDA programming, critical process is carried out in the GPU and
+then the final result is sent back to the CPU. It requires costs related to
+the visualization of computational result, processing data on the GPU
+and then send the results to the CPU and then visualize the result back
+to the GPU is not efficient. To improve efficiency and performance, it
+is necessary to implement this with OpenGL / CUDA interoperability.
+Instead of sending back result to the CPU and then send back again to
+GPU in order to visualize it, it is better to directly visualize the result
+without passing it to the CPU is the efficient solution.

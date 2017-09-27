@@ -1,0 +1,54 @@
+\section{Introduction}
+
+\IEEEPARstart{T}{he} beauty and grace of collective coherent
+motion ofself-propelled biological organisms namely, flocks of birds,schools of fish, swarms of insects,
+slime molds, herds of wilde-beests, has fascinated humans from ancient time his
+kind of behavior often referred to asflocking,exists innature at almost every
+length scale of observation: from humancrowds, mammalian herds, bird flocks,
+fish schools to unicellularorganisms such as amoebae and bacteria, individual
+cells, andeven at a microscopic level in the dynamics of actin and
+tubulinfilaments and molecular motors. Despite the huge differences inthe scales
+of aggregations, the similarities in the patterns thatsuch groups produce have
+suggested that general principles mayunderlie collective motion.
+
+An effective approach to study these collective behaviours is represented by
+mathematical modelling and numerical simulation as proven by numerous papers
+published in this field that are related with both biology and computer
+science (vedi citazioni in H. Hamann and T. Schmickl e pure Kishore Dutta).
+
+
+
+Simple motion principles of organisms like flocking, shoaling, herding or phenomena
+based on random motion can be reflected well enough in mathematical models derived
+from physics. In such models, organisms are treated like gas molecules and their motion is
+Brownian combined with attraction/repulsion forces. Also ‘mean-field’ approaches, mainly done
+in ordinary differential equation (ODE) models, might be useful to model some biological
+swarm systems, whenever the assumption of a ‘well mixed’ distribution may be applicable.
+However, organisms seldom move really randomly. Nor are they just simple particles. They
+pursue specific goals, aggregate or disperse in space, communicate and memorize. They
+have specific physiological states (e.g. energy-level) and morphologies (size, weights, etc.).
+These factors do not only affect their energetics, they also prominently affect the behaviours
+that they (choose to) perform. In addition to that, they frequently interact by direct and indirect
+communication and they tend to memorize past effects. Finally, also the environment
+in which they operate is highly structured and this heterogeneity is also dynamic.
+All these factors describe important discrepancies between biological life forms
+and atoms or molecules. Thus, it is likely that models, which were originally derived from physics and chemistry, might not hold well
+for biological swarm systems as soon as a certain level of abstraction has to be overcome.
+In these cases, individual-based models or even multi-agent
+models (\cite{Ferber},\cite{Woolridge}) might be a better choice.
+
+In this paper we present efficient GPGPU implementations of a the
+\textsc{ACIADDRI} multi agent flocking model on SIMT architecture (section \ref{sect:aciaddri}
+formalize the model and section \ref{sect:gpuimplementation} the parallel
+implementation) using the CUDA framework.
+Specifically, starting from Reynolds works on bird flocking behavior, \textsc{ACIADDRI} extends it by means of
+additional features such as support for multi-species interaction, predator
+avoidance, partially observable environment and birds flight constraints
+(maximum thrust, stall and peak velocity, etc.).
+
+Section \ref{sect:experiments} reports experiments carried out on the
+specific GPU harware and by considering both aggregate motion of a huge number (up to tens of millions) of boids in a virtual
+environment and other species or predators avoidance, significant performance
+improvement in terms of speedup were obtained ( up to $ 500\times$) while
+conclusions and future works are reported at the end of the paper.
+

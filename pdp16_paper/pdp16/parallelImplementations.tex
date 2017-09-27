@@ -1,0 +1,98 @@
+\section{Parallel implementation}
+\label{sect:gpuimplementation}
+In this work we adopt GPUs and the CUDA framework to accelerate the flocking
+simulation of a large number of boids using the the model presented in section
+\ref{sect:aciaddri} in an environment with a number of agents up to $5
+\times10^6$.
+Seeking the APOD development methodology we produced two different parallel
+versions, both sharing the high-level implementation structure that consists in
+(the well-known host-managed accelerated program structure):
+\begin{itemize}
+	\item Initialization of data structures on \emph{CPU}
+	\item Data transfer from \textbf{\emph{CPU} to \emph{GPU}}
+	\item Kernels execution on \emph{GPU}
+	\item Copying the result back from \textbf{\emph{GPU} to \emph{CPU}}
+\end{itemize}
+The parallelization strategy is designed with the purpose to avoid as much
+as possible the very undesirable data copy from \emph{host to device}\cite{cita}, or vice versa.
+The computation of $\vec{p}_b^{i+1}$ and $\vec{v}_b^{i+1}$ is entirerly performed on GPU and implemented as composition of CUDA kernels. Moreover Parameters are stored in constant memory for fast access.
+An OpenGL 3D visualization tool comes with the simulation system and permits real time and interactive 
+rendering of the flocking model.
+
+\subsection{Na\"{i}ve version}
+In this version each agent is mapped to a CUDA thread organized in a 1D block-grid structure.
+All data resides in global memory and user managed cache (shared memory) remains unused. 
+Due to the high parallel nature of the simulation, although its simplicity this version already yield to a speedup of $\approx20 \times$. 
+
+\subsubsection*{If-Divergence mitigation} Thread divergence is a well known
+issue, that disallow full parallelism at warp level. Two threads are said to
+diverge if they belongs to the same warp but executing different
+instructions\footnote{Common code constructs that usually cause thread
+divergence are conditionals that depends on  thread-id variable}. If some
+threads in a warp evaluate a conditional to \emph{true} and others to \emph{false}, then threads will branch to different instructions paths
+and those paths are executed in \emph{serial manner}\footnote{It is important to
+stress that serial execution happens only when thread of the same warp
+diverge.}\cite{CUDA1}. This serialization may result in significant performance
+loss.
+
+A serie of workaraund have been implemented in order to mitigate this problem  and more specifically, a number of $if$ construct have been substituted with an equivalent arithmetical operation that are performed by all threads and preserves the original semantic of the code. Listings \ref{list:divergent} and \ref{list:notDivergent} shows an example of such translation.
+\begin{lstlisting}[style=customc,caption=Thread Divergent code example, label={list:divergent}]
+	private var;
+	if(threadIdx.x > 16) then
+		var:= A
+	else
+		var:= B
+\end{lstlisting}
+
+\begin{lstlisting}[style=customc, label={list:notDivergent}, caption=If mitigated version of the listing \ref{list:divergent} ]
+	bool c = threadIdx.x > N
+    private var;
+	var:= c*A + !c*B
+\end{lstlisting}
+
+
+\subsection{Shared memory version}
+This version exploit the shared memory in order to cache birds's frequently accessed data. Shared memory is mush faster than global memory but is of limited capacity (and depends on compute capability of the device, $48 KB$ in the \emph{GTX980}),only accessible at block level and freshed at each kernel invocation. This implies a number of restriction on its usage namely:
+
+\begin{itemize}
+	\item it has to be initializated (i.e. requires a global memory access)
+    \item limited size of data available per thread
+    \item 
+
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

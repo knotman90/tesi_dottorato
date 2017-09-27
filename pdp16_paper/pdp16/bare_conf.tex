@@ -1,0 +1,365 @@
+\documentclass[journal,transmag]{IEEEtran}
+
+
+\usepackage[noadjust]{cite}
+\usepackage{physics}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{calc}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{rotating}
+\usepackage{calrsfs}
+\usepackage{amsfonts}
+\usepackage{pgf,tikz}
+\usepackage{mathrsfs}
+\usetikzlibrary{arrows}
+\usepackage{subfig}
+\usepackage{gensymb}
+\hyphenation{}
+
+\newcommand{\dimensional}[1] {
+ \left[\vb{#1}\right]
+ }
+
+\lstdefinestyle{customc}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=L,
+  xleftmargin=\parindent,
+  language=C,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{green!40!black},
+  commentstyle=\itshape\color{purple!40!black},
+  identifierstyle=\color{blue},
+  stringstyle=\color{orange},
+}
+
+\lstdefinestyle{codeStyleC}{
+language=C++,
+basicstyle=\ttfamily\small,
+keywordstyle=\color{blue}\ttfamily,
+stringstyle=\color{red}\ttfamily,
+commentstyle=\color{green}\ttfamily,
+breaklines=true,
+columns=flexible,
+gobble=4,
+xleftmargin=\leftmargini,
+frame=L,
+numbers=left,
+numberstyle=\tiny,
+belowcaptionskip=0.5em,
+belowskip=1em,
+}
+
+\lstdefinestyle{codeStyleCUDA}{
+language=C++,
+basicstyle=\ttfamily\small,
+keywordstyle=\color{blue}\ttfamily,
+keywordstyle=[2]\color{darkgreen},
+keywordstyle=[3]\color{red},
+stringstyle=\color{red}\ttfamily,
+commentstyle=\color{green}\ttfamily,
+breaklines=true,
+columns=flexible,
+gobble=4,
+xleftmargin=\leftmargini,
+frame=L,
+numbers=left,
+numberstyle=\tiny,
+keywords=[2]{__global__,__host__,__device__,__synchThreads()},
+keywords=[3]{atomicAdd},
+belowcaptionskip=1em,
+belowskip=1em,
+}
+
+\lstdefinestyle{codeStyleFORTRAN}{
+language=FORTRAN,
+basicstyle=\ttfamily\small,
+keywordstyle=\color{blue}\ttfamily,
+keywordstyle=[2]\color{darkgreen},
+stringstyle=\color{red}\ttfamily,
+commentstyle=\color{green}\ttfamily,
+breaklines=true,
+columns=flexible,
+gobble=4,
+xleftmargin=\leftmargini,
+frame=L,
+numbers=left,
+numberstyle=\tiny,
+keywords=[2]{__global__,__host__,__device__,__synchThreads()},
+belowcaptionskip=2em,
+belowskip=5em,
+}
+
+\begin{document}
+
+
+\title{A GPU Accelerated Multi-Agent Based Bird Flocking model}
+
+
+%----AUTHORS------------------------------------------------------------------------------------------------------------------------
+% author names and affiliations
+% transmag papers use the long conference author name format.
+
+% 		\author{\IEEEauthorblockN{Rahmat Hidayat\IEEEauthorrefmark{1,2},
+% 		Davide Spataro\IEEEauthorrefmark{2},
+% 		William Spataro\IEEEauthorrefmark{2},
+% 		Donato D'Ambrosio\IEEEauthorrefmark{2}}
+% 		
+% 		\IEEEauthorblockA{\IEEEauthorrefmark{1}University Of Calabria,
+% 		Department of Mathematics and Computer Science, Italy}
+% 		\IEEEauthorblockA{\IEEEauthorrefmark{2}IT Division BPJS Kesehatan, Indonesia}
+% 		}
+
+%\thanks{Manuscript received December 1, 2012; revised September 17, 2014.
+%Corresponding author: M. Shell (email:
+% http://www.michaelshell.org/contact.html).}}
+
+
+
+%
+
+
+
+
+\IEEEtitleabstractindextext{%
+\begin{abstract}
+Birds flocking is an interesting natural phenomenon to study as proven by
+numerous papers in this field. In this paper, we present a massive birds
+flocking simulation using the GPGPU CUDA framework. This technology has been
+widely adopted in computational science fields and dramatically increase
+computation performances. Using the autonomous agent approach with multi-agents
+and multiple groups for birds flocking modeling, we present both aggregate
+motion of a large number of birds in virtual environment and other species or
+predators avoidance in the plane as well. From  these experiments we gained
+significant performance improvements in the terms of speedup. In
+conclusion, the work shows that the use of  the CUDA technology can be effective
+to cut computational costs also in multi agent modeling.
+\end{abstract}
+
+% Note that keywords are not normally used for peerreview papers.
+\begin{IEEEkeywords}
+GPGPU, CUDA, flocking, modelling, agents
+\end{IEEEkeywords}}
+
+
+
+
+\maketitle
+
+
+
+\IEEEdisplaynontitleabstractindextext
+
+
+
+\IEEEpeerreviewmaketitle
+
+
+
+
+
+
+
+\input{introduction.tex}
+\input{flockingModel.tex}
+\input{parallelImplementations.tex}
+\input{results_conclusion.tex}
+
+
+
+
+
+
+\appendices
+\section{Cartesian to Spherical coordinate conversion}
+\label{app:cartToSpherical}
+We use the the two arguments atan version in order to to gather information on the signs of the inputs in order to return the appropriate quadrant of the computed angle, which is not possible for the singleargument arctangent function. Additionally, the ordinary arctangent  suffers when required to produce  $\pm \frac{\pi}{2} $ angle \footnote{Computing angle between $x$ and $y$ axis would require a division by zero.}.
+\begin{equation*}
+	\theta = 
+	\begin{cases}
+	
+	\frac{\pi}{2},&\mbox{if }  p'^x_n=0, \ p'^y_n>0  \\
+	
+	\frac{3\pi}{2},&\mbox{if } p'^x_n=0, \ p'^y_n<0 \\
+	
+	\text{undefined} &\mbox{if } p'^x_n=0, p'^y_n =0 \\
+	
+	\arctan \frac{p'^y_n}{p'^x_n} &\mbox{if } p'^x_n>0, \ p'^y_n \ge 0  \\
+	
+	\arctan \frac{p'^y_n}{p'^x_n} + 2 \pi &\mbox{if } \ p'^x_n>0, \ p'^y_n < 0, \ \ or
+	\ p'^x_n<0, \ p'^y_n > 0 \\
+	
+	\arctan \frac{p'^y_n}{p'^x_n} + \pi &\mbox{if }\ p'^x_n<0, \ p'^y_n \le 0 
+	\end{cases}
+\end{equation*}
+
+
+\begin{figure}%
+    \centering
+    \subfloat[label 1]{\includegraphics{./images/horizonthal.png}}%
+    \qquad
+    \subfloat[label 2]{\includegraphics{./images/vertical.png}}%
+    \caption{Example of spherical coordinate representation. $V_d$ for
+    instance is a vector of magnitute $10$ and polar and aximuthal angles
+    $45\degree$ and $27.94\degree$ respectively.}%
+    \label{fig:example}%
+\end{figure}
+
+% use section* for acknowledgment
+\section*{Acknowledgment}
+The authors would like acknowledge, Elisa De Giorgio for pointing out the
+precide formalization of  the bird's field of view and NVIDIA for providing the
+GPU hardware.
+
+\ifCLASSOPTIONcaptionsoff
+\newpage
+\fi
+
+
+
+\begin{thebibliography}{1}
+
+\bibitem{Ferber}
+J. Ferber
+\newblock Multi-Agent Systems: An Introduction to Distributed Artificial
+Intelligence, AddisonWesley
+\newblock New York, 1999
+
+\bibitem{Woolridge}
+M. Woolridge
+\newblock Introduction to Multiagent Systems, John Wiley and Sons,
+\newblock New York, 2001
+
+\bibitem{Reynolds}
+Reynolds, C.W.
+\newblock Flocks, herds, and schools.
+\newblock Computer Graphics 21(4) (1987), 25–34
+
+\bibitem{Blumberg}
+Bruce~M. Blumberg and Tinsley~A. Galyean.
+\newblock Multi-level direction of autonomous creatures for real-time virtual
+  environments.
+\newblock {\em Computer Graphics}, 29(Annual Conference Series):47--54, 1995.
+
+\bibitem{Cheng}
+John Cheng, Max Grossman, and Ty~McKercher.
+\newblock {\em Professional CUDA C Programming}.
+\newblock John Wiley \& Sons, Inc, 2014.
+
+\bibitem{Culler}
+David~E. Culler, Jaswinder~Pal Singh, and Anoop Gupta.
+\newblock {\em Parallel Computer Architecture, A Hardware/Software Approach}.
+\newblock Morgan Kaufmann, 1997.
+
+\bibitem{Dutta}
+Kishore Dutta.
+\newblock How birds fly together: The dynamics of flocking.
+\newblock {\em Resonance}, 15(12):1097--1110, December 2010.
+
+\bibitem{phys.org}
+Katharine Gammon.
+\newblock http://phys.org/news/2011-10-secrets-flocking-revealed.html, last
+  accessed 11 september 2015, 2011.
+
+\bibitem{Gangshan}
+Gangshan Jingab, Yuanshi Zhengab, and Long Wang.
+\newblock Flocking of multi-agent systems with multiple groups.
+\newblock {\em International Journal of Control}, 87(12):2573–2582, July
+  2014.
+
+\bibitem{Hwu}
+David~B. Kirk and Wen mei W.~Hwu.
+\newblock {\em Programming Massively Parallel Processors, A Hands-onApproach}.
+\newblock Morgan Kaufmann, second edition, 2013.
+
+\bibitem{Laird}
+John~E. Laird.
+\newblock It knows what you're going to do: Adding anticipation to a quakebot.
+\newblock {\em AAAI 2000 Spring Symposium Series: Artificial Intelligence and
+  Interactive Entertainment}, pages 41--50, March 2000.
+
+\bibitem{CUDA2}
+NVIDIA.
+\newblock {\em Whitepaper NVIDIA GeForce GTX 980, Featuring Maxwell, The Most
+  Advanced GPU Ever Made}.
+\newblock NVIDIA, 2014.
+
+\bibitem{CUDA3}
+NVIDIA.
+\newblock {\em CUDA C Best Practices Guide}.
+\newblock NVIDIA, 2015.
+
+\bibitem{CUDA1}
+NVIDIA.
+\newblock {\em CUDA C Programming Guide}.
+\newblock NVIDIA, March 2015.
+
+\bibitem{Pacheco}
+Peter~S. Pacheco.
+\newblock {\em An Introduction to Parallel Programming}.
+\newblock Morgan Kaufmann, 2011.
+
+\bibitem{Reynolds3}
+Craig~W. Reynolds.
+\newblock Flocks, herds, and schools: A distributed behavioral model.
+\newblock {\em Computer Graphics}, 21(4):25--34, 1987.
+
+\bibitem{Reynolds2}
+Craig~W. Reynolds.
+\newblock Steering behaviors for autonomous characters.
+\newblock {\em Game Developers Conference 1999, San Jose, California}, pages
+  763--782, 1999.
+
+\bibitem{Reynolds1}
+Craig~W. Reynolds.
+\newblock Interaction with groups of autonomous characters.
+\newblock {\em Game Developers Conference 2000, San Francisco, California},
+  pages 449--460, 2000.
+
+\bibitem{Shiffman}
+Daniel Shiffman.
+\newblock {\em The Nature of Code, Simulating Natural System with Processing}.
+\newblock Self Publishing, 2012.
+
+\bibitem{Wilt}
+Nicholas Wilt.
+\newblock {\em The CUDA Handbook, Comprehensive Guide to GPU Programming}.
+\newblock Addison-Wesley, 2013.
+
+\bibitem{Hemelrijk}
+Hemelrijk, Charlotte K. AND Hildenbrandt, Hanno (2011).
+\newblock {\em Some Causes of the Variable Shape of Flocks of Birds}.
+\newblock PLoS ONE 6(8), 2011.
+\end{thebibliography}
+
+% biography section
+%
+% If you have an EPS/PDF photo (graphicx package needed) extra braces are
+% needed around the contents of the optional argument to biography to prevent
+% the LaTeX parser from getting confused when it sees the complicated
+% \includegraphics command within an optional argument. (You could create
+% your own custom macro containing the \includegraphics command to make things
+% simpler here.)
+%\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{mshell}}]{Michael Shell}
+% or if you just want to reserve a space for a photo:
+
+% You can push biographies down or up by placing
+% a \vfill before or after them. The appropriate
+% use of \vfill depends on what kind of text is
+% on the last page and whether or not the columns
+% are being equalized.
+
+%\vfill
+
+% Can be used to pull up biographies so that the bottom of the last one
+% is flush with the other column.
+%\enlargethispage{-5in}
+
+
+
+% that's all folks
+\end{document}

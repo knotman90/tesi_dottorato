@@ -1,0 +1,146 @@
+\RequirePackage{fix-cm}
+\documentclass[%
+    twoside, openright, titlepage, numbers=noenddot,%
+    cleardoublepage=plain,%
+    abstractoff,
+    %
+    BCOR=5.5mm, paper=a4, fontsize=11pt,% A5 soft cover
+    %BCOR=5.5mm, paper=21cm:29.7cm, fontsize=10pt,% 17 cm x 24 cm
+    %BCOR=5mm, paper=15.59cm:23.39cm, fontsize=9pt,% Royal soft cover
+    %BCOR=0mm, paper=15.24cm:22.86cm, fontsize=10pt,% US-Trade hard cover
+]{scrreprt}
+
+
+
+\usepackage{etex}
+\reserveinserts{10}
+
+\input{preamble/general}
+%\input{preamble/listings}
+\usepackage[final]{pdfpages}
+
+\input{preamble/listings}
+\usepackage{tikz}
+\usetikzlibrary{positioning,chains,fit,shapes,calc, matrix,arrows, decorations.markings}
+% for double arrows a la chef
+% adapt line thickness and line width, if needed
+\tikzstyle{vecArrow} = [thick, decoration={markings,mark=at position
+	1 with {\arrow[semithick]{open triangle 60}}},
+double distance=1.4pt, shorten >= 5.5pt,
+preaction = {decorate},
+postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
+\tikzstyle{innerWhite} = [semithick, white,line width=1.4pt, shorten >= 4.5pt]
+
+
+\usetikzlibrary{positioning}
+%inparaenum
+%\usepackage{paralist}
+%\usepackage{wrapfig,booktabs}
+%\usepackage{float}
+\usepackage{siunitx}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+\usepackage{dirtytalk}
+\usepackage[framemethod=tikz]{mdframed}
+
+\usepackage{tabularx}
+\usepackage{adjustbox}
+\usepackage{nomencl}
+\usepackage{physics}
+\makenomenclature
+
+\newcommand{\dimensional}[1] {
+	\left[\vb{#1}\right]
+}
+
+
+% Bibliography
+\addbibresource{main.bib}
+
+%\addbibresource[label=ownpubs]{ownpubs.bib}
+%\addbibresource{bibliography.bib}
+%\addbibresource{misc.bib}
+\usepackage{amssymb,graphicx}
+\renewcommand{\floatpagefraction}{.72}
+\usepackage{wrapfig}
+\usepackage{lettrine}
+
+
+\begin{document}
+\frenchspacing
+\raggedbottom%
+\selectlanguage{english}
+\pagenumbering{roman}
+\pagestyle{scrplain}
+
+%
+% Cover
+%
+% Uncomment and adapt these line\dfrac{s}{den} if you want to include a cover PDF.
+%
+%\includepdf[pages={1,{}}]{cover/crop/cover_front.pdf}
+\cleardoublepage\setcounter{page}{1}
+
+%
+% Frontmatter
+%
+
+\include{frontbackmatter/dirtytitlepage}
+\include{frontbackmatter/titlepage}
+\include{frontbackmatter/titleback}
+\cleardoublepage\include{frontbackmatter/dedication}
+\cleardoublepage\include{frontbackmatter/abstract}
+\cleardoublepage\include{frontbackmatter/acknowledgments}
+\pagestyle{headings}
+\cleardoublepage\include{frontbackmatter/contents}
+
+%
+% Mainmatter
+%
+
+%CA
+\pagenumbering{arabic}
+\cleardoublepage
+\include{chapters/CA_FDM/ca}
+\cleardoublepage%
+
+\cleardoublepage
+%\def\dir{chapters/CA_FDM}
+\include{chapters/CA_FDM/fdm}
+\cleardoublepage
+
+\cleardoublepage
+\include{chapters/parallel_programming/parallel_programming}
+\cleardoublepage
+
+\cleardoublepage
+\include{chapters/opencal/opencal}
+
+\cleardoublepage
+
+\cleardoublepage
+\include{chapters/opencal/opencalcluster}
+\cleardoublepage
+
+\cleardoublepage
+\include{chapters/bacteria/bacteria}
+\cleardoublepage
+
+\cleardoublepage
+\include{chapters/birdflocking/birdflocking}
+\cleardoublepage
+
+\appendix
+\cleardoublepage%
+\include{chapters/stream_compaction/stream_compaction}
+
+\cleardoublepage%
+
+\cleardoublepage\include{frontbackmatter/bibliography}
+\cleardoublepage%
+\cleardoublepage\include{glossary}
+\bookmarksetup{startatroot}
+\pagenumbering{gobble}
+%\cleardoublepage\include{frontbackmatter/cv}
+\cleardoublepage\include{frontbackmatter/publications}
+
+\end{document}

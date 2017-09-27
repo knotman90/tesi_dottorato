@@ -1,0 +1,14 @@
+#TeXlipse project settings
+#Tue Oct 06 12:49:33 CEST 2015
+markTmpDer=true
+builderNum=2
+outputDir=
+makeIndSty=
+bibrefDir=
+outputFormat=pdf
+tempDir=tmp
+mainTexFile=bare_conf.tex
+outputFile=pdp16.pdf
+langSpell=en
+markDer=true
+srcDir=

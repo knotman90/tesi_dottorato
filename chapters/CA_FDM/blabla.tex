@@ -1,0 +1,64 @@
+        In this example, a one-dimensional cellular space $R$
+    can be used (cf. Figure \ref{fig:cellularspaces}a) to model the
+    $10$ grid points $i$ $(i = 0, 1, ...,9)$, while the values that
+    the generic cell can assume are simply represented by the $Q = [0,
+      100] \subset \mathbb{R}$ substate. By using the forward
+    difference formula for the first order derivative and the central
+    one for the second order, the following explicit recurrence scheme
+    is obtained:
+    $$ T_i^{t+1} = T_i^t + k \Delta t \frac{T_{i+1}^t - 2T_i^t +
+      T_{i-1}^t}{\Delta x^2}
+    $$ denoting that the value of the temperature at the grid point
+    $i$ at the time step $t+1$ is a function of the (known) values
+    assumed by $T$ at the $i-1$, $i$ and $i+1$ grid points at the
+    (previous) time step $t$. Thus, the one dimensional radious-one $X
+    = \{-1, 0, 1\}$ neighburhood pattern can be adopted (cf. Figure
+    \ref{fig:1Dneighborhood}a) and an elementary process used to
+    implement the above recurrence scheme. The explicit formulation of
+    the FDM one-dimensional heat conduction model can be therefore
+    expressed in terms of the XCA formalism as:
+
+    $$ FDM_{heat} = <R,\Gamma,X,Q,P,\sigma,\gamma>$$
+
+    \noindent where:
+
+    \begin{itemize}
+
+    \item $R = \{0,1,...,9\}$ is the one-dimensional cellular space,
+      representing the integer coordinates of the cells of the
+      computational domain (cf. Figure \ref{fig:cellularspaces}a).
+
+    \item $\Gamma = \{0, 9\} \subset R$ is the region identifying the
+      boundary of the computational domain.
+
+
+    \item $X = \{-1, 0, 1\}$ is the geometrical pattern defining the
+      neighborhood relationship (cf. Figure
+      \ref{fig:1Dneighborhood}a).
+
+    \item $Q = [0, 100] \subset \mathbb{R}$ is the set of cell's
+      states used to express the temperature values at the grid
+      points.
+
+    \item $P = \{k = 1, \Delta t = 0.01, \Delta x = 0.2\}$ is the set
+      of the FDM model parameters.
+      
+    \item $\sigma : Q^3 \rightarrow Q$ is the cell's transition
+      function, which implements the explicit recurrence FDM scheme.
+
+    \item $\gamma: Q^{|\Gamma|} \rightarrow Q^{|\Gamma|} \times
+      \mathbb{R}$ is the global steering function, used to apply the
+      boundary conditions at each computational step.
+
+    \end{itemize}
+
+    The initial conditions of the system are preliminarly defined at
+    time $t=0$ by assigning the temperature value 0 to each grid
+    point, except for the boundaries where the value 100 is set. The
+    global evolution of the system can therefore be obtained by
+    applying the $\tau$ global transition function (which in turn
+    applies $\sigma$ to each grid point) and eventually the steering
+    function $\gamma$ at discete time steps.
+    
+    
+    
