@@ -1,0 +1,38 @@
+
+# LaTeX temporary files
+*.lot
+*.bcf
+*.acn
+*.glsdefs
+*.aux
+*.log
+*.toc
+*.bak
+*.sav
+*.ist
+*.nls
+*.nlo
+*.xml
+*.xdy
+*.lof
+
+build/
+
+# PDF output - usually a bad idea to keep this in Git
+*.pdf
+
+# Latexmk
+*.fdb_latexmk
+
+# SyncTeX
+*.synctex.gz
+
+# LaTeX Beamer
+*.snm
+*.vrb
+*.nav
+*.out
+
+# BibTeX
+*.bbl
+*.blg

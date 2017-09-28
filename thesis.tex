@@ -63,7 +63,7 @@ postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
 \renewcommand{\floatpagefraction}{.72}
 \usepackage{wrapfig}
 \usepackage{lettrine}
-
+\newcommand{\eqname}[1]{\tag*{#1}}% Tag equation with name
 
 \begin{document}
 \frenchspacing
@@ -141,6 +141,6 @@ postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
 \bookmarksetup{startatroot}
 \pagenumbering{gobble}
 %\cleardoublepage\include{frontbackmatter/cv}
-\cleardoublepage\include{frontbackmatter/publications}
+%\cleardoublepage\include{frontbackmatter/publications}
 
 \end{document}
