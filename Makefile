@@ -12,4 +12,6 @@ $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 clean:
-	latexmk $(TEXFLAGS) -jobname=$(BUILD_DIR)/ -C thesis.tex
+	cd build && rm  *.nlo *.lot *.bcf *.acn *.glsdefs *.aux *.log *.toc *.bak *.sav *.ist *.nls  *.nlo *.xml *.xdy *.lof 	
+#latexmk $(TEXFLAGS) 
+-jobname=$(BUILD_DIR)/ -C thesis.tex

@@ -4,76 +4,110 @@
 	Sapere aude! Habe Mut, dich deines eigenen Verstandes zu bedienen! }%
 \vskip 1em
 %\section{Introduction}
-\lettrine[lines=3,lhang=0.33,lraise=0,loversize=0.15]{O}{ver} the last two decades lot has changed regarding the way modern scientific applications are designed, written and executed especially in the field of data-analytics, modelling and simulation and visualization mainly because the size of the problems that scientist try to tackle nowadays are much bigger and because of the amount of available raw data that can be analyzed. 
-Traditionally performance improvements in computer architecture have come from cramming ever more functional units onto silicon, increasing clock speeds and transistors number. Moore's law states that the number of transistors that can be placed inexpensively on an integrated circuit will double approximately every two years (See Figure \ref{fig:moore}). Coupled with increasing clock speeds CPU performance has until recently scaled likewise. But it is important to acknowledge that this trend cannot be sustained indefinitely or forever. Increased clock speed and transistor number require more power and consequently generate more heat. Although the trend for transistor densities has continued to steadily increase, clock speeds began slowing circa 2003 at 3 GHz. If we apply Moore’s law type thinking to clock-speed performance, we should be able to buy at least 10 GHz CPUs. However, the fastest CPU available at the time of writing is $\approx 4.0 GHz$.
-\begin{figure}
+\lettrine[lines=3,lhang=0.33,lraise=0,loversize=0.15]{O}{ver} the last two decades lot has changed regarding the way modern scientific applications are designed, written and executed especially in the field of data-analytics, modelling and simulation and visualization. The main reasons behind these changes are that the size of the problems that scientist try to tackle nowadays are much bigger and because of the amount of available raw data that can be analyzed. Data Analytics and Big Data techniques are applied in pretty much every field of science and have been exploited effectively by corporate organizations especially by those in the fields of  
+\begin{inparaenum}
+	\item Finance,
+	\item Sales,
+	\item Custom Service,
+	\item Risk Management,
+	\item Supply chain,
+	\item Asset Management,
+	\item Marketing,
+\end{inparaenum}
+but have been applied effectively in a number of other less common field, such as political election. As an example, the fund raisings for the last two campaign of the former president of the United Stated,Mr. Barak Obama, were optimized by means of Big Data. 
+
+Traditionally performance improvements in computer architecture have come from cramming ever more functional units onto silicon, increasing clock speeds and transistors number. Moore's law states that the number of transistors that can be placed inexpensively on an integrated circuit will double approximately every two years (See Figure \ref{fig:moore}). Coupled with increasing clock speeds, CPU performance has until recently scaled likewise. But it is important to acknowledge that this trend cannot be sustained indefinitely or forever. Increased clock speed and transistor number require more power and consequently generate more heat. Although the trend for transistor densities has continued to steadily increase, clock speeds began slowing circa 2003 at 3 GHz. If we apply Moore’s law type thinking to clock-speed performance, we should be able to buy at least 10 GHz CPUs. However, the fastest CPU available at the time of writing is $\approx 4.0 GHz$.
+\begin{figure}[!htbp]
+		\hspace*{-1.8cm}
 \centering
-%\includegraphics[totalheight=0.5\textheight]{./images/parallel_programming/moore_law_large}
-\includegraphics[width=1.0\textwidth]{./images/parallel_programming/moore_law2}
-\caption{Moore's Law regarding CPU transistors number
-history.}\label{mooreLaw}
+\includegraphics[width=1.2\textwidth]{./images/parallel_programming/moore_law2}
+\caption[Moore's Law regarding CPU transistors number.]{Moore's Law regarding CPU transistors number. \textsc{Intel} co-founder, Gordon Moore in 1695 observed that number of transistors in integrated circuits doubled each year. Although the pace has slowed in recent times, the number of transistors per square centimeter has since doubled approximately every 18 months. This is used as the current definition of the law. It is expected to hold true until 2020-2025. Note the logarithmic vertical scale. The almost linear trend correspond to an exponential growth.
+}
+\label{mooreLaw}
 \end{figure}
 At same point the performance gaining fails to increase proportionally with the added effort in terms of transistors number or clock speed because efficient heat dissipation and increasing transistor resolution on the wafer, which is not far from from its physical limit (the atom scale),  becomes more important and challenging.
 The heat emitted from the modern processor, measured in power density rivals the heat of a nuclear reactor core (see Figures \ref{fig:tempCPU} and \ref{fig:tempCPU_thermal})!
-\begin{figure}
-	\centering
-	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/heat_cpu}
-	\caption{Thermal camera image of a modern CPU showing that heat is concentrated in a small part of the wafer.}\label{fig:tempCPU_thermal}
-\end{figure}
-But the power demand did not stop in these year, and is not going to stop in the near future, here the necessity of relying heavily on parallel architectures, so today the dominating trend in commodity CPU architectures is multiple processing cores mounted on a single die operating at reduced clock speeds and sharing resources and memory. Today is normal to use multicore (2,4,8,12, up to 40) CPUs on a desktop PC at home at the point that is very uncommon to be able to buy a single core device.
-Even smartphones are proper multicore machines; for instance, the popular mobile CPU \textit{Snapdragon 835} manufactured by Qualcomm is a $8 \times$ cores each of them with a clock speed up to $2.45$ GHz.
-\begin{figure}
+But the power demand did not stop in these year, and is not going to stop in the near future, here the necessity of relying heavily on parallel architectures. Today, the dominating trend in commodity CPU architectures is multiple processing cores mounted on a single die operating at reduced clock speeds and sharing resources and memory. Multicore (2,4,8,12, up to 40) CPUs on a desktop PC at home or at the office are ubiquitous at the point that is even hard to be able to buy a single core device.
+Even smart-phones are proper multi-core machines; for instance, the popular mobile CPU, the \textit{Snapdragon 835},m manufactured by \textit{Qualcomm} is a $8 \times$ cores, each of them with a clock speed up to $2.45$ \si{GHz}.
+\begin{figure}[!htbp]
 \centering
 \includegraphics[width=1.0\textwidth]{./images/parallel_programming/temperatureCPU}
-\caption{Temperature density CPUs}\label{fig:tempCPU}
+\caption[Temperature density of CPUs over the years.]{Integraed Circuits power density over the years. Note  that since 2000s power density is higher than a nuclear reactor. This shows that this trend is not sustainable.}\label{fig:tempCPU}
 \end{figure}
-
-
 
 Lot of effort has put during these years in order to try to mitigate and overcome the limits regarding the sequential computer architecture which may derive from its three main components:
 \begin{enumerate}
-
 \item  Processor
-
 \item Memory
-
 \item  Communication system (datapaths, usually buses)
 \end{enumerate}
-All three components present bottlenecks that limit the overall computing performance capability of a system. Caches, low-latency high bandwidth and small capacity memories, for example can hide latency of DRAM chips storing the fetched data and serving subsequent requests of the same memory location\footnote{The fraction of the data satisfied by the cache is called \textit{\textbf{hit rate}}.}. But one of the most important innovation that addresses these bottlenecks is multiplicity (in processor, memories and datapaths) that allows to extend the class of tractable problems with larger instances and more cases that can be handled. This multiplicity has been organized in several manners during the years giving birth to a variety of architectures.
+All three components present bottlenecks that limit the overall computing performance capability of a system. Caches, low-latency high bandwidth and small capacity high speed memories, for example can hide latency of DRAM storing the fetched data and serving subsequent requests of the same memory (or neighboring) locations\footnote{The fraction of the data satisfied by the cache is commonly refeered as \textit{\textbf{hit rate}}.}. But one of the most important innovation that addresses these bottlenecks is multiplicity (in processor, memories and datapaths) that allows to extend the size of the tackled problems. This hardware multiplicity has been organized in several manners during the years, giving birth to a variety of parallel computer architectures.
 
-\section{Architectures}
-Lots of definitions and classifications have been proposed in years, mostly based on the adopted hardware configuration or logical approach in handling and implementing the parallelism, in order to categorize parallel systems.Among all, Flynn's taxonomy seems to be a well known and accepted one and is here introduced briefly.
-\subsection{Classical classification - Flynn's taxonomy}
+\begin{figure}[!htbp]
+	\centering
+	\includegraphics[width=0.5\textwidth]{./images/parallel_programming/heat_cpu}
+	\caption[CPU and Motherboard Temperature.]{Thermal camera image of a modern CPU showing that heat is concentrated in a small part of the wafer.}\label{fig:tempCPU_thermal}
+\end{figure}
+
+\section{Parallel Architectures - Flynn's taxonomy}
 \label{sec:flynn_tax}
-The classification is based on the notion of  \textit{stream of information}.
-Two types of information flow into the processor: instructions and data.
+A number of definitions and classifications have been proposed  over the years in order to categorize parallel systems, the majority of them are mostly based on the adopted hardware configuration or on the logical approach in handling and implementing the parallelism. Among all, \textit{Flynn}'s  taxonomy \cite{flynn:1972,duncan:1990} seems to be a well known and accepted one, and is  introduced briefly in this section.
+
+Flynn's classification is based on the notion of  \textit{stream of information}.
+Two types of information flow into the processor: \textbf{instructions} and \textbf{data}.
 Conceptually they can be separated into two independent streams. A coarse
 classification can be made taking in account only the number of instructions and
  data streams that a parallel machine can manage (see figure \ref{fig:parallelClassification1}).
-That's how Flynn's taxonomy\cite{Flynn1972} classifies machines: according to
+That's how Flynn's taxonomy classifies machines: according to
 whether they have one or more streams of each type.
 \begin{figure}
 \includegraphics[width=1.0\textwidth]{./images/parallel_programming/parallelClassification}
 \caption[Flynn's Parallel architecture taxonomy]{Flynn's Parallel architecture taxonomy.}
 \label{fig:parallelClassification1}
 \end{figure}
+According to Flynn's classification, there are 4 families of computer architecture:
 \begin{description}
+
 \item[SISD:] \textit{\textbf{Single}} instruction \textit{\textbf{Single}}
 data.\hfill\\
 No parallelism in either instruction or data streams. Each arithmetic
-instruction initiates an operation on a data item taken from a single stream of data elements (e.g. mainframes). A single control unit fetches a single instruction from the memory.
+instruction initiates an operation on a data item taken from a single stream of data elements. A single control unit fetches a single instruction from the memory. Mainframes belong to this category.
 \item[SIMD:] \textit{\textbf{Single}} instruction
 \textit{\textbf{Multiple}} data. \hfill \\ Data parallelism. The same
 instruction is executed on a batch of different data. The control unit is
 responsible for fetching and interpreting instructions. When it encounters an
 arithmetic or other data processing instruction, it broadcasts the instruction
 to all processing elements (PE), which then all perform the same operation. For
-example, the instruction might be \textit{add R3,R0.}. Each PE would add the
-contents of its own internal register R3 to its own R0. (e.g. stream
-processors\footnote{Vector processing is performed on an SIMD machine by distributing
-elements of vectors across all data memories.}.) SSE and AVX extensions to the $x86$ processors family is an example of such parallelism. One single instruction can operate on up to $512$ byte of data (see Figure \ref{fig:SSEvectorization}). SIMD exploits data and spatial prallelism in a synchronous manner.
+example, the instruction might be \texttt{add R3,R0.}. Each PE would add the
+contents of its own internal register R3 to its own R0. This is how stream
+processors work, for example. Elements are distributed across all available data memories. and the same instruction executed on each PE. \texttt{SSE} and \texttt{AVX} extensions to the $x86$ processors family is an example of such parallelism. One single instruction can operate on up to $512$ byte of data (see Figure \ref{fig:SSEvectorization} and Listing \ref{code:avxvectorization}). SIMD exploits data and spatial parallelism in a synchronous manner.
 
-\begin{figure}
+\lstset{language=[OpenCL]C,frame=tb,
+	caption={Multiplying eight floats of one array by eight floats of a second array and add the result to a third array. Serial and SIMD (AVX2) code examples. Note that the AVX2 intrinsic function \texttt{\_\_mm256\_fmadd\_ps} processes twentyfour floats, but it does not map to a single instruction (see Figure \ref{fig:SSEvectorization}). Instead, it executes three instructions: \texttt{vfmadd132ps}, \texttt{vfmadd213ps}, and \texttt{vfmadd231ps}. Despite this, it executes quickly and it is much faster than looping through the individual elements.}, 
+	label=code:avxvectorization, 
+	basicstyle=\footnotesize\ttfamily,
+	keywordstyle=\color{blue}\ttfamily,
+	stringstyle=\color{red}\ttfamily,
+	commentstyle=\color{green}\ttfamily,
+	backgroundcolor=\color{light-gray}, 
+	numbers=left,numbersep=3pt,, 
+	numberstyle=\tiny\ttfamily\color{gray}
+}
+\begin{lstlisting}
+//adds 8 floats in a serial fashion. One at the time in 8 different steps
+multiply_and_add(const float* a, const float* b, const float* c, float* d) {  
+	for(int i=0; i<8; i++) {
+		d[i] = a[i] * b[i];
+		d[i] = d[i] + c[i];
+	}
+}
+//A single instruction adds 8 floats in a SIMD fashion
+__m256 multiply_and_add(__m256 a, __m256 b, __m256 c) {
+	return _mm256_fmadd_ps(a, b, c);
+}
+\end{lstlisting}
+
+\begin{figure}[!htbp]
 	\centering
 	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/vectorization_example}
 	\caption{Example of vectorization with Intel SSE and extension.}
@@ -81,32 +115,30 @@ elements of vectors across all data memories.}.) SSE and AVX extensions to the $
 \end{figure}
 
 \item[MISD:] \textit{\textbf{Multiple}} instruction \textit{\textbf{Single}} data. \hfill \\ 
-Multiple instruction operating on the same data stream  (See Figure \ref{fig:MISD}). It is a class of system very unusual, mostly for fault-tolerance reasons. No machines in this category have been commercially successful or had any impact on computational science. 
-An type of of computer  that fits the MISD description is the so called \textit{systolic array} which consists of a network of pipelined primitive computing nodes or processors. 
-\begin{figure}
+Multiple instruction operating on the same data stream  (See Figure \ref{fig:MISD}). It is a class of system very unusual. No machines in this category have been commercially successful or had any impact on computational science. 
+A type of computer  that fits the MISD description is the so called \textit{systolic array} \cite{fortes:1987,kung:1984} which consists of a network of pipelined primitive computing nodes or processors. 
+\begin{figure}[!htbp]
 	\centering
 	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/MISD}
 	\caption{MISD machine schematization. Each processor $CU_i$ has its own instruction flow and all operates on the same data.}
 	\label{fig:MISD}
 \end{figure}
  
-\item[MIMD:] \textit{\textbf{Multiple}} instruction
-
-\textit{\textbf{Multiple}} data. \hfill \\ Multiple instruction operating
-independently on multiple data streams (e.g. most modern computers). A MIMD machine is an example of a true multiprocessor and are often employed to ro perform the so called \textit{Single Program Multiple Data} computation where each independent processor executes the same program.
-MIMD architecture can be further divided by by their memory layout and organization:
+\item[MIMD:] \textit{\textbf{Multiple}} instruction \textit{\textbf{Multiple}} data. \hfill \\ Multiple instruction operating
+independently on multiple data streams. Most modern computers belogn to this family. A MIMD machine is an example of a true multiprocessor and are often employed to perform the so called \textit{Single Program Multiple Data} computation where each independent processor executes the same program.
+MIMD architecture can be further divided by  their memory layout and organization:
 \begin{description}
-	\item [Shared Memory (modern CPUs)] where each processors shares the same memory address space and are interconnected by a shared buses. 	Shared memory architecture ar usually shipped as \textit{Symmetric Multi Processors} (SMP) since each of them is usually identical in computational and access to resources capabilities, and the OS kernel can run on any of them in contrast to \textit{Asymettric Multiprocessor} where there is a master-slave relationship  among the group of processors. According to whether subsets of processors have a dedicated and private memory module we can categorize SM architectures in:	
+	\item [Shared Memory (modern CPUs)] where each processors shares the same memory address space and are interconnected by shared buses. 
+	Shared memory architecture ar usually shipped as \textit{Symmetric Multi Processors} (SMP) since each of them is usually identical in computational and access to resources capabilities, and the OS kernel can run on any of them in contrast to \textit{Asymmetric Multiprocessor} where there is a master-slave relationship  among the group of processors. According to whether subsets of processors have a dedicated and private memory module we can categorize SM architectures in:	
 	\begin{itemize}
 		\item UMA (Uniform Memory Access) : Identical processors with equal
 		access time to memory (see figure \ref{fig:UMA_NUMA}),
-		sometimes called CC-UMA acronym for Cache Coherent UMA, because the
-		hardware ensures that all the processor can see a memory modification
-		performed by one of them.
+		sometimes called  Cache Coherent UMA (CC-UMA), because the
+		hardware ensures that all the processor can see a modification in the memory 	performed by one of them.
 		\item NUMA (Non Uniform Memory Access): Usually different groups
-		of processors (SMP, Symmetric multiprocessors\footnote{Group of processors connected via buses. Usually they consist of not more than 32 processors.}) are connected, and processors belonging to different SMP can access memoryspaces of each others. As NUMA if is present a cache coherence mechanism this architecture is called CC-NUMA.
-		 \begin{figure}
-			\caption{Shared memory architectures.}
+		of processors (SMP, Symmetric multiprocessors\footnote{Group of processors connected via buses. Usually they consist of not more than 32 processors.}) are inter connected, and processors belonging to different SMP can access the memory spaces of each others. As for UMA, if a cache coherence mechanism  is present, then this architecture is called CC-NUMA.
+		 \begin{figure}[b]
+			\caption[Shared memory architectures.]{UMA and NUMA shared memory architecture.}
 			\label{class12}
 			\centering
 			\begin{subfigure}[b]{0.5\textwidth}
@@ -124,28 +156,27 @@ MIMD architecture can be further divided by by their memory layout and organizat
 		
 
 	\end{itemize}
-	SM architecture provides an easy perspective to memory,	data sharing across processors, and parallelism since no explicit communication is involved. Memory access and communication are fast due to the proximity of memory to CPUs, but it is not scalable because adding more CPUs to the pool can geometrically increases the traffic on the bus and makes cache management harder. Is up to the programmer to ensure the correct accesses to global memory in order to avoid race-conditions.
-	As an example of real SM modern processor Figure \ref{fig:intelPhi} shows the Intel \textit{Knights Landing} Architecture for the intel Phi processor family which is armed with 72 cores, $8$ billions transistors at \SI{14}{\nano\metre}, AVX-512 and is able to executes 240 threads simultaneously.
+	SM architecture provides an easy perspective to memory,	data sharing across processors and parallelism since no explicit communication is involved. Memory access and communication are fast due to the proximity of memory to CPUs, but it is not scalable because adding more CPUs to the pool can geometrically increases the traffic on the bus and makes cache management harder. Additionally, ensuring the correctness of accesses to global memory , in order to avoid race-conditions, is up to the programmer.
+	As an example of real world SM modern processor, Figure \ref{fig:intelPhi} shows the Intel \textit{Knights Landing} Architecture for the Intel Phi processor family which is armed with 72 cores, $8$ billions transistors at \SI{14}{\nano\metre}, AVX-512 and is able to executes 240 threads simultaneously.
 		\begin{figure}
 		\centering
 		\label{fig:distribuiteMemory}
 		\includegraphics[width=1.0\textwidth]{./images/parallel_programming/xeonphi}
-		\caption{Xeon Phi, Intel Knight Landing architecture and specifications.}
+		\caption{Xeon Phi, Intel Knight Landing architecture and technical specifications.}
 	\end{figure}
-	Coupled with this architecture many software solution can be used to program
-	shared memory machines. The most used are:
-	\begin{itemize}
-		\item Threads. Lightweight processes but with same PID (e.g. pthreads)
-		\item A standard language with preprocessor directives to the compiler that is capable of converting the serial program in a parallel program without any (or very few) intervention by the programmer (e.g. \texttt{OpenMP}, see Section \ref{sec:openmp}).
-		
-	\end{itemize}
-	
 
-	\item [Distributed Memory] 	Different systems, and hence, different multiprocessors connected via some kind of network (see Figure \ref{fig:distribuiteMemory}), usually high speed networks such as gigabit Ethernet, InfiniBand and Myrinet, and the memory space in one processor do not map to another processor. Each of them operate independently on its memory address, so changes are not reflected on memory spaces of the others. Explicit communication is required between processors and is like synchronization	programmer's responsibility.
+	Coupled with this architecture many software model can be used to program
+	shared memory machines. Among all, the most used are:
+	\begin{itemize}
+		\item Threads; Lightweight processes but with same PID (e.g. pthreads)
+		\item Compiler preprocessor directives; A standard language with preprocessor directives to the compiler that is capable of converting the serial program in a parallel program without any (or very few) interventions or hints by the programmer (e.g. \texttt{OpenMP}, see Section \ref{sec:openmp}).		
+	\end{itemize}	
+
+	\item [Distributed Memory] 	Different systems, and hence, different multiprocessors connected via some kind of network (see Figure \ref{fig:distribuiteMemory}), usually high speed networks such as gigabit \textsc{Ethernet} \cite{Spurgeon:2000:EDG:336070}, \textsc{InfiniBand} \cite{Shanley:2002:INF:579371} and \textsc{Myrinet} \cite{Boden:1995:MGL:623261.623898}, and the memory space in one processor do not map to another processor. Each of them operate independently on its memory address, so changes are not reflected on memory spaces of the others. Explicit communication is required between processors and is like synchronization	programmer's responsibility.
 	This architecture  is very scalable and there is not  overhead in maintaining	cache coherency. 	
 	The most used paradigm for programming distributed memory machines is the
-	message passing\footnote{\texttt{MPI} is the \textit{de facto} industry standard for
-	message passing. \url{http://www.mpi-forum.org/}}.
+	message passing for which the \textit{Message Passing Interface} (\texttt{MPI}\footnote{\url{http://www.mpi-forum.org/}}) \cite{Forum:1994:MMI:898758,Gropp:1999:UMA:555151} is the \textit{de facto} industrial and academic standard 
+ .
 	\begin{figure}
 		\centering
 		\caption{Distributed memory architecture.}
@@ -154,8 +185,8 @@ MIMD architecture can be further divided by by their memory layout and organizat
 		\includegraphics[scale=0.25]{./images/parallel_programming/distribuitedMemory}
 	\end{figure}
 	
-	\item[Hybrid Systems] As the name suggest is a mix of actitectures. Only a limited number of  processors, say $N$, have	access to a common pool of shared memory. These N processor are connected to the others via network and each processor can consist of many cores.
-	A common example of a  programming model for hybrid system is the combination 	of the message passing model (\texttt{MPI}) with the threads model (\texttt{OpenMP}) in which
+	\item[Hybrid Systems] As the name suggest a computer belonging to this category, is a mix of architectures. Only a limited number of  processors, say $N$, have	access to a common amount of shared memory. These $N$ processors are inter connected to the others groups via network. Note that each processor usually is an agglomerate of many computing cores.
+	Hybrid systems of the kind described in this section are usually programmed using a combination of the message passing model (\texttt{MPI}) with the threads model (\texttt{OpenMP}) in which:
 	\begin{itemize}
 		\item threads perform computationally intensive task, using local
 		\textbf{on-node} memory space and
@@ -234,13 +265,13 @@ MIMD architecture can be further divided by by their memory layout and organizat
     \begin{figure}
     	\centering
     	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/memory-bandwidth}
-    	\caption{Intel CPUs and Nvidia GPUs memory bandwidth
+    	\caption{\textsc{Intel} CPUs and \textsc{NVIDIA} GPUs memory bandwidth
     		chart}\label{CPU-VS-GPU_MEMORY}
     \end{figure}
     \begin{figure}
     	\centering
     	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/cpu-vs-gpu}
-    	\caption{Performance comparison between CPU and modern accelerators (NVIDIA, Intel and AMD) over time.}\label{CPU-VS-GPU_GFLOP}
+    	\caption{Performance comparison between CPU and modern accelerators (\textsc{NVIDIA}, \textsc{Intel} and \textsc{AMD}) over time.}\label{CPU-VS-GPU_GFLOP}
     \end{figure}
     Nowadays, GPU are widely used for general purpouse computing. The Top 500 Supercomputers\footnote{\url{http://www.top500.org/statistics/list/}} ranking is dominated by massively parallel computer, built on top of superfast networks and millions of sequential CPUs working in concert but as the industry is developing even ore powerful, programmable and capable GPUs in term of GFlops  we see that they begin to offer advantages over traditional cluster of computers in terms of economicity and scalability.
     
@@ -283,29 +314,29 @@ MIMD architecture can be further divided by by their memory layout and organizat
     	to be used in subsequent calculations are copied to textures for temporary storage and the process could start over again for another iteration.
     \end{enumerate} 
     
-    The year 2006 marked a significant turning point in GPU architecture. The \texttt{G80}  was the first NVIDIA GPU to have a unified architecture whereby the different shader processors were  combined into unified stream processors. The resulting stream processors had to be more complex so as to provide all of the functionality of the shader processors they replaced. Although research had been carried out into general purpose programming
+    The year 2006 marked a significant turning point in GPU architecture. The \texttt{G80}  was the first \textsc{NVIDIA} GPU to have a unified architecture whereby the different shader processors were  combined into unified stream processors. The resulting stream processors had to be more complex so as to provide all of the functionality of the shader processors they replaced. Although research had been carried out into general purpose programming
     for GPUs previously, this architectural change opened the door to a far wider range of  applications and practitioners.    
     GPUs are nowadays, well-suited data-parallel problems because they are very good at execution the same code on many data elements at the same time  in a \textit{Single Instruction, Multiple Threads} (SIMT) fashion or using a more general definition as \textit{Parallel Random-Access Machine in which each thread Can Read or Write a memory location} (\texttt{CRCW PRAM}).
     
     
     \section{The \texttt{OpenCL} Parallel Computing Paradigm on Heterogeneous Devices}
-    Released on December 2008 by the Kronos Group, \texttt{OpenCL} is an open standard for programming heterogeneous computers built from CPUs, GPUs and other processors. It allows to define the computation using the \textit{platform} abstraction. A platform is composed by an host device and one or more compute devices. A C-like language is the used to program and orchestrate the various parts of the platform (see Figure \ref{fig:openCL}).
-    One of the advantages of \texttt{OpenCL} is that it is not restricted to the use of
-    GPUs but it take each computing resource in the system as computational peer unit, easing the process of interfacing with them. Another big advantage is that it is an open, free cross-compatible across vendors since is supported by all major hardware producers.
+    Released on December 2008 by the Kronos Group, \texttt{OpenCL} \cite{Gaster:2011:HCO:2046379,Stone:2010:OPP:622179.1803953,Munshi:2011:OPG:2049883} is an open standard for programming heterogeneous computers built from CPUs, GPUs and other processors. It allows to define the intended computation using the \textit{platform} abstraction. A platform is composed by an host and one or more compute devices. A C-like language is used to program and orchestrate the various parts of the platform (see Figure \ref{fig:openCL}).
+    
+    One of the advantages of \texttt{OpenCL} is that it is not restricted, as in the case of CUDA\cite{NvidiaprogGuide}, to the use of GPUs only but it takes each computing resource in the system as computational peer unit, interposing a uniform set of API between them and the programmer, easing the process of interfacing with them. Another big advantage is that it is  open, free, and cross-compatible across vendors since is supported by all major hardware producers.
     
     A typical \texttt{OpenCL} application is subdivided in two parts, one
-    running on the CPU (host application) and one or more running on a
-    compliant device (device application), where the actual parallel
+    running on the CPU (\textit{host} application) and one or more running on a
+    compliant device (\textit{device} application), where the actual parallel
     computation generally takes place. The host application defines
     the tasks to be executed in parallel. Each parallel task is
     implemented as an \texttt{OpenCL} \emph{kernel}, which is a special C
-    function, which is specifically (runtime) compiled  and deployed to a compliant device (or even to different different devices) for execution. The execution model is similar to the one of CUDA (with different terminology), where each kernel is executed by threads, the smallest execution entity, also called work-items, which are grouped into work-groups. A work-item is executed by one or more processing elements as part of a work-group executing on a compute unit. A work-item is distinguished from other executions within the collection by its global ID and local ID.
-    A Work-group is a collection of related work-items that execute on a single compute unit. The work-items in the group execute the same kernel and share local memory and work-group barriers.
+    function, which is specifically (runtime) compiled for and deployed to a compliant device (or to different ones) for execution. The execution model is similar to the one of CUDA (CUDA and OpenCL share a similar programming model and underlying hardware architecture, even if a quite different terminology is adopted), where each kernel is executed by \textbf{threads}, the smallest execution entity, also called \textbf{work-items}, which are grouped into \textbf{work-groups}. A work-item is executed by one or more processing elements as part of a work-group executing on a compute unit. A work-item is distinguished from other executions within the collection by its \textbf{global ID} and \textbf{local ID}.
+    A work-group is a collection of related work-items that execute on a single compute unit. The work-items in the group execute the same kernel and share local memory and work-group barriers.
     Work-groups can 
     \begin{itemize}
-		\item Share data between the work-group's work-items using local memory
-		\item Synchronize between work-items using barriers and memory fences mechanism
-		\item Use special built-in functions such as \texttt{work\_group\_copy}
+		\item \textbf{Share data} between the work-group's work-items using local memory
+		\item \textbf{Synchronize} between work-items using barriers and memory fences mechanism
+		\item \textbf{Use special built-in functions} such as \texttt{work\_group\_copy}
     \end{itemize}
 
     \begin{figure}
@@ -390,13 +421,12 @@ MIMD architecture can be further divided by by their memory layout and organizat
     	context and then proceed building for a particular subset of
     	context's devices. We first query the runtime for the available devices and
     	then load directly source code as string in a
-    	\textbf{\textit{cl::Program:Source}} \texttt{OpenCL} object (see listing1
+    	\textbf{\textit{cl::Program:Source}} \texttt{OpenCL} object (see Listing
     	\ref{code:loadBuildProgramCL}).\\
     	
     	\item In order a kernel to be executed a \emph{kernel object} must be created.
     	For a given \emph{Program} there would exists more than one entry point
-    	(identified by the keyword \emph{\_\_kernel} \footnote{Obviously in the same
-    		source code one can define more than on kernel.}). We choose one of them for
+    	(identified by the keyword \emph{\_\_kernel}. We choose one of them for
     	execution specifying in the kernel object constructor\\
     	
     	\item We effectively execute the kernel putting it into a 
