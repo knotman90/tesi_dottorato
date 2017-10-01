@@ -206,18 +206,25 @@ MIMD architecture can be further divided by  their memory layout and organizatio
 \subsection{The \texttt{OpenMP} Parallel Computing Paradigm for Shared Memory Computers}
     \texttt{OpenMP} is a portable API providing compiler directives and library
     functions for shared memory parallel programming in \texttt{C/C++} and
-    Fortran \cite{Chapman:2007:UOP:1370966} implemented on top of \texttt{pthread}. It implements the
-    multi-threaded \emph{fork-join} (see Figure \ref{fig:omp_fork-join}) programming model, where an initial (or master) thread forks a given number of new threads (team of threads), which share the resources of the process which they are part of and run concurrently on the available processing
-    elements. Threads created during the fork phase can therefore
+    Fortran \cite{Chapman:2007:UOP:1370966} implemented on top of \texttt{pthread} \cite{Nichols:1996:PP:237813}. It implements the
+    multi-threaded \emph{fork-join}  programming model (see Figure \ref{fig:omp_fork-join}), where an initial (or master) thread forks a given number of new threads (team of threads), which share the resources of the process which they are part of and run concurrently on the available processing cores.
+    Threads created during the fork phase can therefore
     rejoin to the master thread (join phase), and more fork-join
     stages can occur in a typical execution of an \texttt{OpenMP} program.
+    The size of the teams can be controlled by an environment variable \texttt{OMP\_NUM\_THREADS}, set at runtime by using the \texttt{omp\_set\_num\_threads(n)} function or specified for each parallel region using the \texttt{num\_thread(n)} in a \texttt{for} directive (see Listing \ref{code:openmp_lock}).
 \begin{figure}
 	\centering
 	\includegraphics[scale=0.8]{./images/parallel_programming/omp_fork-join}
-	\caption{\texttt{OpenMP} fork-join execution model.}
+	\caption[\texttt{OpenMP} fork-join execution model.]
+	{\texttt{OpenMP} fork-join execution model.
+		\begin{inparaenum}
+			\item OpenMP programs start with a single thread; the \textit{master thread} (\textit{Thread \#}$0$).
+			\item At the starting point of a parallel region, \textit{master} creates team of parallel worker threads (\textbf{FORK}).
+			\item Statements in the parallel block are executed in concurrently by every thread (master as well). 
+			\item At end of parallel region, all threads \textbf{synchronize}, and join \textit{master} thread (\textbf{JOIN}).
+		\end{inparaenum} Note that parallel regions can be nested.}
 	\label{fig:omp_fork-join}
 \end{figure}
-
 
     The fork-join model allows for the selective parallelization of
     the original source code (e.g. loops), by leaving portions that
@@ -230,17 +237,76 @@ MIMD architecture can be further divided by  their memory layout and organizatio
     manner, when a thread terminates its current chunk, it requests a
     new one in a typical master-slave manner, usually resulting in
     better performance in the case chunks are not well balanced.
+    scheduling can be specified using the \texttt{schedule} keyword in the \texttt{for} directive.
+    Static scheduling can be non-optimal in the case when different iteration take different amount of time to be executed. As an example consider the program in Listing \ref{code:scheduling_omp} in which each loop iteration causes the executing thread to sleep for a number of seconds equals to the number of the iteration. 
+    
+    \lstset{language=[OpenCL]C,
+    	caption={Scheduling in OpenMP example. Note that specifying \textbf{static scheduling } is not needed since it is the default setting.}, 
+    	label={code:scheduling_omp}, 
+    	basicstyle=\ttfamily,
+    	keywordstyle=\color{blue}\ttfamily,
+    	stringstyle=\color{red}\ttfamily,
+    	commentstyle=\color{green}\ttfamily,
+    	backgroundcolor=\color{light-gray}, 
+    	numbers=left, 
+    	numberstyle=\tiny,
+    	morekeywords={schedule,parallel,omp,pragma,num_threads,omp_get_thread_num,omp_destroy_lock,omp_unset_lock,omp_set_lock,omp_lock_t,omp_init_lock}
+    }
+    \begin{lstlisting}
+    #define CHUNK_SIZE (1)
+    int main ( ) {
+    	#pragma omp parallel for schedule(static,CHUNK_SIZE) num_threads(4)
+    	for (int i = 0; i < N; i++) {
+    		/* wait for i seconds */
+    		sleep(i);    		
+    		printf("Thread %d has completed iteration %d.\n", 
+    				omp_get_thread_num( ), i);
+    	}
+    	/* all threads done */
+    	printf("All done!\n");
+    	return 0;
+    }
+\end{lstlisting}
 
-    Moreover, \texttt{OpenMP} provides locks to serialize the access to shared
-    variables by defining critical sections. A lock must be firstly
-    initialized and then can be acquired or released. When a thread
-    attempts to acquire a lock that is already be set by another
-    thread, its execution is suspended until the lock is released,
-    giving rise to performance degradation (or even to possible deadlock
-    situations). However, a lock can also be queried in order to
-    evaluate its state, without blocking the thread execution. In this
-    way, if the lock is already set, the querying thread can perform
-    other computation, by minimizing the idle time.
+There is a great imbalance among the threads in the number of seconds they will wait, because the last thread executes the last chunk of iterations.
+\textit{Dynamic} scheduling can be applied in a case like this to improve the overall execution time. OpenMP assigns one iteration to each thread and when a thread completes its work, it is assigned the next iteration that has not been executed yet. 
+
+Moreover, \texttt{OpenMP} provides locking mechanism to serialize the access to shared variables by defining critical sections.
+A lock must be firstly  initialized and then can be acquired or released. When a thread  attempts to acquire a lock that is already be set by another
+thread, its execution is suspended until the lock is released,
+giving rise to performance degradation (or even to possible deadlock
+situations). 
+However, a lock can also be queried in order to
+evaluate its state, without blocking the thread execution. In this
+way, if the lock is already set, the querying thread can perform
+other computation, by minimizing the idle time. See Listing \ref{code:openmp_lock} for an example of lock usage in OpenMP.
+
+\lstset{language=[OpenCL]C,
+	caption={\texttt{OpenMP} lock acquisition, usage and destruction example. Note that the region of code between lines 8 and 10 is serialized.}, 
+	label={code:openmp_lock}, 
+	basicstyle=\ttfamily,
+	keywordstyle=\color{blue}\ttfamily,
+	stringstyle=\color{red}\ttfamily,
+	commentstyle=\color{green}\ttfamily,
+	backgroundcolor=\color{light-gray}, 
+	numbers=left, 
+	numberstyle=\tiny,
+	morekeywords={#pragma,omp_destroy_lock,omp_unset_lock,omp_set_lock,omp_lock_t,omp_init_lock}
+}
+\begin{lstlisting}
+omp_lock_t writelock;
+omp_init_lock(&writelock);
+#pragma omp parallel for num_threads(5)
+for ( i = 0; i < x; i++ ){
+// some stuff in a concurrent fashion
+omp_set_lock(&writelock);
+// one thread at a time stuff
+omp_unset_lock(&writelock);
+// some more  stuff in a concurrent fashion
+}    
+omp_destroy_lock(&writelock);
+\end{lstlisting}
+    
 
     In addition to the data-type parallelization provided by the
     fork-join model, \texttt{OpenMP} aslo supports the functional-type
@@ -250,17 +316,39 @@ MIMD architecture can be further divided by  their memory layout and organizatio
     low-level implementation details. Moreover, by using \texttt{OpenMP} it is
     possible to build the same source code to produce both parallel or
     sequential executable. In the latter case, the compiler simply
-    ignores the \texttt{OpenMP} directives.
+    ignores the \texttt{#prama OpenMP} directives.
     
+    \begin{table}
+    	\label{tab:scheduling_policies}
+    	\caption{OpenMP scheduling policies}
+    	\begin{tabularx}{1.0\textwidth}{cX}
+    		\rowcolor{gray!35}	
+    		\heading{\textbf{Scheduling Kind}} &  \heading{\textbf{Description}} \\ \hline
+    		\rowcolor{gray!15}
+    		\texttt{\textbf{static}} & The loop is divided into equal-sized chunks of iterations. By default, chunk size is $\frac{iterations}{number\_of\_threads}$. If the chunk size is set to $1$, iteration are executed by the threads in a interleaved fashion.\\ \hline
+    		\rowcolor{gray!5}
+    		\texttt{\textbf{dynamic}} & chunk-sized block of iterations are internally queued. When a thread is ready to execute some work, it retrieves the next block  from the top of the queue. Note that by default chunk size is $1$. Managing the queue and assigning work to  to threads comes with an arrached overhead.\\ \hline
+    		
+    		\rowcolor{gray!15}
+    		\texttt{\textbf{guided}} & similar execution policy  to \texttt{dynamic} but che chunk size decreases over time to better handle load imbalance between iterations. In this cake the optional parameter of the schedule construct specifies the minimum chunk size. By default it is equal to $\frac{iterations}{number\_of\_threads}$\\ \hline
+    		
+    		\rowcolor{gray!5}
+    		\texttt{\textbf{auto}} & The compiler is free to decide any possible mapping of iteration to threads.\\ \hline
+    		
+    		\rowcolor{gray!15}
+    		\texttt{\textbf{runtime}} & the scheduling policy is choosen at runtime and changes according to the environment variable \verb|OMP_schedule| \\ \hline
+    	\end{tabularx}
+    	\label{tab:scheduling_policies}
+    	\caption[OpenMP scheduling policies]{\texttt{\#pragma omp parallel for schedule(kind [,chunk size])} OpenMP scheduling kinds. The optional parameter (chunk size), when specified, must be a positive integer. }
+    \end{table}
     
     \subsection{General Purpouse GPU Computing - GPGPU}
-    The concept of many processor working together in concert is not new in computer graphics. Since the demand generated by entertainment started to grow, multi-core hardware emerged in order to take advantage of the high amount of parallel work available during in the processo of generating and rendering 3D images.
-    In computer graphics, the process of generating a 3D images consist of
-    refreshing pixels at rate of sixty or more $\si{Hz}$. Each has to be processed goes through a number of stages, and this process is commonly referred to as the \emph{graphic processing pipeline}. The peculiarity of this task is that the  computation each pixel is independent of the other's so this work is perfectly suitable for distribution over parallel processing elements. To support extremely fast processing of large graphics data sets (which mainly consists of vertices and fragments), modern GPUs employ a stream processing model with parallelism.
+    The concept of many processors working together in concert is not new in computer graphics. Since the demand generated by entertainment started to grow, multi-core hardware emerged in order to take advantage of the high amount of parallel work available in the process of generating and rendering $3D$ images.
+    Main goal of the computer graphics is to  rendering $3D$ images, which translates to refreshing pixels at rate of sixty or more $\si{Hz}$. Each pixel has to be processed goes through a number of stages, and this process is commonly referred to as the \emph{graphic processing pipeline}. The peculiarity of this task is that the  computation each pixel is independent of the other's so this work is perfectly suitable for distribution over parallel processing elements. To support extremely fast processing of large graphics data sets (which mainly consists of vertices and fragments), modern GPUs employ a stream processing model with parallelism.
     The game industry boosted the development of the GPU, that offer now greater
     performance than CPUs and are improving faster too (see Figure
     \ref{CPU-VS-GPU_GFLOP} and \ref{CPU-VS-GPU_MEMORY}).
-    The reason behind the discrepancy in floating-point capability between CPU and  GPU is that GPU is designed such that more transistors are devoted to data  processing rather than caching and flow control.
+    The reason behind the discrepancy in floating-point capability between CPU and  GPU is that GPUs are designed such that more transistors are devoted to data chruncing and processing rather than caching, flow control, branch prediction, etc..
     
     \begin{figure}
     	\centering
@@ -273,13 +361,13 @@ MIMD architecture can be further divided by  their memory layout and organizatio
     	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/cpu-vs-gpu}
     	\caption{Performance comparison between CPU and modern accelerators (\textsc{NVIDIA}, \textsc{Intel} and \textsc{AMD}) over time.}\label{CPU-VS-GPU_GFLOP}
     \end{figure}
-    Nowadays, GPU are widely used for general purpouse computing. The Top 500 Supercomputers\footnote{\url{http://www.top500.org/statistics/list/}} ranking is dominated by massively parallel computer, built on top of superfast networks and millions of sequential CPUs working in concert but as the industry is developing even ore powerful, programmable and capable GPUs in term of GFlops  we see that they begin to offer advantages over traditional cluster of computers in terms of economicity and scalability.
+    Nowadays, GPU are widely used for general purpouse computing. The Top $500$ supercomputers \cite{Strohmaier:2006:TS:1188455.1188474} \footnote{\url{http://www.top500.org/statistics/list/}} ranking is dominated by massively parallel computer, built on top of superfast networks and millions of sequential CPUs working in concert.
+    But as the industry is developing even more powerful, programmable and capable GPUs in term of \si{\giga FLOPS},  we see that they begin to offer advantages over traditional cluster of computers in terms of economicity and scalability.
     
     \subsection{From Graphics Graphics to General Purpose HW}\label{graphicPipeline}
-    A graphics task such as rendering a 3D scene on the GPU
-    involves a sequence of processing stages (i.e. shaders) that run in parallel
-    and in a prefixed order, known as the graphics hardware
-    pipeline\footnote{The pipeline is the most common form of 3D computer rendering, distinct from for instance, \textit{raytracing} or \textit{raycasting} for which the concept of pipeline is not even defined.}. Figure \ref{graphicPipeline} shows the important key steps that make up the graphic pipeline and for which the GPU hardware has been specialized for years. The pipeline works taking as input graphics primitives, each stage forward its results on to the next stage.
+    A graphics task such as rendering a $3D$ scene on the screen
+    involves a sequence of processing stages inside the GPU, i.e. shaders, that run in parallel and in a prefixed order, known as the graphics hardware
+    pipeline which is the most common form of 3D computer rendering, distinct from, for instance, \textit{raytracing} or \textit{raycasting} for which the concept of pipeline is not even defined. Figure \ref{graphicPipeline} shows the important key steps that make up the graphic pipeline and for which the GPU hardware has been specialized for years. The pipeline works taking as input graphics primitives, each stage forward its results on to the next stage.
     \begin{itemize}
     	\item     The first stage of the pipeline is the \textit{vertex shader}. The
     	input to this phase is a list of vertices in object space coordinate which are then converted to world coordinates (applying the \textit{model and view matrices}).
