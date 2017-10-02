@@ -371,7 +371,14 @@ with respect to the central one. Note that, a zero-based index is
 assigned to the neigbouring cells in order to address them without
 the need to provide their relative coordinates, as shown in Figures
 \ref{fig:2Dneighborhood} and \ref{fig:3Dneighborhood}.
-
+\begin{figure}[!htbp]
+	\begin{center}
+		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure01}
+		\caption{Examples of von Neumann (a) and Moore (b) neighborhoods for two-
+			dimensional CA with square cells. Examples of Moore neighborhoods are also shown for hexagonal CA, both for the cases of horizontal (c) and vertical (d) orientations. Central cell is represented in dark gray, while adjacent cells are in light gray. A reference system is here considered to evaluate cells coordinates in terms of row and column indices in a matrix-style representation, and a 0-based numerical identifier assigned to each cell in the neighborhood for straightforward access}
+		\label{fig:2Dneighborhood}
+	\end{center}
+\end{figure}
 Elementary processes, both local interactions and internal
 transformations, are defined by means of callback functions and
 registered to a computational model by means of the
@@ -384,17 +391,8 @@ loop to the cells of the computational domain in the same order in
 which they were registered to the computational model, or in a user
 defined order (cf. below).
 
-\begin{figure}
-	\begin{center}
-		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure01}
-		\caption{Examples of von Neumann (a) and Moore (b) neighborhoods for two-
-			dimensional CA with square cells. Examples of Moore neighborhoods are also shown for hexagonal CA, both for the cases of horizontal (c) and vertical (d) orientations. Central cell is represented in dark gray, while adjacent cells are in light gray. A reference system is here considered to evaluate cells coordinates in terms of row and column indices in a matrix-style representation, and a 0-based numerical identifier assigned to each cell in the neighborhood for straightforward access}
-		\label{fig:2Dneighborhood}
-	\end{center}
-\end{figure}
 
-
-\begin{figure}
+\begin{figure}[!htbp]
 	\begin{center}
 		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure04}
 		\caption{Examples of von Neumann (a) and Moore (b, b') neighborhoods for
@@ -407,7 +405,6 @@ defined order (cf. below).
 		\label{fig:3Dneighborhood}
 	\end{center}
 \end{figure}
-
 Substates are defined as pointers to
 \verb'CALSubstate{2D|3D}{b|i|r}' and can be registered by means of
 the \verb'calAddSubstate{2D|3D}{b|i|r}()' function. Substates are

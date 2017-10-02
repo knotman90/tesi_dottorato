@@ -61,7 +61,7 @@ classification can be made taking in account only the number of instructions and
 That's how Flynn's taxonomy classifies machines: according to
 whether they have one or more streams of each type.
 \begin{figure}
-\includegraphics[width=1.0\textwidth]{./images/parallel_programming/parallelClassification}
+\includegraphics[width=0.8\textwidth]{./images/parallel_programming/parallelClassification}
 \caption[Flynn's Parallel architecture taxonomy]{Flynn's Parallel architecture taxonomy.}
 \label{fig:parallelClassification1}
 \end{figure}
@@ -158,7 +158,7 @@ MIMD architecture can be further divided by  their memory layout and organizatio
 	\end{itemize}
 	SM architecture provides an easy perspective to memory,	data sharing across processors and parallelism since no explicit communication is involved. Memory access and communication are fast due to the proximity of memory to CPUs, but it is not scalable because adding more CPUs to the pool can geometrically increases the traffic on the bus and makes cache management harder. Additionally, ensuring the correctness of accesses to global memory , in order to avoid race-conditions, is up to the programmer.
 	As an example of real world SM modern processor, Figure \ref{fig:intelPhi} shows the Intel \textit{Knights Landing} Architecture for the Intel Phi processor family which is armed with 72 cores, $8$ billions transistors at \SI{14}{\nano\metre}, AVX-512 and is able to executes 240 threads simultaneously.
-		\begin{figure}
+		\begin{figure}[!htbp]
 		\centering
 		\label{fig:distribuiteMemory}
 		\includegraphics[width=1.0\textwidth]{./images/parallel_programming/xeonphi}
@@ -177,12 +177,12 @@ MIMD architecture can be further divided by  their memory layout and organizatio
 	The most used paradigm for programming distributed memory machines is the
 	message passing for which the \textit{Message Passing Interface} (\texttt{MPI}\footnote{\url{http://www.mpi-forum.org/}}) \cite{Forum:1994:MMI:898758,Gropp:1999:UMA:555151} is the \textit{de facto} industrial and academic standard 
  .
-	\begin{figure}
+	\begin{figure}[!htbp]
 		\centering
 		\caption{Distributed memory architecture.}
 		\label{fig:distribuiteMemory}
 		\setlength{\fboxrule}{1pt}%
-		\includegraphics[scale=0.25]{./images/parallel_programming/distribuitedMemory}
+		\includegraphics[width=0.5\textwidth]{./images/parallel_programming/distribuitedMemory}
 	\end{figure}
 	
 	\item[Hybrid Systems] As the name suggest a computer belonging to this category, is a mix of architectures. Only a limited number of  processors, say $N$, have	access to a common amount of shared memory. These $N$ processors are inter connected to the others groups via network. Note that each processor usually is an agglomerate of many computing cores.
@@ -194,7 +194,7 @@ MIMD architecture can be further divided by  their memory layout and organizatio
 	\end{itemize} 
 \begin{figure}
 	\centering
-	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/hybrid_model}
+	\includegraphics[width=0.7\textwidth]{./images/parallel_programming/hybrid_model}
 	\caption{Hybrid memory architecture (Each processor is milti-core)}
 	\label{fig:hybridMemory}
 \end{figure}
@@ -207,11 +207,11 @@ MIMD architecture can be further divided by  their memory layout and organizatio
     \texttt{OpenMP} is a portable API providing compiler directives and library
     functions for shared memory parallel programming in \texttt{C/C++} and
     Fortran \cite{Chapman:2007:UOP:1370966} implemented on top of \texttt{pthread} \cite{Nichols:1996:PP:237813}. It implements the
-    multi-threaded \emph{fork-join}  programming model (see Figure \ref{fig:omp_fork-join}), where an initial (or master) thread forks a given number of new threads (team of threads), which share the resources of the process which they are part of and run concurrently on the available processing cores.
-    Threads created during the fork phase can therefore
-    rejoin to the master thread (join phase), and more fork-join
-    stages can occur in a typical execution of an \texttt{OpenMP} program.
-    The size of the teams can be controlled by an environment variable \texttt{OMP\_NUM\_THREADS}, set at runtime by using the \texttt{omp\_set\_num\_threads(n)} function or specified for each parallel region using the \texttt{num\_thread(n)} in a \texttt{for} directive (see Listing \ref{code:openmp_lock}).
+    multi-threaded \emph{fork-join}  programming model (see Figure \ref{fig:omp_fork-join}), where an initial (or master) thread forks a given number of new threads (team of threads), which share the resources of the parent process and run concurrently on the available processing cores.
+    Threads created during the \textit{fork} phase can therefore
+    rejoin to the master thread (join phase), and more \textit{fork-join}
+    stages can occur in a typical execution of an \texttt{OpenMP} executable.
+    The size of the teams can be controlled by an environment variable \texttt{OMP\_NUM\_THREADS}, set at runtime by using the \texttt{omp\_set\_num\_threads(n)} function or specified for each parallel region using \texttt{num\_thread(n)} in the \texttt{\#pragma omp parallel} directive (see Listing \ref{code:openmp_lock}).
 \begin{figure}
 	\centering
 	\includegraphics[scale=0.8]{./images/parallel_programming/omp_fork-join}
@@ -226,18 +226,18 @@ MIMD architecture can be further divided by  their memory layout and organizatio
 	\label{fig:omp_fork-join}
 \end{figure}
 
-    The fork-join model allows for the selective parallelization of
+    The \textit{fork-join} model allows for the selective parallelization of
     the original source code (e.g. loops), by leaving portions that
     are difficult to be parallelized or that would lead to negligible
     (or even worsening) improvements, unchanged with respect to the
-    serial implementation. By default, iterations are equally
-    subdivided in chunks and statically assigned to threads by a
+    serial implementation \footnote{The majority of scientific and technical programs usually accomplish most of their work in a relatively small portion of their code base. Those portions of code are called \textit{hotspots} and are the solely parts of an application that are usually worth parallelizing. Profilers and performance analysis tools are  employed during this phase in order to identify such hotspots.}.
+    
+    By default, static scheduling is adopted where iterations are equally
+    subdivided in chunks and statically allotted to threads in a
     round-robin policy. However, iterations can also be assigned to
-    threads on demand, by using the dynamic scheduling clause. In this
-    manner, when a thread terminates its current chunk, it requests a
-    new one in a typical master-slave manner, usually resulting in
-    better performance in the case chunks are not well balanced.
-    scheduling can be specified using the \texttt{schedule} keyword in the \texttt{for} directive.
+    threads on demand, by using the \textit{dynamic} scheduling clause. In this
+    manner, when a thread terminates processing its current chunk, it requests for a new one, usually resulting in better performance in the case where load is not well balanced across chunks.
+    Scheduling can be specified using the \texttt{schedule} keyword in the \texttt{\#pragma omp for} directive.
     Static scheduling can be non-optimal in the case when different iteration take different amount of time to be executed. As an example consider the program in Listing \ref{code:scheduling_omp} in which each loop iteration causes the executing thread to sleep for a number of seconds equals to the number of the iteration. 
     
     \lstset{language=[OpenCL]C,
@@ -267,9 +267,8 @@ MIMD architecture can be further divided by  their memory layout and organizatio
     	return 0;
     }
 \end{lstlisting}
-
-There is a great imbalance among the threads in the number of seconds they will wait, because the last thread executes the last chunk of iterations.
-\textit{Dynamic} scheduling can be applied in a case like this to improve the overall execution time. OpenMP assigns one iteration to each thread and when a thread completes its work, it is assigned the next iteration that has not been executed yet. 
+There is a great imbalance among the threads in the number of seconds they will wait, because the last thread executes the last chunk of iterations (which translates to longer sleep time).
+\textit{Dynamic} scheduling can be applied in a case like this to improve the overall execution time. OpenMP assigns one iteration to each thread and when a thread completes its work, it is assigned the next iteration that has not been executed yet reducing execution time effectively. See table \ref{tab:scheduling_policies} for a complete list description of all kind of scheduling in OpenMP.
 
 Moreover, \texttt{OpenMP} provides locking mechanism to serialize the access to shared variables by defining critical sections.
 A lock must be firstly  initialized and then can be acquired or released. When a thread  attempts to acquire a lock that is already be set by another
@@ -278,11 +277,11 @@ giving rise to performance degradation (or even to possible deadlock
 situations). 
 However, a lock can also be queried in order to
 evaluate its state, without blocking the thread execution. In this
-way, if the lock is already set, the querying thread can perform
-other computation, by minimizing the idle time. See Listing \ref{code:openmp_lock} for an example of lock usage in OpenMP.
+way, if the lock is already set, the querying thread can do
+more work, by minimizing idle time. See Listing \ref{code:openmp_lock} for an example of lock usage in OpenMP.
 
 \lstset{language=[OpenCL]C,
-	caption={\texttt{OpenMP} lock acquisition, usage and destruction example. Note that the region of code between lines 8 and 10 is serialized.}, 
+	caption={\texttt{OpenMP} lock acquisition, usage and destruction example. Note that the region of code between lines 6 and 8 is serialized.}, 
 	label={code:openmp_lock}, 
 	basicstyle=\ttfamily,
 	keywordstyle=\color{blue}\ttfamily,
@@ -316,11 +315,10 @@ omp_destroy_lock(&writelock);
     low-level implementation details. Moreover, by using \texttt{OpenMP} it is
     possible to build the same source code to produce both parallel or
     sequential executable. In the latter case, the compiler simply
-    ignores the \texttt{#prama OpenMP} directives.
+    ignores the \texttt{\#pragma omp} directives.
     
     \begin{table}
-    	\label{tab:scheduling_policies}
-    	\caption{OpenMP scheduling policies}
+    	
     	\begin{tabularx}{1.0\textwidth}{cX}
     		\rowcolor{gray!35}	
     		\heading{\textbf{Scheduling Kind}} &  \heading{\textbf{Description}} \\ \hline
@@ -344,30 +342,38 @@ omp_destroy_lock(&writelock);
     
     \subsection{General Purpouse GPU Computing - GPGPU}
     The concept of many processors working together in concert is not new in computer graphics. Since the demand generated by entertainment started to grow, multi-core hardware emerged in order to take advantage of the high amount of parallel work available in the process of generating and rendering $3D$ images.
-    Main goal of the computer graphics is to  rendering $3D$ images, which translates to refreshing pixels at rate of sixty or more $\si{Hz}$. Each pixel has to be processed goes through a number of stages, and this process is commonly referred to as the \emph{graphic processing pipeline}. The peculiarity of this task is that the  computation each pixel is independent of the other's so this work is perfectly suitable for distribution over parallel processing elements. To support extremely fast processing of large graphics data sets (which mainly consists of vertices and fragments), modern GPUs employ a stream processing model with parallelism.
+    The main goal of the computer graphics is to  render and display $3D$ images to the screen, which translates to refreshing pixels at rate of sixty or more $\si{Hz}$ \cite{Akenine-Moller:2002:RR:553838}. Each pixel has to be processed goes through a number of stages, and this process is commonly referred to as the \emph{graphic processing pipeline}. The peculiarity of this task is that the computation of each pixel is independent of the other's meaning that this work is perfectly suitable for distribution over parallel processing elements. This type of workloads ar also called \textbf{embarassingly , perfect} or \textbf{pleasingly} \textit{parallel} \cite{Foster:1995:DBP:527029} (see Section \ref{sec:opencal_julia} and Listing \ref{code:julia_set} at pages \pageref{sec:opencal_julia} and \pageref{code:julia_set} respectively, for an example of a perfectly parallel problem). To support extremely fast processing of large graphics data sets (which mainly consists of vertices and fragments), modern GPUs employ a stream processing model with parallelism.
     The game industry boosted the development of the GPU, that offer now greater
-    performance than CPUs and are improving faster too (see Figure
-    \ref{CPU-VS-GPU_GFLOP} and \ref{CPU-VS-GPU_MEMORY}).
-    The reason behind the discrepancy in floating-point capability between CPU and  GPU is that GPUs are designed such that more transistors are devoted to data chruncing and processing rather than caching, flow control, branch prediction, etc..
+    performance than CPUs and are improving faster too  as shown in Figures
+    \ref{CPU-VS-GPU_GFLOP} and \ref{CPU-VS-GPU_MEMORY}.
+    The reason behind the discrepancy in floating-point capabilities between CPU and  GPU is that GPUs are designed such that more transistors are devoted to data crunching and processing rather than caching, flow control, branch prediction, etc..
+    Also note that memory bandwith is still one of the main advantages of GPU and Xeon Phi over CPUs architectures. The gap is getting wider thanks also to the introduction of High Bandwidth Memories (HBM), stacked memory by NVIDIA and MCDRAM for Xeon Phi \cite{Sodani:7477467,Jun:7939084}. 
     
-    \begin{figure}
+    \begin{figure}[!htbp]
     	\centering
     	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/memory-bandwidth}
-    	\caption{\textsc{Intel} CPUs and \textsc{NVIDIA} GPUs memory bandwidth
-    		chart}\label{CPU-VS-GPU_MEMORY}
+    	\caption[\textsc{Intel} CPUs and \textsc{NVIDIA} GPUs memory bandwidth
+    		chart]{Memory Bandwidth comparisong between \textsc{Intel} CPUs and \textsc{NVIDIA} chips over time. Higher is better.}
+    		\label{CPU-VS-GPU_MEMORY}
     \end{figure}
-    \begin{figure}
+    \begin{figure}[!htbp]
     	\centering
     	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/cpu-vs-gpu}
-    	\caption{Performance comparison between CPU and modern accelerators (\textsc{NVIDIA}, \textsc{Intel} and \textsc{AMD}) over time.}\label{CPU-VS-GPU_GFLOP}
+    	\caption[Performance comparison (FLOPs) between CPU and modern accelerators (\textsc{NVIDIA}, \textsc{Intel} and \textsc{AMD})]{Performance comparison (FLOPs) between CPU and modern accelerators (\textsc{NVIDIA}, \textsc{Intel} and \textsc{AMD}) over time. When Double precision is considered, relative performance between the considered hardware does not change. Higher is better.}\label{CPU-VS-GPU_GFLOP}
     \end{figure}
-    Nowadays, GPU are widely used for general purpouse computing. The Top $500$ supercomputers \cite{Strohmaier:2006:TS:1188455.1188474} \footnote{\url{http://www.top500.org/statistics/list/}} ranking is dominated by massively parallel computer, built on top of superfast networks and millions of sequential CPUs working in concert.
-    But as the industry is developing even more powerful, programmable and capable GPUs in term of \si{\giga FLOPS},  we see that they begin to offer advantages over traditional cluster of computers in terms of economicity and scalability.
-    
+    Nowadays, GPU are widely used for general purpouse computing. The Top $500$ supercomputers  ranking \footnote{\url{http://www.top500.org/statistics/list/}}  \cite{Strohmaier:2006:TS:1188455.1188474} is dominated by massively parallel computer, built on top of superfast networks and millions of sequential CPUs working in concert.
+    But as the industry is developing even more powerful, programmable and capable GPUs in term of \si{\giga FLOPS},  we see that they begin to offer advantages over traditional cluster of computers in terms of economicity and scalability as depicted in Figure \ref{gflops-per-watt-sp}.
+        \begin{figure}[!htbp]
+    	\centering
+    	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/gflops-per-watt-sp}
+    	\caption{GFLOPs per \si{Watt}, Higher is better. GPUs offer higher performance per Watt utilised especially for those fine-grained massively parallel problems such as dense matrix-matrix multiplication. Note that the Figure also shows that the CPU is getting smaller, indicating that CPU are introducing more GPU-like capabilities into their transistors. \textit{Intel} added wider vector processing units (up to 64 byte) to their latest processors. }
+    	\label{gflops-per-watt-sp}
+    \end{figure}
+  
     \subsection{From Graphics Graphics to General Purpose HW}\label{graphicPipeline}
     A graphics task such as rendering a $3D$ scene on the screen
     involves a sequence of processing stages inside the GPU, i.e. shaders, that run in parallel and in a prefixed order, known as the graphics hardware
-    pipeline which is the most common form of 3D computer rendering, distinct from, for instance, \textit{raytracing} or \textit{raycasting} for which the concept of pipeline is not even defined. Figure \ref{graphicPipeline} shows the important key steps that make up the graphic pipeline and for which the GPU hardware has been specialized for years. The pipeline works taking as input graphics primitives, each stage forward its results on to the next stage.
+    pipeline \cite{Shirley:2005:FCG:1088893} which is the most common form of 3D computer rendering, distinct from, for instance, \textit{raytracing} or \textit{raycasting} for which the concept of pipeline is not even defined. Figure \ref{graphicPipeline} shows the important key steps that make up the graphic pipeline and for which the GPU hardware has been specialized for years. The pipeline works taking as input graphics primitives, each stage forward its results on to the next stage.
     \begin{itemize}
     	\item     The first stage of the pipeline is the \textit{vertex shader}. The
     	input to this phase is a list of vertices in object space coordinate which are then converted to world coordinates (applying the \textit{model and view matrices}).
@@ -388,7 +394,7 @@ omp_destroy_lock(&writelock);
     as follows:
     \begin{figure}
     	\centering
-    	\caption{Typical graphic pipeline}\label{graphicPipeline}
+    	\caption{Typical computer graphics pipeline.}\label{graphicPipeline}
     	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/pipeline}
     \end{figure}
     
@@ -402,13 +408,13 @@ omp_destroy_lock(&writelock);
     	to be used in subsequent calculations are copied to textures for temporary storage and the process could start over again for another iteration.
     \end{enumerate} 
     
-    The year 2006 marked a significant turning point in GPU architecture. The \texttt{G80}  was the first \textsc{NVIDIA} GPU to have a unified architecture whereby the different shader processors were  combined into unified stream processors. The resulting stream processors had to be more complex so as to provide all of the functionality of the shader processors they replaced. Although research had been carried out into general purpose programming
-    for GPUs previously, this architectural change opened the door to a far wider range of  applications and practitioners.    
-    GPUs are nowadays, well-suited data-parallel problems because they are very good at execution the same code on many data elements at the same time  in a \textit{Single Instruction, Multiple Threads} (SIMT) fashion or using a more general definition as \textit{Parallel Random-Access Machine in which each thread Can Read or Write a memory location} (\texttt{CRCW PRAM}).
+    The year 2006 marked a significant turning point in GPU architecture. The \texttt{G80}  was the first \textsc{NVIDIA} GPU to have a unified architecture whereby the different shader processors were  combined into unified stream processors (see Figures \ref{fig:volta_sm} and \ref{volta_architecture} at pages \pageref{fig:volta_sm}  \pageref{volta_architecture} respectively). The resulting stream processors had to be more complex so as to provide all of the functionality of the shader processors they replace. Although research had been carried out into general purpose programming
+    for GPUs previously, this architectural change opened the door to a far wider range of  applications and practitioners.
+    GPUs are nowadays, well suited for data-parallel problems because they are very effective at executing the same code on many data elements at the same time  in a \textit{Single Instruction, Multiple Threads} (SIMT) fashion or using a more general definition as \textit{Parallel Random-Access Machine in which each thread Can Read or Write a memory location} (\texttt{CRCW PRAM}).
     
     
     \section{The \texttt{OpenCL} Parallel Computing Paradigm on Heterogeneous Devices}
-    Released on December 2008 by the Kronos Group, \texttt{OpenCL} \cite{Gaster:2011:HCO:2046379,Stone:2010:OPP:622179.1803953,Munshi:2011:OPG:2049883} is an open standard for programming heterogeneous computers built from CPUs, GPUs and other processors. It allows to define the intended computation using the \textit{platform} abstraction. A platform is composed by an host and one or more compute devices. A C-like language is used to program and orchestrate the various parts of the platform (see Figure \ref{fig:openCL}).
+    Released on December 2008 by the Kronos Group, \texttt{OpenCL} \cite{Gaster:2011:HCO:2046379,Stone:2010:OPP:622179.1803953,Munshi:2011:OPG:2049883} is an open standard for programming heterogeneous computers built from CPUs, GPUs and other processors. It allows to define the intended computation using the \textit{platform} abstraction. A platform is composed by an host and one or more compute devices. A C-like language is used to program and orchestrate the various components of the platform (see Figure \ref{fig:openCL_platform}).
     
     One of the advantages of \texttt{OpenCL} is that it is not restricted, as in the case of CUDA\cite{NvidiaprogGuide}, to the use of GPUs only but it takes each computing resource in the system as computational peer unit, interposing a uniform set of API between them and the programmer, easing the process of interfacing with them. Another big advantage is that it is  open, free, and cross-compatible across vendors since is supported by all major hardware producers.
     
@@ -418,9 +424,13 @@ omp_destroy_lock(&writelock);
     computation generally takes place. The host application defines
     the tasks to be executed in parallel. Each parallel task is
     implemented as an \texttt{OpenCL} \emph{kernel}, which is a special C
-    function, which is specifically (runtime) compiled for and deployed to a compliant device (or to different ones) for execution. The execution model is similar to the one of CUDA (CUDA and OpenCL share a similar programming model and underlying hardware architecture, even if a quite different terminology is adopted), where each kernel is executed by \textbf{threads}, the smallest execution entity, also called \textbf{work-items}, which are grouped into \textbf{work-groups}. A work-item is executed by one or more processing elements as part of a work-group executing on a compute unit. A work-item is distinguished from other executions within the collection by its \textbf{global ID} and \textbf{local ID}.
-    A work-group is a collection of related work-items that execute on a single compute unit. The work-items in the group execute the same kernel and share local memory and work-group barriers.
-    Work-groups can 
+    function, which is compiled at runtime for each specifically for and deployed to a compliant device, or to different ones, for execution. The execution model is similar to the one of CUDA (CUDA and OpenCL share a similar programming model and underlying hardware architecture, even if a quite different terminology is adopted), where each kernel is executed by \textbf{threads}, the smallest execution entity, also called \textbf{work-items}, which are grouped into \textbf{work-groups}. A work-item is executed by one or more processing elements as part of a work-group executing on a compute unit. A work-item has to be considered a thread in terms of its control flow and memory model, but the hardward and the compiler can run multiple work-items on a single thread. As an example one can imagine that work-items computation can be carried out on lanes of a SSE vector. 
+    A work-group is a collection of related work-items that execute on a single compute unit. A work group must map to a single compute unit (a core on a CPU, or using CUDA terminology a streaming multiprocessor). 
+    Work-groups can sunchronize internally between work-items using local or global memory or barriers but they cannot synchronize with each other, making impossible building locking and synchronization primitives (among work-groups).
+    The  locality of execution of work-items  leads to more efficient synchronization, and makes possible to have access to user managed local fast memories and caches (similar to CPU L1 caches) in order to makes communication fast.    
+    A work-item is distinguished from other executions within the collection by its \textbf{global ID} and \textbf{local ID} (relative to the parent worl-group).
+    
+    Work-groups can:
     \begin{itemize}
 		\item \textbf{Share data} between the work-group's work-items using local memory
 		\item \textbf{Synchronize} between work-items using barriers and memory fences mechanism
@@ -429,18 +439,33 @@ omp_destroy_lock(&writelock);
 
     \begin{figure}
 	\centering
-	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/opencl_execmodel}
+	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/openCL}
+	\caption[\texttt{OpenCL} platform abstraction.]{\texttt{OpenCL} platform abstraction. A device is any supported device including GPU, CPU, FPGAs, etc.. Command queues are executed concurrently for each device and can be synchronized by means of API calls.}
+	\label{fig:openCL_platform}
+\end{figure}
+
+    \begin{figure}
+	\centering
+	\includegraphics[width=0.85\textwidth]{./images/parallel_programming/opencl_execmodel}
 	\caption{\texttt{OpenCL} 1D,2D,3D work-items and work-groups partitioning. }\label{fig:opencl_execmodel}
 \end{figure}
 
-
-    When launching the kernel for execution, the host code defines the grid dimensions, or the global work size. The host code can also define the partitioning to work-groups, or leave it to the implementation. During the execution, the implementation runs a single work item for each point on the grid. It also groups the execution on compute units according to the work-group size. The order of execution of work items within a work-group, as well as the order of work-groups, is implementation-specific.
-    Data to be processed has to be explicitly partitioned and assigned to compute units because each work-item runs the same kernel on different portions of data in a \textit{SIMD/SIMT} fashion. For example, in case of an array of $n$ elements and $n$ work-items, data can be partitioned by associating each work item to the array element with index corresponding to the work-item ID. Moreover, a local ID is defined for each work-item    within a workgroup. Figure \ref{fig:opencl_execmodel} depicts how items and groups can be arranged when partitioned in 1D, 2D and 3D.
-    Figure \ref{fig:opencl_execmodel2d} shows a 2D decomposition with details on global ID computation from local group and thread indices.
+	Work-groups and work-items are arranged in a indexed grid-like structure. 
+    When launching the kernel for execution, the host code defines the grid dimensions, or the global work size. The host code can also define the partitioning to work-groups, or leave it to the implementation. During the execution, the implementation runs a single work item for each point on the grid (a kernel per work-item). It also groups the execution on compute units according to the work-group size. The order of execution of work items within a work-group, as well as the order of work-groups, is implementation-specific (see Figure \ref{fig:work_group_execution}).
+    Data to be processed has to be explicitly partitioned and assigned to compute units because each work-item runs the same kernel on different portions of data in a \textit{SIMD/SIMT} fashion. For example, in case of an array of $n$ elements and $n$ work-items, data can be partitioned by associating each work item to the array element with index corresponding to the work-item global ID. Figure \ref{fig:opencl_execmodel} depicts how items and groups can be arranged when partitioned in $1D$, $2D$ and $3D$.
+    Figure \ref{fig:opencl_execmodel2d} shows a $2D$ decomposition with details on global ID computation from local group and thread indices.
     
+\begin{figure}[!htbp]
+    	\centering
+    	\includegraphics[width=0.85\textwidth]{./images/parallel_programming/work_group_execution.png}
+    	\caption[\texttt{OpenCL} work group scheduling]{\texttt{OpenCL}  work-groups scheduling. 
+    	The green boxes represent the computing unit. The circles represent the work-groups. Blue work-groups are waiting to be executed, pink work-groups are currently executing and yellow work-groups have been completed. Each work group is queued for execution and executes on a single computing unit (a GPU multiprocessor, CPU core, etc.) Note that execution order is not guaranteed by the standard.}
+    	\label{fig:work_group_execution}
+    \end{figure}
+
         \begin{figure}
     	\centering
-    	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/opencl_execmodel2d}
+    	\includegraphics[width=1.1\textwidth]{./images/parallel_programming/opencl_execmodel2d}
     	\caption{\texttt{OpenCL} 2D work-items and work-groups detailed partitioning. Computation of global index form local item and group index is also shown. }\label{fig:opencl_execmodel2d}
     \end{figure}
     When the kernel execution terminates,
@@ -449,37 +474,53 @@ omp_destroy_lock(&writelock);
     different kernel executions and synchronization stages can take
     place in a typical \texttt{OpenCL} application.
     
-    Data can be shared by all the running threads by means of the
-    device global memory, which is generally the larger among the
-    different memory levels available on the device (e.g. on GPUs)
-    though being the slower one. A read-only memory, equivalent to the
+    Data can be shared by all the running work-items by means of the
+    device global memory, which is generally the largest among all the
+    different memory levels available on the device (this is especially true for modern GPUs)
+    though being the slowest. A read-only memory, equivalent to the
     global one in terms of latency and dimension, called constant
     memory, is also available. Some devices have an appropriate
     portion of this memory, while in other cases the constant memory
     space coincides with that of the global memory. Threads within a
-    workgroup are executed by a specific compute unit and therefore
+    work-group are executed by a specific compute unit and therefore
     can share data on the local memory and also synchronize each
     other. Local memory is generally smaller with respect to the
     global one, but allows for faster access (about $100\times$ faster
     on modern GPUs). Eventually, each work-item has its own private
-    memory, which is at the same time the fastest and the smaller
-    one. The memory space in which a given data must be stored must be
-    initially defined by the host. However, data can move among
-    different memory levels during kernel execution.
+    memory, which is at the same time the fastest and the smallest
+    one. 
     
-    Data exchange and kernels execution are managed host-side thanks
+    The memory in which a given data is stored must be
+    initially defined and allocated by the host using the appropriate API calls (e.g. see Listing \ref{code:opencl_allocate}). 
+    \lstset{language=[OpenCL]C,
+    	basicstyle=\ttfamily,
+    	caption={Allocate buffer API call in OpenCL.},
+    	label={code:opencl_allocate},
+    	morekeywords={cl_context,clCreateBuffer,cl_mem_flags,cl_int,size_t},
+    	keywordstyle=\color{blue}\ttfamily,
+    	stringstyle=\color{red}\ttfamily,
+    	commentstyle=\color{green}\ttfamily,
+    	backgroundcolor=\color{white}, 
+    }
+    \begin{lstlisting}
+		clCreateBuffer(cl_context context,	cl_mem_flags flags,
+						size_t size,void *host_ptr,cl_int *errcode_ret)
+    \end{lstlisting}
+  	 Nevertheless, data can move among different memory levels during kernel execution (from global, to local, to private or the other way round).
+    
+    Data exchange and kernels execution are managed by the host thanks
     to an \texttt{OpenCL} context. In particular, the host application links
     kernels into one or more containers, called \emph{programs}. The
     program therefore connects kernels with the data to be processed
     and dispatches them to a special \texttt{OpenCL} structure called
-    \emph{command queue}. This is necessary because only enqueued
-    kernels are actually executed. The context contains all the
-    devices, command queues and kernels, each device has its own
-    command queue and each command queue contains the kernels to be
+    \emph{command queue} (see Figure \ref{fig:openCL_platform}). This is necessary because only enqueued kernels are actually executed.
+    The context contains all the
+    devices, command queues and kernels, whereas each device has its own
+    command queue each containing the kernels to be
     executed on the corresponding device. Moreover, an \texttt{OpenCL}
     application can configure different devices to perform different
     tasks, and each task can operate on different data. \texttt{OpenCL}
-    provides thus a full task-parallelism. Command queues are also
+    is thus capable of full task-parallelism. Command queues are also
     used for host-device and device-device data transfer operations,
     synchronization between different kernels, and profiling
     operations.
