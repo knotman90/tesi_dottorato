@@ -16,21 +16,19 @@
 
 
 %\section{Introduction}
-\lettrine[lines=3,lhang=0.33,lraise=0,loversize=0.15]{C}{omputing} system are often equipped with more than one GPU. From high-end workstation,that are able to accommodate up to 8 GPUs or more on the same board to large clusters, that are usually composed of several computing nodes (see Figure \ref{fig:distribuiteMemory} and Section \ref{sec:flynn_tax} at page \pageref{fig:distribuiteMemory} and \pageref{sec:flynn_tax} respectively) each of them equipped with more than one GPU.
-For most problems in physics and engineering,
-there is the need to improve the time to solution and to increase the accuracy
-of the discretization. This means further speedup the computation and/or being able to simulate working sets that exceed a single GPU's memory.
-And since having multiple GPUs per node also improves the ratio performance over Watt and  price over Watt multi-GPU programming is becoming more and more important.
+\lettrine[lines=3,lhang=0.33,lraise=0,loversize=0.15]{C}{omputing} systems are often equipped with more than one GPU. From high-end workstation, that are able to accommodate up to 8 GPUs or more on the same motherboard to large clusters, that are usually composed of several computing nodes (see Figure \ref{fig:distribuiteMemory} and Section \ref{sec:flynn_tax} at page \pageref{fig:distribuiteMemory} and \pageref{sec:flynn_tax} respectively) each of them equipped with one or more accelerators.
+For most problems in physics and engineering, there is the need to improve the time to solution and to increase the accuracy
+of the discretization. This means further speed up in the computation and/or being able to simulate working sets that exceed a single GPU's memory.
+And since having multiple GPUs per node also improves the ratio performance over Watt and  price over Watt, multi-GPU programming is becoming more and more important.
 
-Neither CUDA or OpenCL supports natively a multi-GPU model. this model is based on a single core single GPU relationship and works really well for taska that are indipendent one from the other. On the other hand makes things a more difficoult when a task need to have more than one GPU cooperate in some way in order to solve a problem.
-As an example of the first scenario think about the BOINC application \cite{Anderson:2004} which allows user to donate comoputing power and time to solving problems. In a multi GPU environment it works spawning $N$ independent tasks and each of them is schedeuled on one of the $N$ available GPU. When a task is finished, the application simply request another task to the central server, the task dispatcher. No cooperation or communication is required between the GPUs.
-An example of the second scenario, consider the Lattice Boltzmann (LB) \cite{McNamara&Zanetti-1988} \cite{Aidun2010439} \cite{Higuera&Jimenez-1989} method on domain that is decomposed along one axis, let's say the $x$ axis, as depicted in Figure \ref{fig:multigpu_domain_decomposition}, so that each GPU is responsible for a subset of the whole mesh. Computation for a grid point that lies on the boundary of the domain portion assigned to the GPU $2$ need information about neighboring points that are stored on a different GPU ($1$ or $3$ in this case). Communication between the two devices is required.
-
-OpenCAL cluster has been designed to take advantage of the modern multi-GPU capabilities of multi node systems. This makes OpenCAL applications deployable on a variety of heterogeneous single node systems to large clusters of GPUs.
-
+Unfortunately, neither \textsc{CUDA} or \textsc{OpenCL} supports natively a multi-GPU model. The model they support is based on a \textit{single core}-\textit{single GPU} relationship and works really well for tasks that are independent one from the other.
+On the other hand makes things a more difficult when a task need to have more than one GPU cooperate in some way in order to solve a problem.
+As an example of the first scenario think about the BOINC application \cite{Anderson:2004} which allows a user to donate computing power and time to solve relevant problems. In a multi GPU environment, it works spawning $N$ independent tasks and each of them is scheduled on one of the $N$ available GPU. When a task is finished, the application simply requests another task to the central server, the task dispatcher. No cooperation or communication is required between the GPUs.
+An example of the second scenario, consider the Lattice Boltzmann (LB) \cite{McNamara&Zanetti-1988} \cite{Aidun2010439} \cite{Higuera&Jimenez-1989} method on a domain that is decomposed along one axis, let's say the $x$ axis, as depicted in Figure \ref{fig:multigpu_domain_decomposition}, so that each GPU is responsible for a subset of the whole mesh. Computation for a grid point that lies on the boundary of the domain portion assigned to the GPU $2$ needs information about neighboring points that are stored on a different GPU ($1$ or $3$ in this case). Communication between the two devices is required.
+This chapter described the distributed version of OpenCAL, OpenCAL cluster, which has been designed to take advantage of the modern multi-GPU capabilities of multi-node systems. This makes OpenCAL applications deployable on a variety of heterogeneous single node systems to large clusters of GPUs.
   \begin{figure}
 	\begin{center}
-		\includegraphics[width=1.0\textwidth]{./images/opencal/multigpu_domain_decomposition.png}
+		\includegraphics[width=0.67\textwidth]{./images/opencal/multigpu_domain_decomposition.png}
 		\caption{Domain decomposition along one axis.}
 		\label{fig:multigpu_domain_decomposition}
 	\end{center}
@@ -38,88 +36,113 @@ OpenCAL cluster has been designed to take advantage of the modern multi-GPU capa
 
 \subsection{Run Configuration}
 Each OpenCAL application is attached with a running configuration that is provided by the user or the programmer and describes both which computational resources are going to be used during the execution and how the domain is going to be decomposed.
-
 The running configuration is provided as a file with the following structure:
 
-\begin{mdframed}
-\begin{mdframed}[hidealllines=true,backgroundcolor=blue!5]
-	\begin{verbatim}
-DIM_1 DIM_2 ... DIM_N
-NUMBER OF NODES
-	\end{verbatim}
+\captionsetup[table]{name=File Format}
+\begin{table*}
 
-\end{mdframed}
-\begin{mdframed}[hidealllines=true,backgroundcolor=red!5]
+\renewcommand{\arraystretch}{0.4} %<- modify value to suit your needs
+\centering
+\footnotesize
+\begin{tabular}{m{0.4\linewidth} m{0.7\linewidth}}
+\setlength\extrarowheight{-3em}
+	\textsc{domain size}  & 
 	\begin{verbatim}
-IP_NODE_1 NUM_GPU_NODE_1
-PLATFORM_NUMBER_1 DEVICE_NUMBER_1 LOAD_1_1
-PLATFORM_NUMBER_1 DEVICE_NUMBER_2 LOAD_1_2
+		DIM_1 DIM_2 ... DIM_N
 	\end{verbatim}
-	\begin{center}
-	\scalebox{1.2}{$\hdots$}
-	\end{center}
+	\tabularnewline
+	%row------------------------
+	\textsc{number of nodes}  & 
 	\begin{verbatim}
-PLATFORM_NUMBER_1 DEVICE_NUMBER_K1 LOAD_1_K1
-PLATFORM_NUMBER_2 DEVICE_NUMBER_1  LOAD_2_1
+		NUMBER OF NODES
 	\end{verbatim}
-	\begin{center}
-	\scalebox{1.2}{$\hdots$}
-	\end{center}
+		%row------------------------
+	\tabularnewline
+	\midrule
+	 \textsc{ip node 1}   & 
 	\begin{verbatim}
-PLATFORM_NUMBER_2 DEVICE_NUMBER_K2 LOAD_2_K2
+		IP_NODE_1 NUM_GPU_NODE_1
 	\end{verbatim}
-	\begin{center}
-	\scalebox{1.2}{$\hdots$}
-	\end{center}
+	%row------------------------
+	\tabularnewline
+	 \textsc{Device List Node $1$}  & 
 	\begin{verbatim}
-PLATFORM_NUMBER_M1 DEVICE_NUMBER_KM LOAD_M1_KM1
+		PLATFORM_NUMBER_1 DEVICE_NUMBER_1 LOAD_1_1
+		PLATFORM_NUMBER_1 DEVICE_NUMBER_2 LOAD_1_2
+                 ...
+		PLATFORM_NUMBER_1 DEVICE_NUMBER_K1 LOAD_1_K1_1
+		PLATFORM_NUMBER_2 DEVICE_NUMBER_1  LOAD_2_1
+                 ...
+	PLATFORM_NUMBER_2 DEVICE_NUMBER_K2 LOAD_2_K1_2
+                 ...
+	PLATFORM_NUMBER_M1 DEVICE_NUMBER_KM LOAD_M1_K1_M1
 	\end{verbatim}
-\end{mdframed}
-\begin{mdframed}[hidealllines=true,backgroundcolor=green!5]
-	\begin{verbatim}
+	\tabularnewline
+\midrule
+
+
+	 \textsc{ip node 2}   & 
+\begin{verbatim}
 IP_NODE_2 NUM_GPU_NODE_2
+\end{verbatim}
+%row------------------------
+\tabularnewline
+\textsc{Device List Node 2}  & 
+\begin{verbatim}
 PLATFORM_NUMBER_1 DEVICE_NUMBER_1 LOAD_1_1
 PLATFORM_NUMBER_1 DEVICE_NUMBER_2 LOAD_1_2
-	\end{verbatim}
-	\begin{center}
-	\scalebox{1.2}{$\hdots$}
-	\end{center}
-	\begin{verbatim}
-PLATFORM_NUMBER_1 DEVICE_NUMBER_K1 LOAD_1_K1
-PLATFORM_NUMBER_2 DEVICE_NUMBER_1 LOAD_2_1
-	\end{verbatim}
-	\begin{center}
-	\scalebox{1.2}{$\hdots$}
-	\end{center}
-	\begin{verbatim}
-PLATFORM_NUMBER_2 DEVICE_NUMBER_K2 LOAD_2_K2
-	\end{verbatim}
-	\begin{center}
-	\scalebox{1.2}{$\hdots$}
-	\end{center}
-	\begin{verbatim}
-PLATFORM_NUMBER_M2 DEVICE_NUMBER_KM LOAD_M2_KM2
-	\end{verbatim}
-\end{mdframed}
-}
-\begin{center}
-\scalebox{1.5}{$\vdots$}
-\end{center}
-\begin{mdframed}[hidealllines=true,backgroundcolor=yellow!10]
-	\begin{verbatim}
+                 ...
+PLATFORM_NUMBER_1 DEVICE_NUMBER_K2_1 LOAD_1_K2_1
+PLATFORM_NUMBER_2 DEVICE_NUMBER_1  LOAD_2_1
+                 ...
+PLATFORM_NUMBER_2 DEVICE_NUMBER_K2 LOAD_2_K2_2
+                 ...
+PLATFORM_NUMBER_M2 DEVICE_NUMBER_K2_M2 LOAD_M1_K2_M2
+\end{verbatim}
+\tabularnewline
+\midrule
+\vspace{-1em}
+\centering \scalebox{2.5}{  {$\vdots $} }&\centering \scalebox{2.5}{  {$\vdots $} }\\ 
+
+\tabularnewline
+\midrule
+
+
+\textsc{ip node $N$}   & 
+\begin{verbatim}
 IP_NODE_N NUM_GPU_NODE_N
+\end{verbatim}
+%row------------------------
+\tabularnewline
+\textsc{Device List Node N}  & 
+\begin{verbatim}
 PLATFORM_NUMBER_1 DEVICE_NUMBER_1 LOAD_1_1
 PLATFORM_NUMBER_1 DEVICE_NUMBER_2 LOAD_1_2
-...
-PLATFORM_NUMBER_1 DEVICE_NUMBER_K1 LOAD_1_K1
-PLATFORM_NUMBER_2 DEVICE_NUMBER_1 LOAD_2_1
-...
-PLATFORM_NUMBER_2 DEVICE_NUMBER_K2 LOAD_2_K2
-...
-PLATFORM_NUMBER_MN DEVICE_NUMBER_KM LOAD_MN_KM2
-	\end{verbatim}
-\end{mdframed}
-\end{mdframed}
+\end{verbatim}
+\centering {$\vdots$}
+\begin{verbatim}
+PLATFORM_NUMBER_1 DEVICE_NUMBER_KN_1 LOAD_1_KN_1
+PLATFORM_NUMBER_2 DEVICE_NUMBER_1  LOAD_2_1
+\end{verbatim}
+\centering {$\vdots$}
+\begin{verbatim}
+PLATFORM_NUMBER_2 DEVICE_NUMBER_KN_2 LOAD_2_KN_2
+\end{verbatim}
+\begin{center}
+	{$\vdots$}
+\end{center}
+\begin{verbatim}
+PLATFORM_NUMBER_MN DEVICE_NUMBER_KN_MN LOAD_M1_KN_MN
+\end{verbatim}
+
+		
+\end{tabular}
+\caption{File Format for  the OpenCAL cluster. It describes the size of the domain and the machine on which the model is executed. Note that for each node of the cluster, the IP address and a list of devices is listed. Each device is identified, \textit{\`a la} \textsc{OpenCL}, by platform and device number (within the platform).}
+\end{table*}
+%table name back to normal
+\captionsetup[table]{name=Table}
+
+
 where
 \begin{itemize}
 	\item The first line describe the size of the domain as a list of sizes for each dimensions.

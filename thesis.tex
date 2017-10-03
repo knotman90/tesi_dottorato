@@ -49,6 +49,11 @@ postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
 \usepackage{physics}
 \makenomenclature
 
+\usepackage{booktabs}
+\usepackage{multirow}
+%\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
+
+
 \newcommand{\dimensional}[1] {
 	\left[\vb{#1}\right]
 }
@@ -101,20 +106,22 @@ postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
 %CA
 \pagenumbering{arabic}
 \cleardoublepage
-\include{chapters/CA_FDM/ca}
+\part{Uniform Grid Numerical Methods and Parallel Computing}
+%\include{chapters/CA_FDM/fdm}
+%\include{chapters/CA_FDM/ca}
 \cleardoublepage%
 
 \cleardoublepage
 %\def\dir{chapters/CA_FDM}
-\include{chapters/CA_FDM/fdm}
+
 \cleardoublepage
 
 \cleardoublepage
-\include{chapters/parallel_programming/parallel_programming}
+%\include{chapters/parallel_programming/parallel_programming}
 \cleardoublepage
-
+\part{Accelerating Scientific Computation}
 \cleardoublepage
-\include{chapters/opencal/opencal}
+%\include{chapters/opencal/opencal}
 
 \cleardoublepage
 
@@ -123,16 +130,16 @@ postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
 \cleardoublepage
 
 \cleardoublepage
-\include{chapters/bacteria/bacteria}
+%\include{chapters/bacteria/bacteria}
 \cleardoublepage
 
 \cleardoublepage
-\include{chapters/birdflocking/birdflocking}
+%\include{chapters/birdflocking/birdflocking}
 \cleardoublepage
 
 \appendix
 \cleardoublepage%
-\include{chapters/stream_compaction/stream_compaction}
+%\include{chapters/stream_compaction/stream_compaction}
 
 \cleardoublepage%
 

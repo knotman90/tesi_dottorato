@@ -4,7 +4,9 @@
 	Sapere aude! Habe Mut, dich deines eigenen Verstandes zu bedienen! }%
 \vskip 1em
 %\section{Introduction}
-\lettrine[lines=3,lhang=0.33,lraise=0,loversize=0.15]{O}{ver} the last two decades lot has changed regarding the way modern scientific applications are designed, written and executed especially in the field of data-analytics, modelling and simulation and visualization. The main reasons behind these changes are that the size of the problems that scientist try to tackle nowadays are much bigger and because of the amount of available raw data that can be analyzed. Data Analytics and Big Data techniques are applied in pretty much every field of science and have been exploited effectively by corporate organizations especially by those in the fields of  
+\lettrine[lines=3,lhang=0.33,lraise=0,loversize=0.15]{T}{his} chapter introduces the parallel computing concepts and technologies that have been adopted in this work. It contains a description of the Flynn categorization of parallel machines and introduces \textsc{OpenMP}, \textsc{OpenCL} and \textsc{MPI}. 
+\section{Introduction and Motivations}
+Over the last two decades lot has changed regarding the way modern scientific applications are designed, written and executed especially in the field of data-analytics, modelling and simulation and visualization. The main reasons behind these changes are that the size of the problems that scientist try to tackle nowadays are much bigger and because of the amount of available raw data that can be analyzed. Data Analytics and Big Data techniques are applied in pretty much every field of science and have been exploited effectively by corporate organizations especially by those in the fields of  
 \begin{inparaenum}
 	\item Finance,
 	\item Sales,
@@ -14,7 +16,8 @@
 	\item Asset Management,
 	\item Marketing,
 \end{inparaenum}
-but have been applied effectively in a number of other less common field, such as political election. As an example, the fund raisings for the last two campaign of the former president of the United Stated,Mr. Barak Obama, were optimized by means of Big Data. 
+but have been applied effectively in a number of other less common field, such as political election. As an example, the fund raisings for the last two campaign of the former president of the United Stated,Mr. Barak Obama, were optimized by means of Big Data.
+
 
 Traditionally performance improvements in computer architecture have come from cramming ever more functional units onto silicon, increasing clock speeds and transistors number. Moore's law states that the number of transistors that can be placed inexpensively on an integrated circuit will double approximately every two years (See Figure \ref{fig:moore}). Coupled with increasing clock speeds, CPU performance has until recently scaled likewise. But it is important to acknowledge that this trend cannot be sustained indefinitely or forever. Increased clock speed and transistor number require more power and consequently generate more heat. Although the trend for transistor densities has continued to steadily increase, clock speeds began slowing circa 2003 at 3 GHz. If we apply Moore’s law type thinking to clock-speed performance, we should be able to buy at least 10 GHz CPUs. However, the fastest CPU available at the time of writing is $\approx 4.0 GHz$.
 \begin{figure}[!htbp]
@@ -60,13 +63,21 @@ classification can be made taking in account only the number of instructions and
  data streams that a parallel machine can manage (see figure \ref{fig:parallelClassification1}).
 That's how Flynn's taxonomy classifies machines: according to
 whether they have one or more streams of each type.
-\begin{figure}
-\includegraphics[width=0.8\textwidth]{./images/parallel_programming/parallelClassification}
-\caption[Flynn's Parallel architecture taxonomy]{Flynn's Parallel architecture taxonomy.}
-\label{fig:parallelClassification1}
-\end{figure}
-According to Flynn's classification, there are 4 families of computer architecture:
-\begin{description}
+
+\begin{table}
+		\caption[Flynn's Parallel architecture taxonomy]{Flynn's Parallel architecture taxonomy.}
+	\label{fig:parallelClassification1}
+	\begin{tabular}{lcccc}\toprule
+		&\multicolumn{2}{c}{\textbf{\textsf{Single Instruction}}}&\multicolumn{2}{c}{\textbf{\textsf{Multiple Instructions}}}
+		\\\cmidrule(r){2-3}\cmidrule(r){4-5}   
+		&\textbf{\textsf{Single Data}}&\textbf{\textsf{Multiple Data}}&\textbf{\textsf{Single Data}}&\textbf{\textsf{Multiple Data}}\\\midrule
+		& \textsc{sisd} & \textsc{misd}
+		& \textsc{misd} & \textsc{mimd}
+		\\\bottomrule
+	\end{tabular}
+
+\end{table} 
+
 
 \item[SISD:] \textit{\textbf{Single}} instruction \textit{\textbf{Single}}
 data.\hfill\\
@@ -86,16 +97,18 @@ processors work, for example. Elements are distributed across all available data
 	caption={Multiplying eight floats of one array by eight floats of a second array and add the result to a third array. Serial and SIMD (AVX2) code examples. Note that the AVX2 intrinsic function \texttt{\_\_mm256\_fmadd\_ps} processes twentyfour floats, but it does not map to a single instruction (see Figure \ref{fig:SSEvectorization}). Instead, it executes three instructions: \texttt{vfmadd132ps}, \texttt{vfmadd213ps}, and \texttt{vfmadd231ps}. Despite this, it executes quickly and it is much faster than looping through the individual elements.}, 
 	label=code:avxvectorization, 
 	basicstyle=\footnotesize\ttfamily,
-	keywordstyle=\color{blue}\ttfamily,
-	stringstyle=\color{red}\ttfamily,
-	commentstyle=\color{green}\ttfamily,
-	backgroundcolor=\color{light-gray}, 
+	keywordstyle=\color{ultramarine}\ttfamily,
+	stringstyle=\color{rosemadder}\ttfamily,
+	commentstyle=\color{gray}\ttfamily,
+	backgroundcolor=\color{gray!5}, 
 	numbers=left,numbersep=3pt,, 
-	numberstyle=\tiny\ttfamily\color{gray}
+	numberstyle=\tiny\ttfamily\color{gray},
+	morekeywords=[2]{__m256,_mm256_fmadd_ps},
+	%keywordstyle=[2]\color{violet},
 }
 \begin{lstlisting}
 //adds 8 floats in a serial fashion. One at the time in 8 different steps
-multiply_and_add(const float* a, const float* b, const float* c, float* d) {  
+void multiply_and_add(const float* a, const float* b, const float* c, float* d) {  
 	for(int i=0; i<8; i++) {
 		d[i] = a[i] * b[i];
 		d[i] = d[i] + c[i];
@@ -158,13 +171,6 @@ MIMD architecture can be further divided by  their memory layout and organizatio
 	\end{itemize}
 	SM architecture provides an easy perspective to memory,	data sharing across processors and parallelism since no explicit communication is involved. Memory access and communication are fast due to the proximity of memory to CPUs, but it is not scalable because adding more CPUs to the pool can geometrically increases the traffic on the bus and makes cache management harder. Additionally, ensuring the correctness of accesses to global memory , in order to avoid race-conditions, is up to the programmer.
 	As an example of real world SM modern processor, Figure \ref{fig:intelPhi} shows the Intel \textit{Knights Landing} Architecture for the Intel Phi processor family which is armed with 72 cores, $8$ billions transistors at \SI{14}{\nano\metre}, AVX-512 and is able to executes 240 threads simultaneously.
-		\begin{figure}[!htbp]
-		\centering
-		\label{fig:distribuiteMemory}
-		\includegraphics[width=1.0\textwidth]{./images/parallel_programming/xeonphi}
-		\caption{Xeon Phi, Intel Knight Landing architecture and technical specifications.}
-	\end{figure}
-
 	Coupled with this architecture many software model can be used to program
 	shared memory machines. Among all, the most used are:
 	\begin{itemize}
@@ -177,30 +183,62 @@ MIMD architecture can be further divided by  their memory layout and organizatio
 	The most used paradigm for programming distributed memory machines is the
 	message passing for which the \textit{Message Passing Interface} (\texttt{MPI}\footnote{\url{http://www.mpi-forum.org/}}) \cite{Forum:1994:MMI:898758,Gropp:1999:UMA:555151} is the \textit{de facto} industrial and academic standard 
  .
-	\begin{figure}[!htbp]
-		\centering
-		\caption{Distributed memory architecture.}
-		\label{fig:distribuiteMemory}
-		\setlength{\fboxrule}{1pt}%
-		\includegraphics[width=0.5\textwidth]{./images/parallel_programming/distribuitedMemory}
-	\end{figure}
-	
-	\item[Hybrid Systems] As the name suggest a computer belonging to this category, is a mix of architectures. Only a limited number of  processors, say $N$, have	access to a common amount of shared memory. These $N$ processors are inter connected to the others groups via network. Note that each processor usually is an agglomerate of many computing cores.
-	Hybrid systems of the kind described in this section are usually programmed using a combination of the message passing model (\texttt{MPI}) with the threads model (\texttt{OpenMP}) in which:
-	\begin{itemize}
-		\item threads perform computationally intensive task, using local
-		\textbf{on-node} memory space and
-		\item communications between processes on different nodes occurs over network using \texttt{MPI} (see figure \ref{fig:hybridMemory}).
-	\end{itemize} 
-\begin{figure}
-	\centering
-	\includegraphics[width=0.7\textwidth]{./images/parallel_programming/hybrid_model}
-	\caption{Hybrid memory architecture (Each processor is milti-core)}
-	\label{fig:hybridMemory}
-\end{figure}
-	
-\end{description} 
-\end{description}
+ 
+ \begin{figure}
+ 	\centering
+ 	\begin{subfigure}{0.55\textwidth}
+ 		\centering
+ 			\caption{Hybrid memory architecture (each processor is milti-core)}
+ 		\label{fig:hybridMemory}
+ 		\includegraphics[width=0.95\textwidth]{./images/parallel_programming/hybrid_model}
+ 	
+ 	\end{subfigure}%
+ 	\begin{subfigure}{0.45\textwidth}
+ 		\centering
+ 		\caption{Distributed memory architecture.}
+ 		\label{fig:distribuiteMemory}
+ 		\includegraphics[width=0.92\textwidth]{./images/parallel_programming/distribuitedMemory}
+ 	\end{subfigure}%
+ 	\label{fig:UMA_NUMA}
+ \end{figure}
+ 
+
+ 
+ 
+%	\begin{figure}[!htbp]
+%		\centering
+%		\caption{Distributed memory architecture.}
+%		\label{fig:distribuiteMemory}
+%		\setlength{\fboxrule}{1pt}%
+%		\includegraphics[width=0.5\textwidth]{./images/parallel_programming/distribuitedMemory}
+%	\end{figure}
+%
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=0.7\textwidth]{./images/parallel_programming/hybrid_model}
+%	\caption{Hybrid memory architecture (Each processor is milti-core)}
+%	\label{fig:hybridMemory}
+%\end{figure}
+%
+%	
+%	\item[Hybrid Systems] As the name suggest a computer belonging to this category, is a mix of architectures. Only a limited number of  processors, say $N$, have	access to a common amount of shared memory. These $N$ processors are inter connected to the others groups via network. Note that each processor usually is an agglomerate of many computing cores.
+%	Hybrid systems of the kind described in this section are usually programmed using a combination of the message passing model (\texttt{MPI}) with the threads model (\texttt{OpenMP}) in which:
+%	\begin{itemize}
+%		\item threads perform computationally intensive task, using local
+%		\textbf{on-node} memory space and
+%		\item communications between processes on different nodes occurs over network using \texttt{MPI} (see figure \ref{fig:hybridMemory}).
+%	\end{itemize} 
+%
+%	
+%\end{description} 
+%\end{description}
+%		\begin{figure}
+%	\centering
+%	\label{fig:distribuiteMemory}
+%	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/xeonphi}
+%	\caption{Xeon Phi, Intel Knight Landing architecture and technical specifications.}
+%\end{figure}
+
 
 \section{Parallel Programming Models}
 \subsection{The \texttt{OpenMP} Parallel Computing Paradigm for Shared Memory Computers}
@@ -212,7 +250,7 @@ MIMD architecture can be further divided by  their memory layout and organizatio
     rejoin to the master thread (join phase), and more \textit{fork-join}
     stages can occur in a typical execution of an \texttt{OpenMP} executable.
     The size of the teams can be controlled by an environment variable \texttt{OMP\_NUM\_THREADS}, set at runtime by using the \texttt{omp\_set\_num\_threads(n)} function or specified for each parallel region using \texttt{num\_thread(n)} in the \texttt{\#pragma omp parallel} directive (see Listing \ref{code:openmp_lock}).
-\begin{figure}
+\begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.8]{./images/parallel_programming/omp_fork-join}
 	\caption[\texttt{OpenMP} fork-join execution model.]
@@ -225,7 +263,6 @@ MIMD architecture can be further divided by  their memory layout and organizatio
 		\end{inparaenum} Note that parallel regions can be nested.}
 	\label{fig:omp_fork-join}
 \end{figure}
-
     The \textit{fork-join} model allows for the selective parallelization of
     the original source code (e.g. loops), by leaving portions that
     are difficult to be parallelized or that would lead to negligible
@@ -244,13 +281,14 @@ MIMD architecture can be further divided by  their memory layout and organizatio
     	caption={Scheduling in OpenMP example. Note that specifying \textbf{static scheduling } is not needed since it is the default setting.}, 
     	label={code:scheduling_omp}, 
     	basicstyle=\ttfamily,
-    	keywordstyle=\color{blue}\ttfamily,
-    	stringstyle=\color{red}\ttfamily,
-    	commentstyle=\color{green}\ttfamily,
-    	backgroundcolor=\color{light-gray}, 
+    	keywordstyle=\color{ultramarine}\ttfamily,
+    	stringstyle=\color{rosemadder}\ttfamily,
+    	commentstyle=\color{outerspace}\ttfamily,
+    	backgroundcolor=\color{gray!5}, 
     	numbers=left, 
     	numberstyle=\tiny,
-    	morekeywords={schedule,parallel,omp,pragma,num_threads,omp_get_thread_num,omp_destroy_lock,omp_unset_lock,omp_set_lock,omp_lock_t,omp_init_lock}
+    	morekeywords=[2]{schedule,parallel,omp,pragma,num_threads,omp_get_thread_num,omp_destroy_lock,omp_unset_lock,omp_set_lock,omp_lock_t,omp_init_lock},
+    	%keywordstyle=[2]\color{ultramarineblue}\ttfamily   	
     }
     \begin{lstlisting}
     #define CHUNK_SIZE (1)
@@ -284,10 +322,10 @@ more work, by minimizing idle time. See Listing \ref{code:openmp_lock} for an ex
 	caption={\texttt{OpenMP} lock acquisition, usage and destruction example. Note that the region of code between lines 6 and 8 is serialized.}, 
 	label={code:openmp_lock}, 
 	basicstyle=\ttfamily,
-	keywordstyle=\color{blue}\ttfamily,
-	stringstyle=\color{red}\ttfamily,
-	commentstyle=\color{green}\ttfamily,
-	backgroundcolor=\color{light-gray}, 
+	keywordstyle=\color{ultramarine}\ttfamily,
+	stringstyle=\color{rosemadder}\ttfamily,
+	commentstyle=\color{outerspace}\ttfamily,
+	backgroundcolor=\color{gray!5}, 
 	numbers=left, 
 	numberstyle=\tiny,
 	morekeywords={#pragma,omp_destroy_lock,omp_unset_lock,omp_set_lock,omp_lock_t,omp_init_lock}
@@ -373,7 +411,14 @@ omp_destroy_lock(&writelock);
     \subsection{From Graphics Graphics to General Purpose HW}\label{graphicPipeline}
     A graphics task such as rendering a $3D$ scene on the screen
     involves a sequence of processing stages inside the GPU, i.e. shaders, that run in parallel and in a prefixed order, known as the graphics hardware
-    pipeline \cite{Shirley:2005:FCG:1088893} which is the most common form of 3D computer rendering, distinct from, for instance, \textit{raytracing} or \textit{raycasting} for which the concept of pipeline is not even defined. Figure \ref{graphicPipeline} shows the important key steps that make up the graphic pipeline and for which the GPU hardware has been specialized for years. The pipeline works taking as input graphics primitives, each stage forward its results on to the next stage.
+    pipeline \cite{Shirley:2005:FCG:1088893} which is the most common form of 3D computer rendering, distinct from, for instance, \textit{raytracing} or \textit{raycasting} for which the concept of pipeline is not even defined.
+     \begin{figure}[H]
+    	\centering
+    	\caption{Typical computer graphics pipeline.}\label{graphicPipeline}
+    	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/pipeline}
+    \end{figure}
+    
+     Figure \ref{graphicPipeline} shows the important key steps that make up the graphic pipeline and for which the GPU hardware has been specialized for years. The pipeline works taking as input graphics primitives, each stage forward its results on to the next stage.
     \begin{itemize}
     	\item     The first stage of the pipeline is the \textit{vertex shader}. The
     	input to this phase is a list of vertices in object space coordinate which are then converted to world coordinates (applying the \textit{model and view matrices}).
@@ -392,12 +437,6 @@ omp_destroy_lock(&writelock);
     Before the advent of CUDA in 2006 most of the techniques for non-graphics
     computation on the GPU took advantages of the programmable fragment processing stage. The steps involved in mapping a computation on the GPU are
     as follows:
-    \begin{figure}
-    	\centering
-    	\caption{Typical computer graphics pipeline.}\label{graphicPipeline}
-    	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/pipeline}
-    \end{figure}
-    
     \begin{enumerate}
     	\item The data are laid out as texel colors in textures;
     	\item  Each computation step is implemented with a
@@ -497,9 +536,9 @@ omp_destroy_lock(&writelock);
     	caption={Allocate buffer API call in OpenCL.},
     	label={code:opencl_allocate},
     	morekeywords={cl_context,clCreateBuffer,cl_mem_flags,cl_int,size_t},
-    	keywordstyle=\color{blue}\ttfamily,
-    	stringstyle=\color{red}\ttfamily,
-    	commentstyle=\color{green}\ttfamily,
+    	keywordstyle=\color{ultramarine}\ttfamily,
+    	stringstyle=\color{rosemadder}\ttfamily,
+    	commentstyle=\color{outerspace}\ttfamily,
     	backgroundcolor=\color{white}, 
     }
     \begin{lstlisting}
@@ -531,34 +570,90 @@ omp_destroy_lock(&writelock);
     can be first decorated with the parameters on which it is going to
     be executed and then effectively enqueued for execution onto device.
     
-    The following is a brief description of the typical flow of an \texttt{OpenCL} application (See Figure \ref{fig:opencl_program_flow}).
+    The following is a brief description of the typical flow of an \texttt{OpenCL} application (See Figure \ref{fig:opencl_execmodel}).
     \begin{figure}
     	\centering
     	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/opencl_program_flow}
     	\caption{\texttt{OpenCL} program flow and interaction between memory, device and host.}\label{fig:opencl_execmodel}
     \end{figure}
 
-    \begin{enumerate}
-    	\item Contexts creation: The first step in every \texttt{OpenCL} application is to create a context and associate to it a number of devices, an available \texttt{OpenCL} platform (there might be present more than one implementation), and then each operation (memory management, kernel compiling and running) is performed within \emph{this} context. In the example \ref{code:openCLContext} a context associated with the CPU device and the first finded platform is created.\\
+    \begin{description}
+    	\item [Contexts creation:]\hfil \\ The first step in every \texttt{OpenCL} application is to create a context and associate to it a number of devices, an available \texttt{OpenCL} platform (there might be present more than one implementation). Each subsequent operation (memory management, kernel compiling and running), is performed within \emph{this} context. In the example \ref{code:openCLContext} a context associated with the CPU device and the first platform returned by OpenCL is created.
+    	\lstset{language=[OpenCL]C,
+    		caption={\texttt{OpenCL} Context Creation.}, 
+    		label={code:openCLContext}, 
+    		basicstyle=\ttfamily,
+    		keywordstyle=\color{ultramarine}\ttfamily,
+    		morekeywords={cl_context,clCreateBuffer,cl_mem_flags,cl_int,size_t},
+    		stringstyle=\color{rosemadder}\ttfamily,
+    		commentstyle=\color{outerspace}\ttfamily,
+    		backgroundcolor=\color{gray!5}, 
+    		numbers=left, 
+    		numberstyle=\tiny
+    	}
+    	\begin{lstlisting}
+    	cl_int err;
+    	cl::vector<cl::Platform> platformList;
+    	//Gets a list of available platforms.
+    	cl::Platform::get(&platformList); 
+   		checkErr(platformList.size()!=0 ?CL_SUCCESS:-1,"cl::Platform::get");
+    	cl_context_properties cprops[3] ={CL_CONTEXT_PLATFORM,(cl_context_properties)(platformList[0])(), 0};
+    	//create a context based on the first platform from the list
+    	//Constructs a context including a list of specified devices
+    	cl::Context context(CL_DEVICE_TYPE_CPU,cprops,NULL,NULL,&err);
+    	check_error(err, "Conext::Context()"); 
+    	\end{lstlisting}
 
-    	\item Memory buffers creation: \texttt{OpenCL} buffer Object are created. Those
-    	buffer are used to hold data to be computed onto devices.\\
+    	\item [Memory buffers creation:]\hfil \\ \texttt{OpenCL} buffer objects on which kernels operates are created at this point using an available and valid context object as shown in Listing \ref{code:opencl_buffer_creation}. 
+    	\lstset{language=[OpenCL]C,
+    		caption={\texttt{OpenCL} context creation}, 
+    		label={code:opencl_buffer_creation}, 
+    		keywordstyle=\color{ultramarine}\ttfamily,
+    		morekeywords={cl_context,clCreateBuffer,cl_mem_flags,cl_int,size_t},
+    		stringstyle=\color{rosemadder}\ttfamily,
+    		commentstyle=\color{huntergreen}\ttfamily, 
+    		backgroundcolor=\color{gray!5}, 
+    		numbers=left, 
+    		numberstyle=\tiny
+    	}
+    	\begin{lstlisting}
+    	memobj = clCreateBuffer(context, CL_MEM_READ_WRITE,MEM_SIZE * sizeof(char), NULL, &ret);
+    	check_error(err, "Buffer::Buffer()");
+    	\end{lstlisting}
     	
-    	\item Load and build program: we need to load and build the compute program
-    	(the program we intend to run on devices). The purpose of this phase is to
-    	create an object \textbf{\textit{cl::Program}} that is associable with a
-    	context and then proceed building for a particular subset of
-    	context's devices. We first query the runtime for the available devices and
-    	then load directly source code as string in a
-    	\textbf{\textit{cl::Program:Source}} \texttt{OpenCL} object (see Listing
-    	\ref{code:loadBuildProgramCL}).\\
+    	\item [Build a program:]\hfil \\ 
+    	The actual code that runs on the devices has to be compiled first. The \textbf{\textit{cl::Program}} object takes care of building the device code for the devices listed during the context creation. See Listing
+    	\ref{code:loadBuildProgramCL} for an example of how \textbf{\textit{cl::Program}} are created.
+    	     \lstset{language=[OpenCL]C,
+    		caption={\texttt{OpenCL} program load and build}, 
+    		label={ code:loadBuildProgramCL}, 
+    		keywordstyle=\color{ultramarine}\ttfamily,
+    		morekeywords={cl_context,clCreateBuffer,cl_mem_flags,cl_int,size_t},
+    		stringstyle=\color{rosemadder}\ttfamily,
+    		commentstyle=\color{outerspace}\ttfamily,
+    		backgroundcolor=\color{gray!5}, 
+    		numbers=left, 
+    		numberstyle=\tiny
+    	}
+    	\begin{lstlisting}
+    	std::ifstream file("pathToSourceCode.cl");
+    	check_error(file.is_open() ? CL_SUCCESS:-1, "pathToSourceCode.cl");std::string
+    	prog( std::istreambuf_iterator<char>(file),
+    	(std::istreambuf_iterator<char>()));
+    	cl::Program::Sources source(1,std::make_pair(prog.c_str(), prog.length()+1));
+    	cl::Program program(context, source);
+    	err = program.build(devices,"");
+    	check_error(err, "Program::build()");
+    	cl_kernel kernel = clCreateKernel(program, "nameofthekernel", &ret);
+    	\end{lstlisting}
     	
-    	\item In order a kernel to be executed a \emph{kernel object} must be created.
+    	
+    	\item [Kernel launch:]\hfil \\
+    	In order a kernel to be executed a \emph{kernel object} must be created.
     	For a given \emph{Program} there would exists more than one entry point
     	(identified by the keyword \emph{\_\_kernel}. We choose one of them for
-    	execution specifying in the kernel object constructor\\
-    	
-    	\item We effectively execute the kernel putting it into a 
+    	execution specifying its name in the kernel object constructor.    	
+    	 We effectively execute the kernel putting it into a 
     	\emph{cl::CommandQueue}. Given a cl::CommandQueue queue, kernels can be queued
     	using \textit{queue.enqueu\-NDRangeKernel} that queues a kernel on
     	the associated device.
@@ -566,88 +661,36 @@ omp_destroy_lock(&writelock);
     	CUDA, see section \ref{kernels}) to specify the work distribution among
     	work-groups and their dimensionality and size of each dimension (see listing
     	\ref{code:openCLQueuCommand}). We can test the status of the execution by
-    	querying the associated \emph{event}.\\
-    \end{enumerate}
+    	querying the associated \emph{event}.
+    	    \lstset{language=[OpenCL]C,
+    		caption={\texttt{OpenCL} program load and build}, 
+    		label={ code:loadBuildProgramCL}, 
+    		keywordstyle=\color{ultramarine}\ttfamily,
+    		morekeywords={cl_context,clCreateBuffer,cl_mem_flags,cl_int,size_t},
+    		stringstyle=\color{rosemadder}\ttfamily,
+    		commentstyle=\color{outerspace}\ttfamily,
+    		backgroundcolor=\color{gray!5}, 
+    		numbers=left, 
+    		numberstyle=\tiny
+    	}   
+    	\begin{lstlisting}
+    	cl::CommandQueue queue(context, devices[0], 0, &err);
+	    /*cl_kernel kernel = clCreateKernel(program, "nameofthekernel", &ret);*/
+	    kernel.setArg(0,memobj);
+	    //let the work-group size be choosen by the implementation 
+	    ret = clEnqueueNDRangeKernel(queue, kernel, 1, NULL,
+	    &MEM_SIZE, NULL, 0, NULL, NULL)
+    	\end{lstlisting}
+    \end{description}
     
     
-    \lstset{language=[OpenCL]C,
-		caption={\texttt{OpenCL} Queue command,
-		kernel execution}, 
-    	label={code:openCLQueuCommand}, 
-    		basicstyle=\ttfamily,
-    	keywordstyle=\color{blue}\ttfamily,
-    	stringstyle=\color{red}\ttfamily,
-    	commentstyle=\color{green}\ttfamily,
-    	backgroundcolor=\color{light-gray}, 
-    	numbers=left, 
-    	numberstyle=\tiny
-    }
-    \begin{lstlisting}
-    cl_int err;
-    cl::vector< cl::Platform > platformList;
-    cl::Platform::get(&platformList
-    checkErr(platformList.size()!=0 ?  \\
-    CL_SUCCESS:-1,"cl::Platform::get");
-    cl_context_properties cprops[3] =
-    {CL_CONTEXT_PLATFORM, (cl_context_properties)(platformList[0])(), 0};
-    cl::Context context(CL_DEVICE_TYPE_CPU,cprops,NULL,NULL,&err);
-    checkErr(err, "Conext::Context()"); 
-    \end{lstlisting}
+
     
-     \lstset{language=[OpenCL]C,
-     	caption={\texttt{OpenCL} context creation}, 
-    	label={code:openCLContext}, 
-    	    	keywordstyle=\color{blue}\ttfamily,
-    	stringstyle=\color{red}\ttfamily,
-    	commentstyle=\color{green}\ttfamily, 
-    	backgroundcolor=\color{light-gray}, 
-    	numbers=left, 
-    	numberstyle=\tiny
-    }
-    \begin{lstlisting}
-    cl::Buffer outCL(context,CL_MEM_WRITE_ONLY |
-    CL_MEM_USE_HOST_PTR,hw.length()+1,outH,&err);
-    checkErr(err, "Buffer::Buffer()");
-    \end{lstlisting}
+
     
-     \lstset{language=[OpenCL]C,
-       	caption={\texttt{OpenCL} program load and build}, 
-    	label={ code:loadBuildProgramCL}, 
-    	    	keywordstyle=\color{blue}\ttfamily,
-    	stringstyle=\color{red}\ttfamily,
-    	commentstyle=\color{green}\ttfamily,
-    	backgroundcolor=\color{light-gray}, 
-    	numbers=left, 
-    	numberstyle=\tiny
-    }
-    \begin{lstlisting}
-    std::ifstream file("pathToSourceCode.cl");
-    checkErr(file.is_open() ? CL_SUCCESS:-1, "pathToSourceCode.cl");std::string
-    prog( std::istreambuf_iterator<char>(file),
-    (std::istreambuf_iterator<char>()));
-    cl::Program::Sources source(1,std::make_pair(prog.c_str(), prog.length()+1));
-    cl::Program program(context, source);
-    err = program.build(devices,"");
-    checkErr(err, "Program::build()");
-    \end{lstlisting}
+
     
-     \lstset{language=[OpenCL]C,
-	caption={\texttt{OpenCL} program load and build}, 
-	label={ code:loadBuildProgramCL}, 
-	keywordstyle=\color{blue}\ttfamily,
-	stringstyle=\color{red}\ttfamily,
-	commentstyle=\color{green}\ttfamily,
-	backgroundcolor=\color{light-gray}, 
-	numbers=left, 
-	numberstyle=\tiny
-}   
-    \begin{lstlisting}
-    cl::CommandQueue queue(context, devices[0], 0, &err);
-    checkErr(err, "CommandQueue::CommandQueue()");cl::Event event;
-    err = queue.enqueueNDRangeKernel(kernel,cl::NullRange,
-    cl::NDRange(hw.length()+1),	cl::NDRange(1, 1),NULL,&event);
-    checkErr(err, "ComamndQueue::enqueueNDRangeKernel()");
-    \end{lstlisting}
+ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \subsection{The Message Passing Interface}
 

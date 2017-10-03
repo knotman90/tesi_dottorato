@@ -216,8 +216,10 @@ Mixed derivatives con also be approximated using FDM, e.g. for two dimensions by
 \begin{equation}
 \frac{\partial ^2 T}{\partial x \partial y} = \frac{\partial}{\partial x} \Bigg{(}\frac{\partial T}{\partial y}\Bigg{)} = \frac{\partial}{\partial y} \Bigg{(}\frac{\partial T}{\partial x}\Bigg{)}\\
 \end{equation}
-and considering the following approximations:
+and considering the following approximations: \hfil \\
+\begin{center}
 \begin{equation}
+\scalebox{1.1}{
 \begin{cases}
 &\frac{\partial ^2 T}{\partial x \partial y} = 
 \frac{\bigl(\frac{\partial T}{ \partial y}\bigr)_{i+1,j}\, - \,
@@ -226,7 +228,10 @@ and considering the following approximations:
 &\bigl(\frac{\partial T}{\partial y}\bigr)_{i+1,j} = \frac{T_{i+1,j+1} -T_{i+1,j-1}}{2\Delta y}+\mathcal{O}(\Delta y)^2 \\
 &\bigl(\frac{\partial T}{\partial y}\bigr)_{i-1,j} = \frac{T_{i-1,j+1} -T_{i-1,j-1}}{2\Delta y}+\mathcal{O}(\Delta y)^2 \\
 \end{cases}
+}
 \end{equation}
+
+\end{center}
 A second order 2 variables finite difference approximation for the mixed derivative is the following:
 
 \begin{equation}
@@ -274,7 +279,7 @@ Extending the former method to higher dimensional mixed derivatives is straightf
     
 \begin{figure}
 \centering
-\includegraphics[width=0.8\textwidth]{./images/CA_FDM/fdmgrid}
+\includegraphics[width=0.6\textwidth]{./images/CA_FDM/fdmgrid}
 \caption{1D heat equation FDM grid space and time partitioning.}\label{torus}
 \end{figure}
 
