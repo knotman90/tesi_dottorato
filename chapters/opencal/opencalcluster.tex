@@ -15,17 +15,21 @@
 \vskip 1em
 
 
+\lettrine[lines=3,lhang=0.33,lraise=0,loversize=0.15]{F}{or} most problems in physics and engineering there is a huge demand in improving the time needed to solve a certain problem. For instance some numerical meteorological models are so complex that even executed on powerful computers the execution time would be so long that by the time the result are available the prediction would be of no practical use. But speed is not the only important factor in scientific computing. Sometimes the accuracy of a solution need to be improved and that usually translates to a bigger and more dense discretization of the problem. It is clear that in order to overcome these limitations more computing power needs to be employed. 
 %\section{Introduction}
-\lettrine[lines=3,lhang=0.33,lraise=0,loversize=0.15]{C}{omputing} systems are often equipped with more than one GPU. From high-end workstation, that are able to accommodate up to 8 GPUs or more on the same motherboard to large clusters, that are usually composed of several computing nodes (see Figure \ref{fig:distribuiteMemory} and Section \ref{sec:flynn_tax} at page \pageref{fig:distribuiteMemory} and \pageref{sec:flynn_tax} respectively) each of them equipped with one or more accelerators.
-For most problems in physics and engineering, there is the need to improve the time to solution and to increase the accuracy
-of the discretization. This means further speed up in the computation and/or being able to simulate working sets that exceed a single GPU's memory.
-And since having multiple GPUs per node also improves the ratio performance over Watt and  price over Watt, multi-GPU programming is becoming more and more important.
+
+Nowadays, computing systems are often equipped with more than one GPU. From high-end workstation, that are able to accommodate up to 8 GPUs or more on the same motherboard to large clusters, that are usually composed of several computing nodes (see Figure \ref{fig:distribuiteMemory} and Section \ref{sec:flynn_tax} at page \pageref{fig:distribuiteMemory} and \pageref{sec:flynn_tax} respectively) each of them equipped with one or more accelerators possibly of different kind and nature. Programming distributed memory machines is complex especially for non HPC computer scientist because of the intrisic complexity introduced by the parallelism and because of the hardware heterogeneousness, and this is especially true since large cluster are equipped with several accelerators. However is important to fully and effectively utilize such computing power, especially since having multiple GPUs per node improves the ratio performance over Watt and  price over Watt. For these reasons multi-GPU programming is becoming more and more important.
 
 Unfortunately, neither \textsc{CUDA} or \textsc{OpenCL} supports natively a multi-GPU model. The model they support is based on a \textit{single core}-\textit{single GPU} relationship and works really well for tasks that are independent one from the other.
-On the other hand makes things a more difficult when a task need to have more than one GPU cooperate in some way in order to solve a problem.
-As an example of the first scenario think about the BOINC application \cite{Anderson:2004} which allows a user to donate computing power and time to solve relevant problems. In a multi GPU environment, it works spawning $N$ independent tasks and each of them is scheduled on one of the $N$ available GPU. When a task is finished, the application simply requests another task to the central server, the task dispatcher. No cooperation or communication is required between the GPUs.
-An example of the second scenario, consider the Lattice Boltzmann (LB) \cite{McNamara&Zanetti-1988} \cite{Aidun2010439} \cite{Higuera&Jimenez-1989} method on a domain that is decomposed along one axis, let's say the $x$ axis, as depicted in Figure \ref{fig:multigpu_domain_decomposition}, so that each GPU is responsible for a subset of the whole mesh. Computation for a grid point that lies on the boundary of the domain portion assigned to the GPU $2$ needs information about neighboring points that are stored on a different GPU ($1$ or $3$ in this case). Communication between the two devices is required.
-This chapter described the distributed version of OpenCAL, OpenCAL cluster, which has been designed to take advantage of the modern multi-GPU capabilities of multi-node systems. This makes OpenCAL applications deployable on a variety of heterogeneous single node systems to large clusters of GPUs.
+On the other hand, the aforementioned model makes things  more difficult when a task need to have several GPUs cooperate in some way in order to solve a problem instance.
+As an example of an application of the supported model, the \textsc{BOINC} application \cite{anderson:2004} allows a user to donate computing power and time to solve relevant problems. In a multi GPU environment, it works spawning $N$ independent tasks and each of them is scheduled on one of the $N$ available GPUs.
+When a task is finished, the application simply requests another task to the central server, the task dispatcher. No cooperation or communication is required between the GPUs as the tasks to be solved is self-contained, meaning that it does not need any external input or information.
+An example of the unsupported model, consider the Lattice Boltzmann (LB) \cite{McNamara&Zanetti-1988} \cite{Aidun2010439} \cite{Higuera&Jimenez-1989} method on a domain that is decomposed along one axis, let's say the $x$ axis, as depicted in Figure \ref{fig:multigpu_domain_decomposition}, so that each GPU is responsible for a subset of the whole mesh. Computation for a grid point that lies on the boundary of the domain portion assigned to the GPU $2$ needs information about neighboring points that are stored on different GPUs ($1$ and $3$ in this case).
+Communication of such boundary points between the two devices is required.
+
+\section{OpenCAL cluster}
+This chapter described the distributed version of OpenCAL, OpenCAL cluster, which has been designed to take advantage of the modern multi-GPU capabilities of multi-node systems. This makes OpenCAL applications deployable on a variety of computer architectures, from a single CPU workstation to a large heterogeneous clusters. 
+Section \ref{sec:configuration_file} starts by describing the \textit{configuration file} that is used to dispatch data and computation across the machine. Then, Sections \ref{}and \ref{}  outline the adopted parallelization and domain decomposition strategies. Section \ref{} introduces a set API and number of examples that show how it can used to code OpenCAL cluster applications. Finally, Section \ref{sec:perfomance} discusses performance and tests.
   \begin{figure}
 	\begin{center}
 		\includegraphics[width=0.67\textwidth]{./images/opencal/multigpu_domain_decomposition.png}
@@ -34,17 +38,22 @@ This chapter described the distributed version of OpenCAL, OpenCAL cluster, whic
 	\end{center}
 \end{figure}
 
-\subsection{Run Configuration}
-Each OpenCAL application is attached with a running configuration that is provided by the user or the programmer and describes both which computational resources are going to be used during the execution and how the domain is going to be decomposed.
-The running configuration is provided as a file with the following structure:
 
-\captionsetup[table]{name=File Format}
+
+\subsection{Run Configuration}
+\label{sec:run_configuration}
+Each OpenCAL application is attached with a running configuration that is provided by the user or the programmer and describes both which computational resources are going to be used during the execution and how the domain is be decomposed among them.
+The running configuration is provided as a plain text file which syntaxt and structure is described in Listing \ref{code:file_syntax}.
+
+
+\captionsetup[table]{name=Listing}
 \begin{table*}
 
-\renewcommand{\arraystretch}{0.4} %<- modify value to suit your needs
+\renewcommand{\arraystretch}{1} %<- modify value to suit your needs
 \centering
-\footnotesize
-\begin{tabular}{m{0.4\linewidth} m{0.7\linewidth}}
+\small
+\begin{tabular}{m{0.21\linewidth}| m{0.7\linewidth}}
+	\toprule
 \setlength\extrarowheight{-3em}
 	\textsc{domain size}  & 
 	\begin{verbatim}
@@ -102,7 +111,7 @@ PLATFORM_NUMBER_M2 DEVICE_NUMBER_K2_M2 LOAD_M1_K2_M2
 \tabularnewline
 \midrule
 \vspace{-1em}
-\centering \scalebox{2.5}{  {$\vdots $} }&\centering \scalebox{2.5}{  {$\vdots $} }\\ 
+\centering \scalebox{2.0}{  {$\vdots $} }&\centering \scalebox{2.0}{  {$\vdots $} }\\ 
 
 \tabularnewline
 \midrule
@@ -118,23 +127,16 @@ IP_NODE_N NUM_GPU_NODE_N
 \begin{verbatim}
 PLATFORM_NUMBER_1 DEVICE_NUMBER_1 LOAD_1_1
 PLATFORM_NUMBER_1 DEVICE_NUMBER_2 LOAD_1_2
-\end{verbatim}
-\centering {$\vdots$}
-\begin{verbatim}
+                 ...
 PLATFORM_NUMBER_1 DEVICE_NUMBER_KN_1 LOAD_1_KN_1
 PLATFORM_NUMBER_2 DEVICE_NUMBER_1  LOAD_2_1
-\end{verbatim}
-\centering {$\vdots$}
-\begin{verbatim}
+                 ...
 PLATFORM_NUMBER_2 DEVICE_NUMBER_KN_2 LOAD_2_KN_2
-\end{verbatim}
-\begin{center}
-	{$\vdots$}
-\end{center}
-\begin{verbatim}
+                 ...
 PLATFORM_NUMBER_MN DEVICE_NUMBER_KN_MN LOAD_M1_KN_MN
 \end{verbatim}
-
+\\ \tabularnewline
+\bottomrule
 		
 \end{tabular}
 \caption{File Format for  the OpenCAL cluster. It describes the size of the domain and the machine on which the model is executed. Note that for each node of the cluster, the IP address and a list of devices is listed. Each device is identified, \textit{\`a la} \textsc{OpenCL}, by platform and device number (within the platform).}
@@ -142,28 +144,43 @@ PLATFORM_NUMBER_MN DEVICE_NUMBER_KN_MN LOAD_M1_KN_MN
 %table name back to normal
 \captionsetup[table]{name=Table}
 
+The configuration file starts with two lines describing:
+\begin{enumerate}
+	\item The size of the domain along each of the dimensions as a list of positive integers.
+	\item The number $N$ of computational nodes, each described and identified uniquely by its IP address.
+\end{enumerate}
+$N$ descriptions of nodes follows.
+A node $i$, $1 \leq i \leq N$ is described by a line containing its IP address $IP_i$ and the number of devices (installed and available on that node) $NUM\_GPU\_NODE_i$ to be utilized.
+$NUM\_GPU\_NODE_i$ lines follows, each containing the definition of the devices within node $i$ and its workload. 
 
-where
-\begin{itemize}
-	\item The first line describe the size of the domain as a list of sizes for each dimensions.
-	\item The second line contains the number of computational nodes. Each node is described and identified by its IP address.
-	\item For each node $i$, a line containing its IP address $IP_i$ and the number of devices to be utilized $NUM\_GPU\_NODE_i$.
-   \item $NUM\_GPU\_NODE_i$ lines follows, each containing the definition of the devices within node $i$. A device is identified by its \textbf{platform number}, its  \textbf{device number within the platform} and the \textbf{load} parameter which describe the amount of work, assigned to that device.
-	 
-\end{itemize}
+A device is identified by its \textbf{platform number} $PLATFORM\_NUMBER_p$, $1 \leq p \leq M_i$, where $M_i$ is the number of the platforms on node $i$, a \textbf{device number within the platform} $DEVICE\_NUMBER_l$ ($l$ relative to the platform). A \textbf{load} parameter for the device $d$, $LOAD^i_{(p,d)}$ describing the amount of work assigned (portion of the domain) to that device.
+
+The list of devices within a node can be arbitrarly ordered.
+
 
 
 \subsection{Domain Decomposition}
 \label{sec:domain_decomposition}
-In this preliminary work, the general strategy for dividing work among the available nodes and devices is decomposing the domain along the first dimension listed in the run configuration. The run file has to correctly describe a $1D$ decomposition along the first dimension of the domain. That means that the following has to be always true:
+In this preliminary work, the general strategy for dividing work among the available nodes and devices is to decompose the domain along the first dimension listed in the run configuration. The configuration file has to correctly describe a $1D$ decomposition along the first dimension of the domain. That means that the following has to be always true:
 \[
-\sum_i^n \sum_p^{m_i} \sum_d^{k_m} LOAD(i,p,k) = DIM\_1
+\sum_i^N \sum_p^{M_i} \sum_d^{K_p} LOAD^i_{(p,d)} = DIM\_1
 \]
-i.e. the sum of the loads has to always match the size of the first dimension of the domain. This ensures that the whole domain is assigned to some device on some node.
+i.e. the sum of the loads has to  match the size of the first dimension of the domain exactly. This ensures that the whole domain is assigned to some device on a node.
 
-The decomposition follows the order in which nodes and devices are listed in the run file. Subsequents portions of not yet decomposed domain are assigned to subsequent (with the respect to the order in which they appear in the file) device. Size of such portion is described by the device load parameter. In order to show how it works consider the following run configuration file:
-\begin{mdframed}[hidealllines=true,backgroundcolor=gray!5]
-	\begin{verbatim}
+The decomposition follows the order in which nodes and devices are listed in the configuration file. Subsequent portions of not yet assigned portions of the domain are assigned to subsequent (with the respect to the order in which they appear in the file) devices. The size of such portion is described by the device load parameter.
+
+ In order to show how decomposition works, consider the  configuration file in Listing \ref{code:configuration_file_example}.
+\lstset{
+ 	caption={Configuration file example. Size of the domain is $16384 \times 16384$, scattered along the first dimension among $2$ nodes and $5$ device overall.}, 
+ 	label={code:configuration_file_example}, 
+ 	basicstyle=\footnotesize\ttfamily,
+ 	keywordstyle=\color{blue}\ttfamily,
+ 	stringstyle=\color{red}\ttfamily,
+ 	commentstyle=\color{green}\ttfamily,
+ 	backgroundcolor=\color{light-gray}
+ 	}
+ \begin{minipage}{\linewidth}
+\begin{lstlisting}
 16384 16384
 2
 192.168.1.111 2  
@@ -173,10 +190,10 @@ The decomposition follows the order in which nodes and devices are listed in the
 0 0 1200
 1 0 3200
 1 1 3792
-	\end{verbatim}
-\end{mdframed}
-which defines a $2D$ domain of size $2^{{14}^2} = 2^{28}}$ points.
-The domain is scattered along the first dimension, $x$, among 2 nodes and 5 devices, in the following way:
+\end{lstlisting}
+\end{minipage}
+which defines a $2D$ domain of size $2^{{14} \times 2^{{14}} = 2^{28}}$ points.
+The domain is scattered along the first dimension, $x$, among 2 nodes and 5 devices, in the following manner:
 \begin{itemize}
 	\item $0 \leq x < 4096 \longmapsto$  device $(0,0)$ running at node $192.168.1.111$.
 	\item  $4096 \leq x < 4096+4099$ go to device $(0,1)$ running at node $192.168.1.111$.
@@ -188,7 +205,8 @@ The domain is scattered along the first dimension, $x$, among 2 nodes and 5 devi
 
 
 
-Generally speaking using the decomposition described in section \ref{sec:domain_decomposition} when $N$ devices are involved a GPU $i$ needs to know, for the update of the nodes in its own boundaries, the value of substates belonging to the devices in the boundaries of its neighbors (neighboring device are possibly located in a separate node), so, at each iteration, it must perform all the operations depicted in Figures \ref{fig:communication_scheme} and \ref{fig:multigpu_naive_exchange} (assuming periodic boundary conditions for the sake of simplicity).
+Generally speaking using the decomposition described in section \ref{sec:domain_decomposition} when $N$ devices are involved, GPU $i$ needs to know, for the update of the grid points within the boundaries of its subdomain, the value of substates of the neighboring subdomains belonging to different devices (that can be possibly located in different nodes). 
+At each iteration, it must perform all the operations depicted in Figures \ref{fig:communication_scheme} and \ref{fig:multigpu_naive_exchange} (assuming periodic boundary conditions for the sake of simplicity).
 \begin{figure}[H]
 \begin{tikzpicture}
 \definecolor{blue1}{HTML}{4443ba}
@@ -236,7 +254,7 @@ Generally speaking using the decomposition described in section \ref{sec:domain_
 \begin{figure}
 	\centering
 		\includegraphics[width=1.0\textwidth]{./images/opencal/multigpu_naive_exchange.png}
-		\caption{The adopted Multi-GPU computation scheme.}
+		\caption{The adopted multi-GPU computation scheme.}
 		\label{fig:multigpu_naive_exchange}
 \end{figure}
 
@@ -250,41 +268,53 @@ For a communication step to take place, it is necessary to:
 \end{enumerate}
 
 
-\section{OpenCAL cluster API}
-This section describes the difference between OpenCAL-CL and OpenCAL cluster and discuss the set of the additional API calls that the cluster version exposes.
+\section{The OpenCAL cluster Parallel Implementation}
+  In this section, OpenCL cluster parallel implementation
+of OpenCAL, which allows for the parallel execution on one or more accelerators installed on computing nodes interconnected via network and MPI.
+This section describes the difference between OpenCAL-CL and OpenCAL cluster and discusses only the set of the additional API calls that the cluster version exposes. 
 
-The Domain Decomposition format described in section \ref{sec:domain_decomposition} is reflected in OpenCAL with the following classes:
-\begin{description}
-	\item[\texttt{Device}] described by $4$ non-negative integers, two of which identify the device  within the node (using the OpenCL idiom of platform and device numbers) while the rest describe the portion of the subdomain assigned to the specific device.
-	\item[\texttt{Node}] containing an IP address, a description of the portion of subdomain assigned to it and finally, a list of \texttt{Device}s installed on the machine that are used for the computation.
-	\item [\texttt{Cluster}] containing a list of \texttt{Node}s that are concurrently used to  execute an OpenCAL application.
-\end{description}
-A \texttt{Cluster} can conveniently constructed from a file using the \texttt{calFromClusterFile} method exposed. It parse, validate and finally return a valid \texttt{Cluster} instance.
+The programming model adopted by OpenCAL cluster is similar to the other versions of OpenCAL (see Section \ref{ch:opencal}) but it introduces new concepts that mainly reflect the multi-GPU and multinode structure of the target machines.
 
-\subsection{\texttt{Init} and \texttt{finalize} functors}
-The Cluster Abstraction is utilized by the \texttt{MultiNode} class
+The main difference is the addition of the \texttt{MultiNode} class (see Listing \ref{code:multinode}).
 \lstset{language=[OpenCL]C,frame=tb,
-	caption=OpenCAL cluster MultiNode Class Declaration, 
-	label=code:multinode, 
+	caption={OpenCAL cluster MultiNode Class Declaration}, 
+	label={code:multinode}, 
 	basicstyle=\footnotesize\ttfamily,
 	keywordstyle=\color{blue}\ttfamily,
 	stringstyle=\color{red}\ttfamily,
 	commentstyle=\color{green}\ttfamily,
 	backgroundcolor=\color{light-gray}, 
-	numbers=left,numbersep=3pt,, 
-	\lstset{language=[OpenCL]C,frame=tb,
 }
 \begin{lstlisting}
 template <class Init_Functor,class Finalize_Functor>
-
 class MultiNode{
 public:
-Cluster c;
-Init_Functor *init;
-Finalize_Functor *finalize;
-...
+	Cluster c;
+	Init_Functor *init;
+	Finalize_Functor *finalize;
+		...
 \end{lstlisting}
-which among others fields, contains a \texttt{Cluster} object and two pointers to functors which type is shown in listing \ref{code:init_finalize_signature}.
+It manages communications and computations across nodes and across GPUs and must be constructed by all the processes/nodes.
+
+In order to use OpenCAL  cluster a  valid domain decomposition must be specified, see Section \ref{sec:domain_decomposition} and \ref{sec:run_configuration}.
+The Domain Decomposition format described in section \ref{sec:domain_decomposition} is reflected in the OpenCAL implementation with the following classes:
+\begin{description}
+	\item[\texttt{Device}] described by $4$ non-negative integers, two of which identify the device  within the node (using the OpenCL idiom of platform and device numbers) while the rest describe the portion of the subdomain assigned to the specific device.
+	\item[\texttt{Node}] containing an IP address, a integer values describing the portion of subdomain assigned to it and finally, a list of \texttt{Device}s installed on the machine that are used for the computation.
+	\item [\texttt{Cluster}] containing a list of \texttt{Node}s that are concurrently used to  execute an OpenCAL application.
+\end{description}
+Each OpenCAL cluster application necessitates of a \texttt{Cluster} object correctly initialized that can conveniently constructed from a file using the \texttt{calFromClusterFile} function exposed. Given a configuration file, it  \texttt{calFromClusterFile} parses, validates and finally returns a valid \texttt{Cluster} instance.
+
+The information stored in the \texttt{Cluster} object is then utilized by each MPI process to allocate and to initialize all the listed devices.
+The library is designed s.t. each MPI process runs several instances of  OpenCAL-CL (see Section \ref{sec:OpenCAL-CL}), each executing on different device and on a different portion of the original subdomain.
+Note also that, OpenCAL cluster degenerate to OpenCAL-CL when only one one and one device is utilized, and that a multi-GPU single node configuration is obtainable specifiying a single node with several devices in the configuration file.
+
+Devices within a node are managed by a \texttt{CALCLMultiGPU} object,  which  coordinate them and can be created using the \texttt{calclMultiGPUDef2D} API call. \texttt{CALCLMultiGPU} takes care of storing hooks to a per node's devices and resources as the list of compiled kernels for each devices.
+It also exposes a number of methods for adding or removing a device from the pool, or for communication boundaries to and from two devices.
+
+
+\subsection{\texttt{Init} and \texttt{finalize} functors}
+Listing \ref{code:multinode} shows that the \texttt{MultiNode} object, among others fields, contains a \texttt{Cluster} object and two pointers to functors which type is shown in listing \ref{code:init_finalize_signature}.
 \lstset{language=[OpenCL]C,frame=tb,
 	caption=OpenCAL cluster init and finalize functor signature, 
 	label=code:init_finalize_signature, 
@@ -299,9 +329,9 @@ void finalize(struct CALCLMultiGPU*);
 void init(struct CALCLMultiGPU*, const Cluster*);
 \end{lstlisting}
 
-\texttt{ init} and \texttt{finalize} if defined, are executed by each MPI process (Node) at the initialization and finalization phases, respectively.
-The init functor can be employed to take car of, given the information about the workloads contained into the Cluster object, making sure that each MPI process allocates all of its listed devices with the right resources in order to process the assigned domain.
-Devices within a node are managed by a \texttt{CALCLMultiGPU} object,  which  coordinate them and can be created using the \texttt{calclMultiGPUDef2D} API call.
+\texttt{init} and \texttt{finalize} if defined, are executed by each MPI process (Node) at the initialization and finalization phases, respectively.
+The init functor can be employed to take car of making sure that each MPI process allocates all of its listed devices with the right resources in order to process the assigned domain. Their definition is optional.
+
 Listing \ref{code:init} shows an example of init function that is part of the Opencal Julia Set generator application shown in section \ref{sec:julia_set} and in listing \ref{code:julia_set}.
 \lstset{language=[OpenCL]C,frame=tb,
 	caption=OpenCAL cluster finalize example code for the Julia Set generator application. It outputs the node's portion of a substate to a file., 
@@ -369,6 +399,8 @@ A MultiNode is used in user code as shown in listing \ref{code:multinode_user_co
 	commentstyle=\color{green}\ttfamily,
 	backgroundcolor=\color{light-gray}, 
 }
+
+
 \begin{lstlisting}
 	//Construct a MultiNode object
 	MultiNode<decltype(init), decltype(finalize)> mn(cluster, mpi_world_rank, init, finalize);
@@ -739,6 +771,8 @@ commenta tempi di esecuzione e soprattuto che non era possibile arrivato ad un c
 \subsection{SciddicaT}
 
 
+
+\section{Performance}
 
 
 \subsection{Conclusion}
