@@ -1,0 +1,30 @@
+\chapter{Accelerators - Technical Specification}
+\label{app:tech_spec}
+\begin{table}[H]
+	\centering
+	\caption{Technical Specification for the NVIDIA K40,K20 and GTX980 GPUs.}
+	\label{tab:tech_spec_nvidia}
+\begin{tabular}{m{0.2\linewidth} m{0.2\linewidth} m{0.2\linewidth} m{0.2\linewidth}}
+	\toprule
+	{\textbf{Spec.}} & {\textbf{K40}} & {\textbf{K20}} & {\textbf{GTX980}}\\
+	\midrule
+	\textit{CUDA Cores}                & $2880$   & $2496$    & $2048$   \\
+	
+	\textit{Core Clock}                & $745$-$845$ \si{MHz}   & $706$ \si{MHz}    &    $1126-1216$ \si{MHz} \\
+
+	
+\midrule
+	
+	\textit{Memory Size}                & $12$ \si{GB}  & $5$ \si{GB}    & $4$ \si{GB}    \\
+	
+	\textit{Memory Clock Speed}                & $3.0$ \si{GHz}   & $2.6$ \si{GHz}    &  $1.753$ \si{GHz}    \\
+	
+	\textit{Bandwith}                & $288$ \si{GB/s}   & $208$ \si{GB/s}   & $224$ \si{GB/s}   \\
+
+	\textit{Interface}                & $384$ bit   & $308$ \si{bit}    & $256$ \si{bit}    \\
+
+	\midrule
+	\textit{API Supported}                & OpenACC, OpenCL $1.2$   &  OpenACC, OpenCL $1.1$    & OpenACC, OpenCL $1.1$    \\
+	\bottomrule
+\end{tabular}
+\end{table}

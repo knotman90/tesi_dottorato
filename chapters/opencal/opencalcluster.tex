@@ -270,7 +270,7 @@ For a communication step to take place, it is necessary to:
 
 \section{The OpenCAL cluster Parallel Implementation}
   In this section, OpenCL cluster parallel implementation
-of OpenCAL, which allows for the parallel execution on one or more accelerators installed on computing nodes interconnected via network and MPI.
+of OpenCAL is described, which allows for the parallel execution on one or more accelerators installed on computing nodes interconnected via network and MPI.
 This section describes the difference between OpenCAL-CL and OpenCAL cluster and discusses only the set of the additional API calls that the cluster version exposes. 
 
 The programming model adopted by OpenCAL cluster is similar to the other versions of OpenCAL (see Section \ref{ch:opencal}) but it introduces new concepts that mainly reflect the multi-GPU and multinode structure of the target machines.
@@ -307,17 +307,17 @@ Each OpenCAL cluster application necessitates of a \texttt{Cluster} object corre
 
 The information stored in the \texttt{Cluster} object is then utilized by each MPI process to allocate and to initialize all the listed devices.
 The library is designed s.t. each MPI process runs several instances of  OpenCAL-CL (see Section \ref{sec:OpenCAL-CL}), each executing on different device and on a different portion of the original subdomain.
-Note also that, OpenCAL cluster degenerate to OpenCAL-CL when only one one and one device is utilized, and that a multi-GPU single node configuration is obtainable specifiying a single node with several devices in the configuration file.
+Note also that, OpenCAL cluster degenerate to OpenCAL-CL when only one none and one device are utilized, and that a multi-GPU single node configuration is obtainable specifiying a single node with several devices in the configuration file.
 
 Devices within a node are managed by a \texttt{CALCLMultiGPU} object,  which  coordinate them and can be created using the \texttt{calclMultiGPUDef2D} API call. \texttt{CALCLMultiGPU} takes care of storing hooks to a per node's devices and resources as the list of compiled kernels for each devices.
-It also exposes a number of methods for adding or removing a device from the pool, or for communication boundaries to and from two devices. 
+It also exposes a number of functions for adding or removing a device from the pool and for boundaries exchange between two devices. 
 
 
 \subsection{\texttt{Init} and \texttt{finalize} functors}
 Listing \ref{code:multinode} shows that the \texttt{MultiNode} object, among others fields, contains a \texttt{Cluster} object and two pointers to functors which type is shown in listing \ref{code:init_finalize_signature}.
 \lstset{language=[OpenCL]C,frame=tb,
 	caption=OpenCAL cluster init and finalize functor signature, 
-	label=code:init_finalize_signature, 
+	label={code:init_finalize_signature}, 
 	basicstyle=\footnotesize\ttfamily,
 	keywordstyle=\color{blue}\ttfamily,
 	stringstyle=\color{red}\ttfamily,
@@ -330,9 +330,9 @@ void init(struct CALCLMultiGPU*, const Cluster*);
 \end{lstlisting}
 
 \texttt{init} and \texttt{finalize} if defined, are executed by each MPI process (Node) at the initialization and finalization phases, respectively.
-The init functor can be employed to take car of making sure that each MPI process allocates all of its listed devices with the right resources in order to process the assigned domain. Their definition is optional.
+Their definition is optional. They can be employed to perform operations that are hard to manage automatically on a per node basis. For example a certain node might need a particular initialization phase such as module loading for instance. The library can completely hide the initialization and allocation phases, but it is important to note that this behaviour can be changed and manual initialization can be enabled. When it is the case, the init functor can be employed to take car of making sure that each MPI process allocates all of its listed devices with the right resources in order to process the assigned domain. 
 
-Listing \ref{code:init} shows an example of init function that is part of the Opencal Julia Set generator example  application shown in section \ref{sec:julia_set} and in listing \ref{code:julia_set}.
+Listing \ref{code:init} shows an example of init function that is part of the Opencal Julia Set generator example application shown in section \ref{sec:julia_set} and in listing \ref{code:julia_set}. It shows how manual initialization can be performed from the configuration file. Each nodes access its own list of devices using its MPI rank (lines 3-4)  and add them all to the pool using the \texttt{calclAddDevice} function (lines 7-11).
 \lstset{language=[OpenCL]C,frame=tb,
 	caption=OpenCAL cluster finalize example code for the Julia Set generator application. It outputs the node's portion of a substate to a file., 
 	label=code:init, 
@@ -368,7 +368,7 @@ void init(struct CALCLMultiGPU* multigpu, const Cluster* c){
 	calclAddElementaryProcessMultiGPU2D(multigpu, 	KERNEL_LIFE_TRANSITION_FUNCTION);
 }
 \end{lstlisting}
-Listing \ref{code:init} shows that the cluster object is used to eventually configure a \texttt{calclMultiGPUDef2D} object (line 19). Each nodes access its own list of devices using its MPI rank (lines 3-4)  and add them all to the pool using the \texttt{calclAddDevice} function (lines 7-11).
+Listing \ref{code:init} shows also that cluster object is used to eventually configure a \texttt{calclMultiGPUDef2D} object (line 19). 
 Note that the decomposition along the first dimension of the domain is clear here. A CALModel2D object is created using the node's workload (the number of rows in this case).
 
 The finalize functor is executed, if defined, at the end of the computation at the node level. Listing \ref{code:finalize} shows an example in which the \texttt{finalize} is used to save a per node copy of the grid to a file.
@@ -390,11 +390,12 @@ std::string fractal_str = "./fractal_portion" + std::to_string(rank)+".txt";
 	calSaveSubstate2Di(multigpu->device_models[0]->host_CA, fractal_substate, (char*)fractal_str.c_str());
 }
 \end{lstlisting}
+Note that an implicit MPI barrier is present right before the execution of the \texttt{init} and \texttt{finalize} call.
 
 A MultiNode is used in user code as shown in listing \ref{code:multinode_user_code}
 \lstset{language=[OpenCL]C,frame=tb,
 	caption=OpenCAL cluster init and finalize functor signature, 
-	label=code:init_finalize_signature, 
+	label={code:multinode_user_code}, 
 	basicstyle=\footnotesize\ttfamily,
 	keywordstyle=\color{blue}\ttfamily,
 	stringstyle=\color{red}\ttfamily,
@@ -402,13 +403,18 @@ A MultiNode is used in user code as shown in listing \ref{code:multinode_user_co
 	backgroundcolor=\color{light-gray}, 
 }
 
-
 \begin{lstlisting}
 	//Construct a MultiNode object
 	MultiNode<decltype(init), decltype(finalize)> mn(cluster, mpi_world_rank, init, finalize);
 	//trigger allocation and init execution
 	mn.allocateAndInit();
 \end{lstlisting}
+
+\subsection{Kernel Side }
+Kernel side  API  and \textit{build-in} variables are added. Those additional variables and functions can be used to access and manage boundary cells belonging to neighboring devices, the so call \textit{ghost cells}. Each device keep an updated copy of  neighboring devices boundaries and offers to the programmer the abstraction of single domain. A \textit{built-in} variable, \texttt{border\_radius} is exposed in the kernel side, and can be used, from within the kernel, to retrieve the size of boundaries.
+
+Listing \ref{code:sciddica_border} shows as an  example  of how \texttt{border\_radius}.
+
 
 The following sections provides examples of usage of OpenCAL cluster. Section \ref{sec:opencal_julia} provides a complete code that generates large \texttt{BMP} images of Julia Sets.
 Section \ref{sec:convolutional_filters_example} shows how to apply a Sobel's convolutional filter to a large 2D image.
@@ -423,9 +429,10 @@ Julia set fractals are normally generated by initializing a complex number  $z =
 \[ 
  z_{n+1} = z_n^2 + c
 \]  
-where $c$ is a complex constant that gives a specific Julia set (see Figure \ref{julia_set_c}).
+where $c$ is a complex constant that gives a specific Julia set (see Figure \ref{fig:julia_set_c}).
 
 \begin{figure}[!htb]
+
 	\minipage{0.32\textwidth}
 	\begin{subfigure}{1.0\textwidth}
 		\includegraphics[width=\linewidth]{./images/opencal/julia1.png}
@@ -469,7 +476,9 @@ where $c$ is a complex constant that gives a specific Julia set (see Figure \ref
 		\caption{$c=1+0.5i$}
 	\end{subfigure}
 	\endminipage
+	
 	\caption{6 Examples of Julia sets obtained variating the constant $c$.}
+		\label{fig:julia_set_c}
 \end{figure}
 
 In the broader sense the exact for of the iterated function may be almost anything of the form $z_{n+1} = f(z_n)$. Interesting sets arises with non-linear functions. Commonly used ones include the following:
@@ -488,7 +497,7 @@ In order to compute this value the iterative process described in Section \ref{s
 Since OpenCAL uses OpenCAL-CL it is not surprising that source code and execution is divided in \textit{host} and \textit{device}(kernels), parts ( see Section \ref{sec:OpenCAL-CL}).  
 
 Host side code is shown in listing \ref{code:julia_set_host}. Note that \texttt{init} and \texttt{finalize} functions are omitted since are already shown in listings \ref{code:init} and \ref{code:finalize}.
-The applications takes as input parameter a configuration file that describes the size and the partitioning of the domain among the nodes and the devices of the cluster. It constructs a \texttt{Cluster} objects out of it using the \textit{fromClusterFile} function.
+The applications takes as input parameter a configuration file that describes the size and the partitioning of the domain among the nodes and the devices of the cluster. It constructs a \texttt{Cluster} objects out of it using the \texttt{fromClusterFile} function.
 The MultiNode class is then created (line 13), and used to allocate  (line 14) and eventually starts the executions (line 17).
 \lstset{language=[OpenCL]C,frame=tb,
 	caption=OpenCAL cluster kernel for the generation of Julia Set., 
@@ -519,14 +528,12 @@ int main(int argc, char** argv){
 	    //start crunching numbers
 		MPI_Barrier(MPI_COMM_WORLD);
 		mn.run(STEPS);
-		//a barriere and finalize functor are implicitly called here
+		//a barrier and finalize functor are implicitly called here
 	return 0;
 }
 
-
-
 \end{lstlisting}
-The `run` function takes care of splitting the domain and handle communication among the devices transparently. This means that at each iteration the code shown in Listing \ref{code:julia_set} is executed on each device and on each point of the grid assigned to it. Note that in this example, boundaries communication is not required, since no neighboring values are needed in order to compute the value for a pixel.
+The \texttt{run} function takes care of splitting the domain and handle communication among the devices transparently. This means that at each iteration the code shown in Listing \ref{code:julia_set} is executed on each device and on each point of the grid assigned to it. Note that in this example, boundaries communication is not required, since no neighboring values are needed in order to compute the value for a pixel.
 
 \lstset{language=[OpenCL]C,frame=tb,
 	caption=OpenCAL cluster kernel for the generation of Julia Set., 
@@ -593,7 +600,7 @@ __kernel void fractal2D_transitionFunction(__CALCL_MODEL_2D) {
 
 \subsection{Convolutional Filters}
 \label{sec:convolutional_filters}
-The example presented in this section is an application that applies a the sobel convolutional filter on a very large 2D image of size XXX MP. The code presented can be trivially extendend in order to support any kind of convolutional filter on domain of higher dimensions.
+The example presented in this section is an application that applies a the sobel convolutional filter on a large 2D image. The code presented can be trivially extendend in order to support any kind of convolutional filter also on domain with more dimensions.
 
  \begin{figure}
 	\begin{center}
@@ -614,17 +621,8 @@ characteristics of an image. Its name derives from the term \textit{convolution}
 Conovolution is performed multiplying the whole neighborhood of a point by a  matrix, the kernel of the convolution, which usually is a small square matrix of size $r$ (the most common size for kernels is $3\times 3$).
 Kernels coefficients correnspond to pointwise values of a arbitrary fixed continuous function, called Point Spread Functions (PFS). Figure \ref{fig:kernel_functions} depicts some of the most common PFS.
 
-Convolution is very often used in image processing. Examples in this field are the Sobel's edge detection filter and the Gaussian Blur filter, that are shown in Figures \ref{fig:sobel} and \ref{fig:gaussian}.
+Convolution is very often used in image processing. Examples in this field are the Sobel's edge detection filter and the Gaussian Blur filter, that are shown in Figures \ref{fig:gaussian} and \ref{fig:sobel}.
 
-\subsubsection{Edge Handling}
-Kernel Convolution requires values from pixels outside the image boundaries. There are a number of ways for handling these corner cases:
-\begin{description}
-    \item[Wrap] \hfill \\The image is conceptually treated as it was wrapped in a toroidal shape. OpenCAL natively deals with toroidal domain.
-    \item[Mirror] \hfill \\
-    The image boundaries are mirrored at the edges, maning that if trying to read a pixel 2 units outside the edges, the returned value is the corrensponding pixel 2 unit inside the edge instead.
-    \item [Crop]\hfill \\
-    	The final image does not contain pixel which would require values from beyond the edges. The output is smaller than the input because edges have been cropped out.
-\end{description}
 
 \begin{figure}
 	\minipage{0.65\textwidth}
@@ -662,10 +660,10 @@ Kernel Convolution requires values from pixels outside the image boundaries. The
 \end{figure}
 
 Formally convolution can be expressed by the following formula:
-
-\begin{equation*}
+\begin{equation}
    f'_{ij} = \sum_{i'=0}^n (\sum_{j'i'=0}^m f_{(i+i')(j+j')}\times d_{ij})
-\end{equation*}
+   \label{eq:convolution}
+\end{equation}
 where 
 \begin{itemize}
 	\item $m,n$ are the  vertical and horizontal size of the kernel,
@@ -673,14 +671,24 @@ where
 	\item $d_{ij}$ is the value of kernel at location $(i,j)$ 
 \end{itemize}
 
+\subsubsection{Edge Handling}
+It is clear from Equation \ref{eq:convolution} that kernel convolution requires values from pixels outside the domain boundaries. There are a number of ways for handling these corner cases:
+\begin{description}
+	\item[Wrap] \hfill \\The image is conceptually treated as it was wrapped in a toroidal shape. OpenCAL natively deals with toroidal domain.
+	\item[Mirror] \hfill \\
+	The image boundaries are mirrored at the edges, maning that if trying to read a pixel 2 units outside the edges, the returned value is the corrensponding pixel 2 unit inside the edge instead.
+	\item [Crop]\hfill \\
+	The final image does not contain pixel which would require values from beyond the edges. The output is smaller than the input because edges have been cropped out.
+\end{description}
+
 \subsection{Sobel Edge Detection OpenCAL cluster implementation}
 \label{sec:convolutional_filters_example}
 Convolutional filtering is easily implemented in OpenCAL cluster in the following steps and has been applied to the image shown in Figure \ref{fig:sobel_input}:
 \begin{enumerate}
     \item Image channels are separately read by each OpenCAL process into \texttt{short} substates (using any image reading third part library, as \texttt{SOIL} \cite{SOIL}, for instance).
     \item A cluster file is defined for the image and shown in listing \ref{code:sobel_cluster_file}. A single node and 3 GPUs were employed in this example. Two \texttt{NVIDIA GTX980} and one \texttt{NVIDIA K40} each with an equal workload.
-    \item The kernels depicted in Figure \ref{fig:sobel} are applied to each pixel of the image. OpenCAL kernel code is shown in listing \ref{code:sobel_kernel}.  Boundaries are automatically handled and transferred  between devices. When devices running on different nodes need to communicate then a MPI communication takes place.
-    \item The resulting image (optimized for book format) is shown in Figure \ref{fig:sobel_result}.
+    \item The kernels depicted in Figure \ref{fig:sobel} are applied to each pixel of the image. OpenCAL kernel code is shown in Listing \ref{code:sobel_kernel}.  Boundaries are automatically handled and transferred  between devices. When devices running on different nodes need to communicate then a MPI communication takes place.
+    \item The resulting image is written on disk and  shown in Figure \ref{fig:sobel_result} (optimized for book format).
 \end{enumerate}
 
 \lstset{language=[OpenCL]C,frame=tb,
@@ -696,46 +704,37 @@ Convolutional filtering is easily implemented in OpenCAL cluster in the followin
 %	numberstyle=\tiny
 }
 \begin{lstlisting}
-#define DEVICE_Q_red (0)
-
-__kernel void sobel2D_transitionFunction(__CALCL_MODEL_2D) {
-
-calclThreadCheck2D();
-int i = calclGlobalRow() + borderSize;
-int j = calclGlobalColumn();
-
-CALint sizeOfX_ = calclGetNeighborhoodSize();
-
-int KX[3][3] = {
-				{-1, 0, 1},
-				{-2, 0, 2},
-				{-1, 0, 1}
-			   };
-
-int KY[3][3] = {
-				{1, 2, 1},
-				{0, 0, 0},
-				{-1, -2, -1}
-			   };
-
-int Gx,Gy,n,k,k1;
-Gx = Gy = n = 0;
-
-if (j > 0 && j < calclGetColumns() - 1)
-	for (k = -1; k <= 1; k++) {
-		for (k1 = -1; k1 <= 1; k1++) {
-			Gx += calclGet2Di(MODEL_2D, DEVICE_Q_red, i + k, j + k1) *
-													KX[k + 1][k1 + 1];
-			Gy += calclGet2Di(MODEL_2D, DEVICE_Q_red, i + k, j + k1) *
-													KY[k + 1][k1 + 1];
-		}
-}
-
-const double R = (Gx * Gx + Gy * Gy);
-const int P = sqrt(R);
-//set new pixel color for channel red
-calclSet2Di(MODEL_2D, DEVICE_Q_red, i, j, P);
-return;
+	#define DEVICE_Q_red (0)
+	
+	__kernel void sobel2D_transitionFunction(__CALCL_MODEL_2D) {
+	
+	calclThreadCheck2D();
+	int i = calclGlobalRow() + borderSize;
+	int j = calclGlobalColumn();
+	int KX[3][3] = {
+					{-1, 0, 1},
+					{-2, 0, 2},
+					{-1, 0, 1}};
+	
+	int KY[3][3] = {
+					{1, 2, 1},
+					{0, 0, 0},
+					{-1, -2, -1} };
+	
+	int Gx,Gy,n,k,k1;
+	Gx = Gy = n = 0;
+	if (j > 0 && j < calclGetColumns() - 1)
+		for (k = -1; k <= 1; k++)
+				for (k1 = -1; k1 <= 1; k1++) {
+				Gx += calclGet2Di(MODEL_2D, DEVICE_Q_red, i + k, j + k1) *
+														KX[k + 1][k1 + 1];
+				Gy += calclGet2Di(MODEL_2D, DEVICE_Q_red, i + k, j + k1) *
+														KY[k + 1][k1 + 1];
+			}
+	const int P = sqrt(Gx * Gx + Gy * Gy);
+	//set new pixel color for red channel
+	calclSet2Di(MODEL_2D, DEVICE_Q_red, i, j, P);
+	return;
 }
 
 \end{lstlisting}
@@ -777,14 +776,70 @@ return;
 		\label{fig:sobel_result}
 \end{figure}
 
-commenta tempi di esecuzione e soprattuto che non era possibile arrivato ad un certo punto eseguire nessun filtro perchè la memoria non bastava
 
 
 \subsection{SciddicaT}
+This section briefly describes the implementation of the \textit{SciddicaT} landslide model introduces in Section \ref{sec:sciddicaT_model}.
+This example shows that it is possible to deploy any model written in OpenCAL-CL to OpenCAL cluster on multiple nodes and accellerators very easily. 
+Code shown for the implementation of sciddicaT  in Section \ref{sec:sciddica_cl} is used in this section, with few lines added.
+The additional lines take care of the definition of a cluster object, as shown in Listing \ref{code:sciddicat_configuration}, during of the initialization phase as shown in Listing \ref{code:sciddicat_initi}.
+Note that in this example no configuration file is used, as to show that is possible to set up a configuration launch programmatically.
 
+\lstset{language=[OpenCL]C,frame=tb,
+	caption=OpenCAL cluster sciddicaT launch configuration set up programmatically during the init (see Section \ref{sec:init_finalize}) phase., 
+	label={code:sciddicat_configuration}, 
+	basicstyle=\footnotesize\ttfamily,
+	keywordstyle=\color{blue}\ttfamily,
+	stringstyle=\color{red}\ttfamily,
+	commentstyle=\color{green}\ttfamily,
+	backgroundcolor=\color{light-gray}, 
+	numbers=left,numbersep=3pt, 
+	numberstyle=\tiny\ttfamily\color{gray}
+	%	numberstyle=\tiny
+}
+\begin{lstlisting}
+void setUpParallelWork(Cluster& mn, const uint XDIM, const uint YDIM){
+	//------node 1
+	struct Node n1;
+	struct Device d1_0 = {0,0,XDIM/4}; //NVIDIA  GTX980
+	struct Device d1_1 = {0,1,XDIM/4}; //NVIDIA  K40
+	struct Device d1_2 = {0,2,XDIM/4}; //NVIDIA  K40	
+	n1.devices.push_back(d1_0);
+	n1.devices.push_back(d1_1);
+	n1.devices.push_back(d1_2);
+	//node workload's is the sum of its devices workloads
+	n1.workload = d1_0.workload+d1_1.workload+d1_2.workload;
+	n1.columns=C;
+	n1.offset = 0;
+	mn.nodes.push_back(n1);
+	
+	//------node 2
+	struct Node n2;
+	//remainder work to this device
+	struct Device d2_0 = {0,0,XDIM/4+XDIM%4};//NVIDIA K20
+	n2.devices.push_back(d2_0);
+	n2.workload = d2_0.workload;
+	n2.columns=C;
+	//n2.workload starting from n1.workload
+	n2.offset = n1.workload;
+	
+	mn.nodes.push_back(n2);
+}
+\end{lstlisting}
+In this case, a configuration \texttt{Cluster} specifiying two nodes and 4 devices overall is created. The 4 devices employed are: 
+\begin{itemize}
+	\item $2$ \textsc{nvidia} K$40$
+	\item $1$ \textsc{nvidia} K$20$
+	\item $1$ \textsc{nvidia} GTX$980$
+\end{itemize}
+(see Appendix \ref{app:tech_spec} for the technical speficiation of the accelerators).
 
+The initialization phase is used here in order to allocate and initialize the library using the same approach shown in Listing \ref{code:init} (lines 7-11).
+
+The kernel side of the application remain the same too, with the exception that boundaries cells are not considered, and are only used in read mode. 
 
 \section{Performance}
+commenta tempi di esecuzione e soprattuto che non era possibile arrivato ad un certo punto eseguire nessun filtro perchè la memoria non bastava
 
 
 \subsection{Conclusion}
