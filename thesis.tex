@@ -47,9 +47,13 @@ postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
 \usepackage{adjustbox}
 \usepackage{nomencl}
 \usepackage{physics}
+
 \makenomenclature
 
 \usepackage{booktabs}
+\newcolumntype{L}{>{$}l<{$}} % math-mode version of "l" column type
+\newcolumntype{C}{>{$}c<{$}} % math-mode version of "l" column type
+
 \usepackage{multirow}
 %\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
 
@@ -112,14 +116,10 @@ postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
 \cleardoublepage%
 
 \cleardoublepage
-%\def\dir{chapters/CA_FDM}
-
-\cleardoublepage
-
-\cleardoublepage
 %\include{chapters/parallel_programming/parallel_programming}
 \cleardoublepage
-\part{Accelerating Scientific Computation}
+
+\part{Seamless Acceleration of Numerical Simulation: The \texttt{OpenCAL} framework}
 \cleardoublepage
 %\include{chapters/opencal/opencal}
 
@@ -129,6 +129,7 @@ postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
 \include{chapters/opencal/opencalcluster}
 \cleardoublepage
 
+\part{Other Related HPC Applications}
 \cleardoublepage
 %\include{chapters/bacteria/bacteria}
 \cleardoublepage
@@ -137,17 +138,19 @@ postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
 %\include{chapters/birdflocking/birdflocking}
 \cleardoublepage
 
-\appendix
+
 \cleardoublepage%
 %\include{chapters/stream_compaction/stream_compaction}
 \cleardoublepage%
-\include{chapters/appendix/tech_spec}
+\appendix
+\cleardoublepage%
+%\include{chapters/appendix/tech_spec}
 
 \cleardoublepage%
 
-\cleardoublepage\include{frontbackmatter/bibliography}
+%\cleardoublepage\include{frontbackmatter/bibliography}
 \cleardoublepage%
-\cleardoublepage\include{glossary}
+%\cleardoublepage\include{glossary}
 \bookmarksetup{startatroot}
 \pagenumbering{gobble}
 %\cleardoublepage\include{frontbackmatter/cv}

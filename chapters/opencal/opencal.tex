@@ -1,26 +1,24 @@
-\chapter[OpenCAL - The Open Computing Abstraction Layer]{The Open Computing Abstraction Layer for Extended
-	Cellular Automata and the Finite Differences Method}
+\chapter[OpenCAL - The Open Computing Abstraction Layer]{The Open Computing Abstraction Layer for Extended Cellular Automata and the Finite Differences Method}
 \label{ch:opencal}
-\dictum[Gottfried Leibniz]{There are two kinds of truths: those of reasoning and those of fact. The truths of reasoning are necessary and their opposite is impossible; the truths of fact are contingent and their opposites are possible.}%
+\dictum[Gottfried Leibniz]{There are two kinds of truths: those of reasoning and those of fact. The truths of reasoning are necessary and their opposite is impossible; the truths of fact are contingent and their opposites are possible.}
 \vskip 1em
 
 \lettrine[lines=3,lhang=0.33,lraise=0,loversize=0.15]{T}{his} chapter introduces \texttt{OpenCAL}, an open source computing
-  abstraction layer defining a domain specific language for Extended
-  Cellular Automata and the Finite Differences method (see chapters \ref{ch:CA} and \ref{ch:FDM} at page \pageref{ch:CA} and \pageref{ch:FDM} repectively). 
-  Different implementations have been developed, which allow for transparent
-  parallelism and are able to exploit multicore CPUs and manycore
-  devices like GPUs, thanks to the adoption of \texttt{OpenMP} and OpenCL,
-  respectively, as well as distributed memory architectures and/or multiple GPUs concurrently.
-   System software architecture is presented and the
-  underlying adopted data structures and algorithms are described in
-  detail. Numerical correctness and efficiency have been assessed by
-  considering the well known $SciddicaT$ Computational Fluid Dynamics
-  landslide simulation model as reference example.  
-  Moreover, a comprehensive study has been performed to device the best platform
-  for execution as a function of numerical complexity and
-  computational domain extent. Obtained results have highlighted the
-  \texttt{OpenCAL} suitability for numerical models development and their execution on
-  the most suitable high-performance parallel computational device.
+abstraction layer defining a domain specific language for Extended
+Cellular Automata and the Finite Differences method (see chapters \ref{ch:CA} and \ref{ch:FDM} at page \pageref{ch:CA} and \pageref{ch:FDM} repectively). 
+Different implementations have been developed, which allow for transparent
+parallelism and are able to exploit multicore CPUs and manycore
+devices like GPUs, thanks to the adoption of \texttt{OpenMP} and OpenCL,
+respectively, as well as distributed memory architectures and/or multiple GPUs concurrently.
+System software architecture is presented and the
+underlying adopted data structures and algorithms are described in
+detail. Numerical correctness and efficiency have been assessed by
+considering the well known $SciddicaT$ Computational Fluid Dynamics
+landslide simulation model as reference example.  
+Moreover, a comprehensive study has been performed to device the best platform
+for execution as a function of numerical complexity and
+computational domain extent. Obtained results have highlighted the
+\texttt{OpenCAL} suitability for numerical models development and their execution on  the most suitable high-performance parallel computational device.
   
 \section{Introduction}
 \label{sec:opencal_introduction}
@@ -798,7 +796,7 @@ scheduling is therefore here adopted instead of the dynamic one.
 \begin{figure}
 	\begin{center}
 		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure09}
-		\caption{An example of application of the parallel stream compaction algorithm used in \texttt{OpenCAL-OMP} to update the set $A$ of active cells. Active cells are represented in gray within a two-dimensional 4x4 matrix of flags, implemented as a linearized array, $F$. The parallel stream
+		\caption[OpenMP stream compatcion algorithm adopted in OpenCAL.]{An example of application of the parallel stream compaction algorithm used in \texttt{OpenCAL-OMP} to update the set $A$ of active cells. Active cells are represented in gray within a two-dimensional 4x4 matrix of flags, implemented as a linearized array, $F$. The parallel stream
 			compaction algorithm processes $F$ by means of a lock-free pool of
 			threads, resulting in the $A_p$ $(p=0,1,2)$ partial arrays of active
 			cells. These latter are eventually assembled together by the master
@@ -1004,7 +1002,7 @@ reductions on substates (cf. Section \ref{sec:OpenCAL}).
 \begin{figure}
 	\begin{center}
 		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure10}
-		\caption{An example of application of the OpenCAL-CL parallel stream compaction algorithm. Active cells are represented in gray within a
+		\caption[\texttt{OpenCL} stream compaction algorithm adopted in \texttt{OpenCAL}.]{An example of application of the OpenCAL-CL parallel stream compaction algorithm. Active cells are represented in gray within a
 			two-dimensional 4x4 matrix of flags, implemented as a linearized
 			array, $F$. The parallel stream compaction algorithm processes $F$ and produces the compacted array $A$ as output, containing the coordinates of the active cells in its first part. A grid of work-items therefore processes data by adopting the one thread/one active cell policy. The process is therefore repeated at the next computational step.}
 		\label{fig:streamcompaction}

@@ -5,6 +5,7 @@
 \vskip 1em
 %\section{Introduction}
 \lettrine[lines=3,lhang=0.33,lraise=0,loversize=0.15]{T}{his} chapter introduces the parallel computing concepts and technologies that have been adopted in this work. It contains a description of the Flynn categorization of parallel machines and introduces \textsc{OpenMP}, \textsc{OpenCL} and \textsc{MPI}. 
+
 \section{Introduction and Motivations}
 Over the last two decades lot has changed regarding the way modern scientific applications are designed, written and executed especially in the field of data-analytics, modelling and simulation and visualization. The main reasons behind these changes are that the size of the problems that scientist try to tackle nowadays are much bigger and because of the amount of available raw data that can be analyzed. Data Analytics and Big Data techniques are applied in pretty much every field of science and have been exploited effectively by corporate organizations especially by those in the fields of  
 \begin{inparaenum}
@@ -78,6 +79,8 @@ whether they have one or more streams of each type.
 
 \end{table} 
 
+\begin{description}
+
 
 \item[SISD:] \textit{\textbf{Single}} instruction \textit{\textbf{Single}}
 data.\hfill\\
@@ -140,6 +143,9 @@ A type of computer  that fits the MISD description is the so called \textit{syst
 \item[MIMD:] \textit{\textbf{Multiple}} instruction \textit{\textbf{Multiple}} data. \hfill \\ Multiple instruction operating
 independently on multiple data streams. Most modern computers belogn to this family. A MIMD machine is an example of a true multiprocessor and are often employed to perform the so called \textit{Single Program Multiple Data} computation where each independent processor executes the same program.
 MIMD architecture can be further divided by  their memory layout and organization:
+
+
+
 \begin{description}
 	\item [Shared Memory (modern CPUs)] where each processors shares the same memory address space and are interconnected by shared buses. 
 	Shared memory architecture ar usually shipped as \textit{Symmetric Multi Processors} (SMP) since each of them is usually identical in computational and access to resources capabilities, and the OS kernel can run on any of them in contrast to \textit{Asymmetric Multiprocessor} where there is a master-slave relationship  among the group of processors. According to whether subsets of processors have a dedicated and private memory module we can categorize SM architectures in:	
@@ -181,8 +187,8 @@ MIMD architecture can be further divided by  their memory layout and organizatio
 	\item [Distributed Memory] 	Different systems, and hence, different multiprocessors connected via some kind of network (see Figure \ref{fig:distribuiteMemory}), usually high speed networks such as gigabit \textsc{Ethernet} \cite{Spurgeon:2000:EDG:336070}, \textsc{InfiniBand} \cite{Shanley:2002:INF:579371} and \textsc{Myrinet} \cite{Boden:1995:MGL:623261.623898}, and the memory space in one processor do not map to another processor. Each of them operate independently on its memory address, so changes are not reflected on memory spaces of the others. Explicit communication is required between processors and is like synchronization	programmer's responsibility.
 	This architecture  is very scalable and there is not  overhead in maintaining	cache coherency. 	
 	The most used paradigm for programming distributed memory machines is the
-	message passing for which the \textit{Message Passing Interface} (\texttt{MPI}\footnote{\url{http://www.mpi-forum.org/}}) \cite{Forum:1994:MMI:898758,Gropp:1999:UMA:555151} is the \textit{de facto} industrial and academic standard 
- .
+	message passing for which the \textit{Message Passing Interface} (\texttt{MPI}\footnote{\url{http://www.mpi-forum.org/}}) \cite{Forum:1994:MMI:898758,Gropp:1999:UMA:555151} is the \textit{de facto} industrial and academic standard.
+\end{description}
  
  \begin{figure}
  	\centering
@@ -440,9 +446,7 @@ omp_destroy_lock(&writelock);
     \begin{enumerate}
     	\item The data are laid out as texel colors in textures;
     	\item  Each computation step is implemented with a
-    	user-defined fragment program. The results are encoded as pixel 
-    	colors and rendered into a pixel-buffer\footnote{ A buffer in GPU memory
-    		which is similar to a frame-buffer.}; 
+    	user-defined fragment program. The results are encoded as pixel colors and rendered into a  pixel-buffer\footnote{ A buffer in GPU memory which is similar to a frame-buffer.}; 
     	\item Results that are
     	to be used in subsequent calculations are copied to textures for temporary storage and the process could start over again for another iteration.
     \end{enumerate} 
@@ -682,17 +686,7 @@ omp_destroy_lock(&writelock);
 	    &MEM_SIZE, NULL, 0, NULL, NULL)
     	\end{lstlisting}
     \end{description}
-    
-    
-
-    
-
-    
-
-    
+\end{description}
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-\subsection{The Message Passing Interface}
-
-
-    
+%\subsection{The Message Passing Interface}

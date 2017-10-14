@@ -501,7 +501,7 @@ The applications takes as input parameter a configuration file that describes th
 The MultiNode class is then created (line 13), and used to allocate  (line 14) and eventually starts the executions (line 17).
 \lstset{language=[OpenCL]C,frame=tb,
 	caption=OpenCAL cluster kernel for the generation of Julia Set., 
-	label=code:julia_set_host, 
+	label={code:julia_set_host}, 
 	basicstyle=\footnotesize\ttfamily,
 	keywordstyle=\color{blue}\ttfamily,
 	stringstyle=\color{red}\ttfamily,
@@ -537,7 +537,7 @@ The \texttt{run} function takes care of splitting the domain and handle communic
 
 \lstset{language=[OpenCL]C,frame=tb,
 	caption=OpenCAL cluster kernel for the generation of Julia Set., 
-	label=code:julia_set, 
+	label={code:julia_set}, 
 	basicstyle=\footnotesize\ttfamily,
 	keywordstyle=\color{blue}\ttfamily,
 	stringstyle=\color{red}\ttfamily,
@@ -693,7 +693,7 @@ Convolutional filtering is easily implemented in OpenCAL cluster in the followin
 
 \lstset{language=[OpenCL]C,frame=tb,
 	caption=OpenCAL Sobel edge detection filter kernel. For the sake of simplicity, filterting is performed on one color channel only., 
-	label=code:sobel_kernel, 
+	label={code:sobel_kernel}, 
 	basicstyle=\footnotesize\ttfamily,
 	keywordstyle=\color{blue}\ttfamily,
 	stringstyle=\color{red}\ttfamily,
@@ -839,6 +839,151 @@ The initialization phase is used here in order to allocate and initialize the li
 The kernel side of the application remain the same too, with the exception that boundaries cells are not considered, and are only used in read mode. 
 
 \section{Performance}
+This section describes the computational results of \texttt{OpenCAL} cluster on the following benchmarks:
+
+\begin{enumerate}
+	\item \textbf{Julia Set} Generation, described in Section \ref{sec:julia_math}. It is a compute bound application.
+	\item \textbf{Convolutional Filter} application, described in Section \ref{sec:convolutional_filters}, is an example of memory bound application.
+	\item Landslide numerical model \texttt{\textbf{sciddicaT}}, introduced and formally defined in Section \ref{sec:sciddicaT_model} at page \pageref{sec:sciddicaT_model}, and is used to benchmark the performance of OpenCAL cluster on a real life computational model. Its kernels are both memory and compute bounds.
+\end{enumerate}
+Assessing the type of limiting factor for performance relatively short kernels as Julia Set generation and convolutional filter is relatively easy by considering the \textit{instruction:byte} rate of the considered kernel.
+Each GPU is attached with a theoretical peak in memory and instruction throughputs\cite{Volkov:EECS-2016-143}.
+Let $I$, in \si{GInst/s}, and $M$,in \si{GB/s}, be the peak instruction and memory throughput, respectively. The quantity $\frac{I}{M}$ is then called \textbf{balanced} \textit{instruction:byte} ratio. It is the number of \texttt{fp32} per byte that should be issued in order to obtain peak compute and bandwidth performance.
+For example the GPU NVIDIA K40 has a theoretical instruction throughput of $715.2$ \si{GInstr/s} and a theoretical bandwidth of $288$ \si{GB/s}. 
+Its theoretical instruction throughput is computed by considering the base clock of a single core, that is $F=745$ \si{MHz} and their number, that is $N=2880$. Assuming that a \texttt{fp32} operation is completed with a latency of $L=3$ cycles then the throughput is computed as follows:
+\[
+	\frac{\frac{F*2880}{1000}}{3} = \frac{745*2880}{3000} = 715.2
+\]
+
+The balanced ratio for the \texttt{K40} is then:\[\frac{715.2}{288} = 2.483\]
+If, compared to the \textit{balanced} ratio for the device at hand, the \textit{instruction:byte} ratio of a kernel is: 
+\begin{description}
+	\item[\textbf{Higher}]:\\usually means that the kernel is \textbf{instruction/compute} bound, while if it is
+	\item[\textbf{Lower}]:\\usually mean that the kernel is \textbf{memory/bandwidth} bound.
+\end{description}
+
+The ration for the Listing \ref{code:julia_set} has a value of roughly (assuming $MAXITERATION=10000$,and cost for \texttt{cl\_complex\_multiply} and \texttt{cl\_complex\_add} is equal to $2$ \texttt{fp32} instructions): $\approx 40000:1 >> 2.48$. Therefore, Listing \ref{code:julia_set} is a compute bound kernel for the $K40$ GPU.
+For the same reasons we can conclude that kernel shown in Listing  \ref{code:sobel_kernel} is memory bound: its \textit{instruction:byte} ratio for is $\approx 1:1$:  
+
+\subsection{Julia Set Generation Performance}
+Fractal Generation is an example of perfectly parallelizable problem, since the computation of each point of the grid does not required any communication and does not depends on the value of any other grid points. Moreover the granularity of the work is small, making it a good candidate for GPU acceleration.
+
+Two considered domain sizes are:
+	\begin{itemize}
+		\item \textbf{small}, consisting of  $12000 \times 12000 = 144 \times 10^6$ points, $10^3$ iterations per step.
+		\item \textbf{large}, consisting of $17000 \times 17000 = 289 \times 10^6$ points, $10^4$ iterations per step-
+	\end{itemize}
+
+Table \ref{tab:julia_single_GPU} shows timings and speedup obtained on a single \texttt{NVIDIA K40} and \texttt{GTX980} on the \textit{small} damain.
+\begin{table}[]
+	\centering
+	\caption{Timings and speedups obtained on a single \texttt{NVIDIA K40} and \texttt{GTX980}}
+	\label{tab:julia_single_GPU}
+\begin{tabular}{@{}lll@{}}
+	\toprule
+	& GTX980 & K40 \\ \midrule
+	\textbf{Time}$(\si{\milli\second})$    & $10908$      & $2561$   \\
+	\textbf{Speedup}($\times$) & $116$      & $496$  \\
+	\bottomrule
+\end{tabular}
+\end{table}
+As expected speedup results are good, up to $\approx 500 \times$, thanks to the great parallelizability of the problem on GPU architecture.
+
+Table \ref{tab:julia_two_GPU} and Figure \ref{fig:julia_two_GPU} show timings and speedups of the same application on two GPUs on the \textit{small} domain. Note that since the two devices adopted have substantial difference in hardware (see Table \ref{tab:tech_spec_nvidia}) it is not easy to determine in advance the best workload for each of the GPU in order to obtain the best load balancing. For this reason a number of experiments are performed in order to discover the optimal workloads for the considered GPUs and kernel.
+The best speedup is obtained when only $25\%$ of the domain is assigned to the \texttt{GTX 980}.It can be seen that for this type of kernels, the $K40$ shows better performance, due to the fact that the \texttt{K40} has an higher number of processing cores and shows and better divergence management than the \texttt{GTX980}.
+Moreover, it also worth to note that the Julia set kernel is highly divergent and that work is not homogeneously spread across the domain, as can be seen from  and from Figure \ref{fig:fractal16k16k}. Pixel coloured in blue correnspond to a small number of iteration of the loop in Listing \ref{code:julia_set}, lines 23-26, while the ones coloured in red to higher number of iteration.
+Note that no communication whatsoever is performed during this application since, the problem is embarrassingly parallel.
+The rightmost part of Figure \ref{fig:julia_two_GPU_true} (from $9000$ to $12000$) shows a weird fluctuation in the speedups that is mainly due to the fact that pixels contained in rows from $1000$ to $2000$ corrensponds to \textit{black} ones i.e. to pixel with almost no work attached to them.
+In order to show that in the case of uniform work attached to each pixel the speedup curve behave normally, a variation of Listing \ref{code:julia_set} is used and shown in Listing \ref{code:julia_set_uniform} where each execution of the kernel is lasts for $1000$ iterations.
+Figure \ref{fig:julia_two_GPU_false} shows that fluctuation in this case are not present.
+
+ \lstset{language=[OpenCL]C,frame=tb,
+ 	caption=OpenCAL cluster kernel for the generation of Julia Set., 
+ 	label={code:julia_set_uniform}, 
+ 	basicstyle=\footnotesize\ttfamily,
+ 	keywordstyle=\color{blue}\ttfamily,
+ 	stringstyle=\color{red}\ttfamily,
+ 	commentstyle=\color{green}\ttfamily,
+ 	backgroundcolor=\color{light-gray}, 
+ 	numbers=left,numbersep=3pt,, 
+ 	numberstyle=\tiny\ttfamily\color{gray}
+ }
+ \begin{lstlisting}
+ int evolveComplexPoint(cl_complex p,cl_complex c){
+  //volatile ensures that the object code for the while is 
+ int it =1;
+ volatile cl_complex p1={p.x,p.y};
+ while(it <= 1000){
+	 p1=juliaFunctor(p1,c);
+	 it++;
+ }
+ return 100;
+ }
+ \end{lstlisting}
+ 
+ 
+ \begin{table}[]
+ 	\centering
+ 	\caption{My caption}
+ 	\label{my-label}
+ 	\begin{tabular}{@{}LLCC@{}}
+ 		\toprule
+ 		\multicolumn{2}{c}{\textbf{\textit{Workload}}}\\ \cline{1-2}
+ 		\textbf{ 980}& \textbf{K40} & \textbf{Time}$(\si{\milli\second})$ & \textbf{Speedup$(\times)$}  \\
+ 		
+ 		0     & 12000 & 2561  & 488.09 \\
+ 		1000  & 11000 & 2520  & 496.03 \\
+ 		2000  & 10000 & 2935  & 425.89 \\
+ 		\cellcolor{blue!25}3000  & \cellcolor{blue!25}9000  & \cellcolor{blue!25}2314  & \cellcolor{blue!25}540.19 \\
+ 		4000  & 8000  & 3305  & 378.21 \\
+ 		5000  & 7000  & 4458  & 280.39 \\
+ 		6000  & 6000  & 6123  & 204.15 \\
+ 		7000  & 5000  & 7573  & 165.06 \\
+ 		8000  & 4000  & 8744  & 142.96 \\
+ 		9000  & 3000  & 9669  & 129.28 \\
+ 		10000 & 2000  & 10359 & 120.67 \\
+ 		11000 & 1000  & 10669 & 117.16 \\
+ 		12000 & 0     & 10908 & 114.59\\
+ 		\bottomrule
+ 	\end{tabular}
+ \end{table}
+ 
+   \begin{figure}
+ 	\begin{center}
+ 		\includegraphics[width=1.0\textwidth]{./plots/fractal12k_k40_980_true}
+ 		\caption{Domain decomposition along one axis.}
+ 		\label{fig:julia_two_GPU_true}
+ 	\end{center}
+ \end{figure}
+ 
+ 
+ \begin{figure}
+ 	\begin{center}
+ 		\includegraphics[width=1.0\textwidth]{./plots/fractal12k_k40_980_false}
+ 		\caption{Domain decomposition along one axis.}
+ 		\label{fig:julia_two_GPU_false}
+ 	\end{center}
+ \end{figure}
+ 
+ 
+Figure \ref{fractal12k_980_980_false} shows speedup and timings for the case where two identical GPUs are employed. 
+It is not surprising that in this case best performance are achieved when the dataset is shared in a equal manner among the two devices.
+
+  \begin{figure}
+	\begin{center}
+		\includegraphics[width=1.0\textwidth]{./plots/fractal12k_980_980_false}
+		\caption{Domain decomposition along one axis.}
+		\label{fig:fractal12k_980_980_false}
+	\end{center}
+\end{figure}
+
+
+
+
+
+
+Note also that the \textit{large} domain performs $10 \times$ more work per grid point than the \textit{small} case. 
+Dici che è compute bound e non del fatto che il lavoro non è uniforme sulla matrice 
 commenta tempi di esecuzione e soprattuto che non era possibile arrivato ad un certo punto eseguire nessun filtro perchè la memoria non bastava
 
 
