@@ -838,7 +838,7 @@ The initialization phase is used here in order to allocate and initialize the li
 
 The kernel side of the application remain the same too, with the exception that boundaries cells are not considered, and are only used in read mode. 
 
-\section{Performance}
+\section{Performance Analysis}
 This section describes the computational results of \texttt{OpenCAL} cluster on the following benchmarks:
 
 \begin{enumerate}
@@ -862,20 +862,28 @@ If, compared to the \textit{balanced} ratio for the device at hand, the \textit{
 	\item[\textbf{Lower}]:\\usually mean that the kernel is \textbf{memory/bandwidth} bound.
 \end{description}
 
-The ration for the Listing \ref{code:julia_set} has a value of roughly (assuming $MAXITERATION=10000$,and cost for \texttt{cl\_complex\_multiply} and \texttt{cl\_complex\_add} is equal to $2$ \texttt{fp32} instructions): $\approx 40000:1 >> 2.48$. Therefore, Listing \ref{code:julia_set} is a compute bound kernel for the $K40$ GPU.
+The ratio for the Listing \ref{code:julia_set} has a value of roughly (assuming $MAXITERATION=10000$,and cost for \texttt{cl\_complex\_multiply} and \texttt{cl\_complex\_add} is equal to $2$ \texttt{fp32} instructions): $\approx 40000:1 >> 2.48$. Therefore, Listing \ref{code:julia_set} is a compute bound kernel for the $K40$ GPU.
 For the same reasons we can conclude that kernel shown in Listing  \ref{code:sobel_kernel} is memory bound: its \textit{instruction:byte} ratio for is $\approx 1:1$:  
 
-\subsection{Julia Set Generation Performance}
-Fractal Generation is an example of perfectly parallelizable problem, since the computation of each point of the grid does not required any communication and does not depends on the value of any other grid points. Moreover the granularity of the work is small, making it a good candidate for GPU acceleration.
+\subsection{Julia Set Generation}
+Fractal Generation is an example of perfectly parallelizable problem, since the computation of each point of the grid does not require any communication and does not depend on the value of any other grid points other than itself. Moreover the granularity of the work is small, making it a good candidate for GPU acceleration.
+The Julia generating function adopted is the following $z_{n+1} = z^2_n + c$ where $c=-0.391+-0.587i$. Each discrete point of the grid $(x,y)\; 0\leq x < S_x, 0\leq y < S_y$ is mapped to the complex plane using the following mapping:
 
-Two considered domain sizes are:
+\begin{align*}
+	Re(z)=&\frac{3(x-\frac{S_x}{2})}{K S_x} \\
+	Im(z)=&\frac{2(y-\frac{S_y}{2})}{K S_y}
+\end{align*}
+where $K$ is the zoom factor, $S_x$ and $S_y$ are the vertical and horizontal sizes, respectively, of the discrete computational grid.
+
+Two domain sizes are considered:
 	\begin{itemize}
-		\item \textbf{small}, consisting of  $12000 \times 12000 = 144 \times 10^6$ points, $10^3$ iterations per step.
-		\item \textbf{large}, consisting of $17000 \times 17000 = 289 \times 10^6$ points, $10^4$ iterations per step-
+		\item \textbf{small}, consisting of  $12000 \times 12000 = 144 \times 10^6$ points, $10^3$ iterations limit per step.
+		\item \textbf{large}, consisting of $17000 \times 17000 = 289 \times 10^6$ points, $10^4$ iterations limit per step.
 	\end{itemize}
+Note that besides its much higher number of grid points, the \textit{large} domain case performs $10 \times$ more work (in a single step) per grid point than the \textit{small} case as the number of iteration limit is increased from $10^3$ to $10^4$.
 
 Table \ref{tab:julia_single_GPU} shows timings and speedup obtained on a single \texttt{NVIDIA K40} and \texttt{GTX980} on the \textit{small} damain.
-\begin{table}[]
+\begin{table}
 	\centering
 	\caption{Timings and speedups obtained on a single \texttt{NVIDIA K40} and \texttt{GTX980}}
 	\label{tab:julia_single_GPU}
@@ -922,67 +930,356 @@ Figure \ref{fig:julia_two_GPU_false} shows that fluctuation in this case are not
  \end{lstlisting}
  
  
- \begin{table}[]
- 	\centering
- 	\caption{My caption}
- 	\label{my-label}
- 	\begin{tabular}{@{}LLCC@{}}
- 		\toprule
- 		\multicolumn{2}{c}{\textbf{\textit{Workload}}}\\ \cline{1-2}
- 		\textbf{ 980}& \textbf{K40} & \textbf{Time}$(\si{\milli\second})$ & \textbf{Speedup$(\times)$}  \\
- 		
- 		0     & 12000 & 2561  & 488.09 \\
- 		1000  & 11000 & 2520  & 496.03 \\
- 		2000  & 10000 & 2935  & 425.89 \\
- 		\cellcolor{blue!25}3000  & \cellcolor{blue!25}9000  & \cellcolor{blue!25}2314  & \cellcolor{blue!25}540.19 \\
- 		4000  & 8000  & 3305  & 378.21 \\
- 		5000  & 7000  & 4458  & 280.39 \\
- 		6000  & 6000  & 6123  & 204.15 \\
- 		7000  & 5000  & 7573  & 165.06 \\
- 		8000  & 4000  & 8744  & 142.96 \\
- 		9000  & 3000  & 9669  & 129.28 \\
- 		10000 & 2000  & 10359 & 120.67 \\
- 		11000 & 1000  & 10669 & 117.16 \\
- 		12000 & 0     & 10908 & 114.59\\
- 		\bottomrule
- 	\end{tabular}
- \end{table}
+%TABLE K40 -980 true and false
+\begin{table}[!htb]
+	\small
+	\caption{The workload columns indicate the amount of rows assigned to each device. }
+	\label{tab:julia_two_GPU}
+	\begin{subtable}{.5\linewidth}
+		\centering
+		\caption{Real Fractal}
+		
+		\begin{tabular}{@{}CCCC@{}}
+			\toprule
+			\multicolumn{2}{c}{\textsc{Workload}}\\ \cline{1-2}
+			\textsc{gtx980}& \textsc{K40} & \textsc{Time}$(\si{\milli\second})$ & \textsc{Speedup$(\times)$}  \\\midrule
+			\rowcolor{gray!15}
+			0     & 12000 & 2561  & 522.05 \\
+			\rowcolor{gray!5}
+			1000  & 11000 & 2520  & 530.54 \\
+			\rowcolor{gray!15}
+			2000  & 10000 & 2935  & 455.52 \\
+			\rowcolor{gray!65}
+			3000  & 9000  & 2314  & 577.77 \\
+			\rowcolor{gray!15}
+			4000  & 8000  & 3305  & 404.53 \\
+			\rowcolor{gray!5}
+			5000  & 7000  & 4458  & 299.90 \\
+			\rowcolor{gray!15}
+			6000  & 6000  & 6123  & 218.35 \\
+			\rowcolor{gray!5}
+			7000  & 5000  & 7573  & 176.54 \\
+			\rowcolor{gray!15}
+			8000  & 4000  & 8744  & 152.90 \\
+			\rowcolor{gray!5}
+			9000  & 3000  & 9669  & 138.27 \\
+			\rowcolor{gray!15}
+			10000 & 2000  & 10359 & 129.06 \\
+			\rowcolor{gray!5}
+			11000 & 1000  & 10669 & 125.31 \\
+			\rowcolor{gray!15}
+			12000 & 0     & 10908 & 122.57\\
+			\bottomrule
+		\end{tabular}
+	\end{subtable}%
+	\begin{subtable}{.5\linewidth}
+		\centering
+		\caption{Uniform number of iterations.}
+		\begin{tabular}{@{}LLCC@{}}
+			\toprule
+			\multicolumn{2}{c}{\textsc{Workload}}\\ \cline{1-2}
+			\textsc{gtx980}& \textsc{K40} & \textsc{Time}$(\si{\milli\second})$ & \textsc{Speedup$(\times)$}  \\\midrule
+				\rowcolor{gray!15}
+				0     & 12000 & 6039  & 193.01 \\
+				\rowcolor{gray!5}
+				1000  & 11000 & 5444  & 214.10 \\
+				\rowcolor{gray!15}
+				2000  & 10000 & 5092  & 228.91 \\
+				\rowcolor{gray!65}
+				3000  & 9000  & 4688  & 248.63 \\
+				\rowcolor{gray!15}
+				4000  & 8000  & 5043  & 231.13 \\
+				\rowcolor{gray!5}
+				5000  & 7000  & 6049  & 192.69 \\
+				\rowcolor{gray!15}
+				6000  & 6000  & 7006  & 166.37 \\
+				\rowcolor{gray!5}
+				7000  & 5000  & 7819  & 149.07 \\
+				\rowcolor{gray!15}
+				8000  & 4000  & 8771  & 132.89 \\
+				\rowcolor{gray!5}
+				9000  & 3000  & 9625  & 121.10 \\
+				\rowcolor{gray!15}
+				10000 & 2000  & 10625 & 109.70 \\
+				\rowcolor{gray!5}
+				11000 & 1000  & 11603 & 100.45 \\
+				\rowcolor{gray!15}
+				12000 & 0     & 12708 & 91.72
+				 \\ 
+			\bottomrule
+		\end{tabular}
+	\end{subtable} 
+\end{table}
  
-   \begin{figure}
- 	\begin{center}
- 		\includegraphics[width=1.0\textwidth]{./plots/fractal12k_k40_980_true}
- 		\caption{Domain decomposition along one axis.}
- 		\label{fig:julia_two_GPU_true}
- 	\end{center}
- \end{figure}
+
  
  
  \begin{figure}
- 	\begin{center}
- 		\includegraphics[width=1.0\textwidth]{./plots/fractal12k_k40_980_false}
- 		\caption{Domain decomposition along one axis.}
+ 	
+ 	\minipage{1.0\textwidth}
+ 	\begin{subfigure}{1.0\textwidth}
+ 		\caption{Non Homogeneous work. High divergent code.}
+ 		\includegraphics[width=\linewidth]{./plots/fractal12k_k40_980_true}
+ 		\label{fig:julia_two_GPU_true}
+ 		
+ 	\end{subfigure}		
+ 	\endminipage\hfill
+ 	\minipage{1.0\textwidth}
+ 	\vspace{5mm}
+ 	\begin{subfigure}{1.0\textwidth}
+ 			\caption{Homogeneous work. No thread divergence.}
+ 		\includegraphics[width=\linewidth]{./plots/fractal12k_k40_980_false}
  		\label{fig:julia_two_GPU_false}
- 	\end{center}
+ 	
+ 	\end{subfigure}
+ 	\endminipage\hfill
+	
+ 	\caption[Time and Speed-up for the \textit{small} case on two different GPU: $1$ \texttt{GTX980} and $1$ \texttt{K40}.]{Time and Speed-up for the \textit{small} case on two different GPU: $1$ \texttt{GTX980} and $1$ \texttt{K40}. The bottom and top horizontal axes indicate the amount of rows assigned to the \texttt{K40} and \texttt{GTX980}, respectively. In Figure \ref{fig:julia_two_GPU_false} are depicted time and speedup values from the modified version of the kernel \ref{code:julia_set} that force homogeneous work among the grid points.  }
+ 	\label{fig:julia_two_GPU}
  \end{figure}
- 
- 
-Figure \ref{fractal12k_980_980_false} shows speedup and timings for the case where two identical GPUs are employed. 
-It is not surprising that in this case best performance are achieved when the dataset is shared in a equal manner among the two devices.
 
-  \begin{figure}
-	\begin{center}
-		\includegraphics[width=1.0\textwidth]{./plots/fractal12k_980_980_false}
-		\caption{Domain decomposition along one axis.}
+Table \ref{tab:fractal12k_980_980} and Figure \ref{fig:fractal12k_980_980} show speedup and timings for the case where two identical GPUs \texttt{GTX980} are employed. 
+It is not surprising that in this case best performance are achieved when the dataset is shared in a equal manner among the two devices. Timing and speed-up are not perfectly symmetrical in this case, as one should expect, because one of the GPU is attached with the (small) overhead of performing screen rendering.
+
+%TABLE 980 -980 true and false
+\begin{table}[!htb]
+\small
+	\caption{TABLE 980 -980 true and false - Best speed-up case is highlighted in dark gray. }
+	\label{tab:fractal12k_980_980}
+	\begin{subtable}{.5\linewidth}
+		\centering
+		\caption{Real Fractal}
+		\begin{tabular}{@{}LLCC@{}}
+			\toprule
+			\multicolumn{2}{c}{\textsc{Workload}}\\ \cline{1-2}
+			\textsc{gtx980}& \textsc{gtx980} & \textsc{Time}$(\si{\milli\second})$ & \textsc{Speedup$(\times)$}  \\\midrule
+\rowcolor{gray!15}
+0     & 12000 & 12896 & 90.38 \\
+\rowcolor{gray!5}
+1000  & 11000 & 11869 & 98.20 \\
+\rowcolor{gray!15}
+2000  & 10000 & 10968 & 106.27 \\
+\rowcolor{gray!5}
+3000  & 9000  & 9959  & 117.04  \\
+\rowcolor{gray!15}
+4000  & 8000  & 9131  & 127.65 \\
+\rowcolor{gray!5}
+5000  & 7000  & 8173  & 142.61 \\
+\rowcolor{gray!65}
+6000  & 6000  & 7088  & 164.44 \\
+\rowcolor{gray!5}
+7000  & 5000  & 7931  & 146.97 \\
+\rowcolor{gray!15}
+8000  & 4000  & 8819  & 132.17 \\
+\rowcolor{gray!5}
+9000  & 3000  & 9684  & 120.36 \\
+\rowcolor{gray!15}
+10000 & 2000  & 10629 & 109.66 \\
+\rowcolor{gray!5}
+11000 & 1000  & 11630 & 100.22 \\
+\rowcolor{gray!15}
+12000 & 0     & 12708 & 91.72 \\
+			\bottomrule
+		\end{tabular}
+	\end{subtable}%
+	\begin{subtable}{.5\linewidth}
+		\centering
+		\caption{Uniform number of iterations.}
+		\begin{tabular}{@{}LLCC@{}}
+			\toprule
+			\multicolumn{2}{c}{\textsc{Workload}}\\ \cline{1-2}
+			\textsc{gtx980}& \textsc{gtx980} & \textsc{Time}$(\si{\milli\second})$ & \textsc{Speedup$(\times)$}  \\\midrule
+		\rowcolor{gray!15}
+		0     & 12000 & 10916 & 122.48 \\
+		\rowcolor{gray!5}
+		1000  & 11000 & 11866 & 112.67 \\
+		\rowcolor{gray!15}
+		2000  & 10000 & 11595 & 115.30 \\
+		\rowcolor{gray!5}
+		3000  & 9000  & 10953 & 122.06 \\
+		\rowcolor{gray!15}
+		4000  & 8000  & 9761  & 136.97 \\
+		\rowcolor{gray!5}
+		5000  & 7000  & 8865  & 150.81 \\
+		\rowcolor{gray!65}
+		6000  & 6000  & 7132  & 187.46 \\
+		\rowcolor{gray!5}
+		7000  & 5000  & 7624  & 175.36 \\
+		\rowcolor{gray!15}
+		8000  & 4000  & 8770  & 152.45 \\
+		\rowcolor{gray!5}
+		9000  & 3000  & 9681  & 138.10 \\
+		\rowcolor{gray!15}
+		10000 & 2000  & 10341 & 129.29 \\
+		\rowcolor{gray!5}
+		11000 & 1000  & 10715 & 124.77 \\
+		\rowcolor{gray!15}
+		12000 & 0     & 10986 & 121.70 \\
+			\bottomrule
+		\end{tabular}
+	\end{subtable} 
+\end{table}
+
+\begin{figure}
+	\minipage{1.0\textwidth}
+	\begin{subfigure}{1.0\textwidth}
+		\caption{Non Homogeneous work. High divergent code.}
+		\includegraphics[width=1.0\textwidth]{./plots/fractal12k_980_980_true}
 		\label{fig:fractal12k_980_980_false}
-	\end{center}
+	\end{subfigure}		
+	\endminipage \hfill
+	\minipage{1.0\textwidth}
+	 \vspace{5mm}
+	\begin{subfigure}{1.0\textwidth}
+		\caption{Homogeneous work. No thread divergence.}
+		\includegraphics[width=1.0\textwidth]{./plots/fractal12k_980_980_false}
+
+\label{fig:fractal12k_980_980_true}
+	\end{subfigure}
+	\endminipage\hfill
+	\caption[Time and Speed-up for the \textit{small} case on two GTX980.]{Time and Speed-up for the \textit{small} case on two GTX980. The bottom and top horizontal axes indicate the amount of rows assigned to the first and second \texttt{GTX980}, respectively. In Figure \ref{fig:fractal12k_980_980_false} are depicted time and speedup values from the modified version of the kernel \ref{code:julia_set} that force homogeneous work among the grid points. Note that in this case the graph is almost perfectly symmetrical.}
+	\label{fig:fractal12k_980_980}
 \end{figure}
 
 
+Table \ref{tab:fractal12k_K40-980-980} and Figure \ref{fig:fractal12k_K40-980-980} show timing and speedup for the \textit{large} dataset that is divided among the three employed devices. In this case, the workload not assigned to the $K40$ is equally divided among the two $GTX980$ as this is the case where best performance are achieved when two identical devices are adopted, as shown in  Figure \ref{fig:fractal12k_980_980}.
+\begin{figure}
+	\minipage{1.0\textwidth}
+	\begin{subfigure}{1.0\textwidth}
+		\caption{Domain decomposition along one axis.}
+		\includegraphics[width=1.0\textwidth]{./plots/fractal12k_K40-980-980_true}
+				\label{fig:fractal12k_K40-980-980_true}
+	\end{subfigure}		
+	\endminipage \hfill
+	\minipage{1.0\textwidth}
+	\vspace{5mm}
+	\begin{subfigure}{1.0\textwidth}
+				\includegraphics[width=1.0\textwidth]{./plots/fractal12k_K40-980-980_false}
+		\caption{Domain decomposition along one axis.}
+		\label{fig:fractal12k_K40-980-980_false}
+	\end{subfigure}
+	\endminipage\hfill
+\caption{6 Examples of Julia sets obtained variating the constant $c$.}
+	\label{fig:fractal12k_K40-980-980}
+
+\end{figure}
+Achieved speedup are good, up to to $\approx 110 \times$, when workload division is s.t. $\approx 20\%$ of the total work is shared among the two \texttt{GTX980} (see Figure \ref{fig:fractal12k_K40-980-980_true}). 
+This is due to the non homogeneous distribution of the work along the domain and to the high number of divergent threads. Infact, when homogeneity of work if forced, i.e. all threads perform the same number of iterations, the best performance are obtained assigning $\approx 40\%$  of the domain  to the two \texttt{GTX980} (see Figure \ref{fig:fractal12k_K40-980-980_false}).
+
+\begin{table}[!htb]
+\footnotesize
+	\caption{TABLE 980 -980 true and false - Best speed-up case is highlighted in dark gray. }
+	\label{tab:fractal12k_980_980}
+	\begin{subtable}{.5\linewidth}
+		\centering
+		\caption{Real Fractal}
+
+\begin{tabular}{@{}LLLCC@{}}
+	
+	\toprule
+\multicolumn{3}{c}{\textsc{Workload}}\\ \cline{1-3}
+& \multicolumn{2}{c}{\textsc{gtx}}\\ \cline{2-3} 
+\textsc{K40} &\textsc{\#1}& \textsc{\#2} & \textsc{Time}$(\si{\milli\second})$ & \textsc{Speedup$(\times)$}  \\\midrule
+\rowcolor{gray!15}
+16500 & 250  & 250  & 65617  & 94.8  \\
+\rowcolor{gray!5}
+15500 & 750  & 750  & 66438  & 93.6  \\
+\rowcolor{gray!15}
+14500 & 1250 & 1250 & 62685  & 99.2  \\
+\rowcolor{gray!65}
+13500 & 1750 & 1750 & 57851  & 107.5 \\
+\rowcolor{gray!15}
+12500 & 2250 & 2250 & 78570  & 79.1  \\
+\rowcolor{gray!5}
+11500 & 2750 & 2750 & 87098  & 71.4  \\
+\rowcolor{gray!15}
+10500 & 3250 & 3250 & 109818 & 56.6  \\
+\rowcolor{gray!5}
+9500  & 3750 & 3750 & 134713 & 46.2  \\
+\rowcolor{gray!15}
+8500  & 4250 & 4250 & 154125 & 40.3  \\
+\rowcolor{gray!5}
+7500  & 4750 & 4750 & 186840 & 33.3  \\
+\rowcolor{gray!15}
+6500  & 5250 & 5250 & 219067 & 28.4  \\
+\rowcolor{gray!5}
+5500  & 5750 & 5750 & 186668 & 33.3  \\
+\rowcolor{gray!15}
+4500  & 6250 & 6250 & 193661 & 32.1  \\
+\rowcolor{gray!5}
+3500  & 6750 & 6750 & 223505 & 27.8  \\
+\rowcolor{gray!15}
+2500  & 7250 & 7250 & 249335 & 24.9  \\
+\rowcolor{gray!5}
+1500  & 7750 & 7750 & 257837 & 24.1  \\
+\rowcolor{gray!15}
+500   & 8250 & 8250 & 264234 & 23.5  \\
+	\bottomrule
+		\end{tabular}
+	\end{subtable}%
+	\begin{subtable}{.5\linewidth}
+	\centering
+	\caption{Real Fractal}
+	
+	\begin{tabular}{@{}LLLCC@{}}
+		\toprule
+		\multicolumn{3}{c}{\textsc{Workload}}\\ \cline{1-3}
+		& \multicolumn{2}{c}{\textsc{gtx}}\\ \cline{2-3} 
+		\textsc{K40} &\textsc{\#1}& \textsc{\#2} & \textsc{Time}$(\si{\milli\second})$ & \textsc{Speedup$(\times)$}  \\\midrule
+		\rowcolor{gray!15}
+\rowcolor{gray!15}
+16500 & 250  & 250  & 65617  & 94.8  \\
+\rowcolor{gray!5}
+15500 & 750  & 750  & 66438  & 93.6  \\
+\rowcolor{gray!15}
+14500 & 1250 & 1250 & 62685  & 99.2  \\
+\rowcolor{gray!5}
+13500 & 1750 & 1750 & 95371  & 255.8 \\
+\rowcolor{gray!15}
+12500 & 2250 & 2250 & 102673 & 237.6 \\
+\rowcolor{gray!5}
+11500 & 2750 & 2750 & 93783  & 260.2 \\
+\rowcolor{gray!15}
+10500 & 3250 & 3250 & 82648  & 295.2 \\
+\rowcolor{gray!5}
+9500  & 3750 & 3750 & 75620  & 322.7 \\
+\rowcolor{gray!15}
+8500  & 4250 & 4250 & 66651  & 366.1 \\
+\rowcolor{gray!65}
+7500  & 4750 & 4750 & 61123  & 399.2 \\
+\rowcolor{gray!15}
+6500  & 5250 & 5250 & 65084  & 374.9 \\
+\rowcolor{gray!5}
+5500  & 5750 & 5750 & 70829  & 344.5 \\
+\rowcolor{gray!15}
+4500  & 6250 & 6250 & 81022  & 301.1 \\
+\rowcolor{gray!5}
+3500  & 6750 & 6750 & 92560  & 263.6 \\
+\rowcolor{gray!15}
+2500  & 7250 & 7250 & 92070  & 265.0 \\
+\rowcolor{gray!5}
+1500  & 7750 & 7750 & 95433  & 255.7 \\
+\rowcolor{gray!15}
+500   & 8250 & 8250 & 108764 & 224.3
+  \\
+		\bottomrule
+	\end{tabular}
+\end{subtable}%
 
 
 
+\end{table}
+		
+	
+	
+\subsection{Convolutional Filtering}
+Convolutional filtering is not a perfectly parallelizable problem since grid points on the boundaries requires values from grid points that resides on different GPUs. The ratio of \textit{instruction:byte} is  usually low (it can vary depending on the convolutional kernel adopted), meaning that the problem is low compute intense and bandwith bound.
+Two filtering operation are taking in consideration for assessing the performance of OpenCAL cluster on this kind of algorithm:
+\begin{description}
+	\item[\textbf{Sobel Edge Detection}]:\\ Described in Section \ref{sec:convolutional_filters} and
+	\item[\textbf{Gaussian Blur}]:\\ that consists of a  uniform matrix  with coefficients equal to $\frac{1}{9}$. At each step of the the application change the value of a grid point with the average of its $8$ immediate neighboring points. It has a \textit{instruction:byte} ratio $\approx 1$.
+\end{description}
 
-Note also that the \textit{large} domain performs $10 \times$ more work per grid point than the \textit{small} case. 
 Dici che è compute bound e non del fatto che il lavoro non è uniforme sulla matrice 
 commenta tempi di esecuzione e soprattuto che non era possibile arrivato ad un certo punto eseguire nessun filtro perchè la memoria non bastava
 
