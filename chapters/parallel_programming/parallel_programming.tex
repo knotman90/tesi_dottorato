@@ -4,22 +4,11 @@
 	Sapere aude! Habe Mut, dich deines eigenen Verstandes zu bedienen! }%
 \vskip 1em
 %\section{Introduction}
-\lettrine[lines=3,lhang=0.33,lraise=0,loversize=0.15]{T}{his} chapter introduces the parallel computing concepts and technologies that have been adopted in this work. It contains a description of the Flynn categorization of parallel machines and introduces \textsc{OpenMP}, \textsc{OpenCL} and \textsc{MPI}. 
+\lettrine[lines=3,lhang=0.33,lraise=0,loversize=0.15]{T}{his} chapter introduces the parallel computing concepts and technologies that have been adopted in this work. It contains a description of the Flynn categorization of parallel machines and introduces \textsc{OpenMP}, \textsc{OpenCL}.
+
+%manca MPI 
 
 \section{Introduction and Motivations}
-Over the last two decades lot has changed regarding the way modern scientific applications are designed, written and executed especially in the field of data-analytics, modelling and simulation and visualization. The main reasons behind these changes are that the size of the problems that scientist try to tackle nowadays are much bigger and because of the amount of available raw data that can be analyzed. Data Analytics and Big Data techniques are applied in pretty much every field of science and have been exploited effectively by corporate organizations especially by those in the fields of  
-\begin{inparaenum}
-	\item Finance,
-	\item Sales,
-	\item Custom Service,
-	\item Risk Management,
-	\item Supply chain,
-	\item Asset Management,
-	\item Marketing,
-\end{inparaenum}
-but have been applied effectively in a number of other less common field, such as political election. As an example, the fund raisings for the last two campaign of the former president of the United Stated,Mr. Barak Obama, were optimized by means of Big Data.
-
-
 Traditionally performance improvements in computer architecture have come from cramming ever more functional units onto silicon, increasing clock speeds and transistors number. Moore's law states that the number of transistors that can be placed inexpensively on an integrated circuit will double approximately every two years (See Figure \ref{fig:moore}). Coupled with increasing clock speeds, CPU performance has until recently scaled likewise. But it is important to acknowledge that this trend cannot be sustained indefinitely or forever. Increased clock speed and transistor number require more power and consequently generate more heat. Although the trend for transistor densities has continued to steadily increase, clock speeds began slowing circa 2003 at 3 GHz. If we apply Moore’s law type thinking to clock-speed performance, we should be able to buy at least 10 GHz CPUs. However, the fastest CPU available at the time of writing is $\approx 4.0 GHz$.
 \begin{figure}[!htbp]
 		\hspace*{-1.8cm}
@@ -27,7 +16,7 @@ Traditionally performance improvements in computer architecture have come from c
 \includegraphics[width=1.2\textwidth]{./images/parallel_programming/moore_law2}
 \caption[Moore's Law regarding CPU transistors number.]{Moore's Law regarding CPU transistors number. \textsc{Intel} co-founder, Gordon Moore in 1695 observed that number of transistors in integrated circuits doubled each year. Although the pace has slowed in recent times, the number of transistors per square centimeter has since doubled approximately every 18 months. This is used as the current definition of the law. It is expected to hold true until 2020-2025. Note the logarithmic vertical scale. The almost linear trend correspond to an exponential growth.
 }
-\label{mooreLaw}
+\label{fig:moore}
 \end{figure}
 At same point the performance gaining fails to increase proportionally with the added effort in terms of transistors number or clock speed because efficient heat dissipation and increasing transistor resolution on the wafer, which is not far from from its physical limit (the atom scale),  becomes more important and challenging.
 The heat emitted from the modern processor, measured in power density rivals the heat of a nuclear reactor core (see Figures \ref{fig:tempCPU} and \ref{fig:tempCPU_thermal})!
@@ -158,7 +147,7 @@ MIMD architecture can be further divided by  their memory layout and organizatio
 		of processors (SMP, Symmetric multiprocessors\footnote{Group of processors connected via buses. Usually they consist of not more than 32 processors.}) are inter connected, and processors belonging to different SMP can access the memory spaces of each others. As for UMA, if a cache coherence mechanism  is present, then this architecture is called CC-NUMA.
 		 \begin{figure}[b]
 			\caption[Shared memory architectures.]{UMA and NUMA shared memory architecture.}
-			\label{class12}
+			\label{fig:UMA_NUMA}
 			\centering
 			\begin{subfigure}[b]{0.5\textwidth}
 				\centering
@@ -170,7 +159,7 @@ MIMD architecture can be further divided by  their memory layout and organizatio
 				\includegraphics[width=0.92\textwidth]{./images/parallel_programming/numa}
 				\caption[]{}%
 			\end{subfigure}%
-		\label{fig:UMA_NUMA}
+
 		\end{figure}
 		
 
@@ -205,7 +194,6 @@ MIMD architecture can be further divided by  their memory layout and organizatio
  		\label{fig:distribuiteMemory}
  		\includegraphics[width=0.92\textwidth]{./images/parallel_programming/distribuitedMemory}
  	\end{subfigure}%
- 	\label{fig:UMA_NUMA}
  \end{figure}
  
 
@@ -248,6 +236,7 @@ MIMD architecture can be further divided by  their memory layout and organizatio
 
 \section{Parallel Programming Models}
 \subsection{The \texttt{OpenMP} Parallel Computing Paradigm for Shared Memory Computers}
+\label{sec:openmp}
     \texttt{OpenMP} is a portable API providing compiler directives and library
     functions for shared memory parallel programming in \texttt{C/C++} and
     Fortran \cite{Chapman:2007:UOP:1370966} implemented on top of \texttt{pthread} \cite{Nichols:1996:PP:237813}. It implements the
@@ -380,8 +369,9 @@ omp_destroy_lock(&writelock);
     		\rowcolor{gray!15}
     		\texttt{\textbf{runtime}} & the scheduling policy is choosen at runtime and changes according to the environment variable \verb|OMP_schedule| \\ \hline
     	\end{tabularx}
-    	\label{tab:scheduling_policies}
+    
     	\caption[OpenMP scheduling policies]{\texttt{\#pragma omp parallel for schedule(kind [,chunk size])} OpenMP scheduling kinds. The optional parameter (chunk size), when specified, must be a positive integer. }
+    	\label{tab:scheduling_policies}
     \end{table}
     
     \subsection{General Purpouse GPU Computing - GPGPU}
@@ -451,7 +441,7 @@ omp_destroy_lock(&writelock);
     	to be used in subsequent calculations are copied to textures for temporary storage and the process could start over again for another iteration.
     \end{enumerate} 
     
-    The year 2006 marked a significant turning point in GPU architecture. The \texttt{G80}  was the first \textsc{NVIDIA} GPU to have a unified architecture whereby the different shader processors were  combined into unified stream processors (see Figures \ref{fig:volta_sm} and \ref{volta_architecture} at pages \pageref{fig:volta_sm}  \pageref{volta_architecture} respectively). The resulting stream processors had to be more complex so as to provide all of the functionality of the shader processors they replace. Although research had been carried out into general purpose programming
+    The year 2006 marked a significant turning point in GPU architecture. The \texttt{G80}  was the first \textsc{NVIDIA} GPU to have a unified architecture whereby the different shader processors were  combined into unified stream processors (see Figures \ref{fig:volta_sm} and \ref{fig:volta_architecture} at pages \pageref{fig:volta_sm}  \pageref{fig:volta_architecture} respectively). The resulting stream processors had to be more complex so as to provide all of the functionality of the shader processors they replace. Although research had been carried out into general purpose programming
     for GPUs previously, this architectural change opened the door to a far wider range of  applications and practitioners.
     GPUs are nowadays, well suited for data-parallel problems because they are very effective at executing the same code on many data elements at the same time  in a \textit{Single Instruction, Multiple Threads} (SIMT) fashion or using a more general definition as \textit{Parallel Random-Access Machine in which each thread Can Read or Write a memory location} (\texttt{CRCW PRAM}).
     
@@ -630,7 +620,7 @@ omp_destroy_lock(&writelock);
     	\ref{code:loadBuildProgramCL} for an example of how \textbf{\textit{cl::Program}} are created.
     	     \lstset{language=[OpenCL]C,
     		caption={\texttt{OpenCL} program load and build}, 
-    		label={ code:loadBuildProgramCL}, 
+    		label={code:loadBuildProgramCL}, 
     		keywordstyle=\color{ultramarine}\ttfamily,
     		morekeywords={cl_context,clCreateBuffer,cl_mem_flags,cl_int,size_t},
     		stringstyle=\color{rosemadder}\ttfamily,
@@ -662,13 +652,13 @@ omp_destroy_lock(&writelock);
     	using \textit{queue.enqueu\-NDRangeKernel} that queues a kernel on
     	the associated device.
     	Launching a kernel need some parameters (similar to launch configuration in
-    	CUDA, see section \ref{kernels}) to specify the work distribution among
+    	\texttt{CUDA}) to specify the work distribution among
     	work-groups and their dimensionality and size of each dimension (see listing
     	\ref{code:openCLQueuCommand}). We can test the status of the execution by
     	querying the associated \emph{event}.
     	    \lstset{language=[OpenCL]C,
-    		caption={\texttt{OpenCL} program load and build}, 
-    		label={ code:loadBuildProgramCL}, 
+    		caption={\texttt{OpenCL} command queue definition and kernel enqueuing.}, 
+    		label={code:openCLQueuCommand}, 
     		keywordstyle=\color{ultramarine}\ttfamily,
     		morekeywords={cl_context,clCreateBuffer,cl_mem_flags,cl_int,size_t},
     		stringstyle=\color{rosemadder}\ttfamily,

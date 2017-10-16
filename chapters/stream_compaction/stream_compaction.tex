@@ -185,7 +185,7 @@ if(idx < length){
 Output of Phase $1$ is a count of valid elements per block. 
 Phase $2$ takes care of computing a prefix-sum among the block counters, which number is much smaller than the original input array.
 For the sake of brevity and since it does not affect the overall performance because this phase is not an hot-spot for the algorithm,\texttt{Thrust} prefix sum is employed here in order to produce a vector of offsets. Offset $i$ indicates how many valid elements will be pushed by blocks $j < i$, thus actually indicating what is the block's $i$ writing index in the output array.
-Listing \ref{code:phase2} shows how to perform a prefix-sum on blocks's counter, output of phase $1$.
+Listing \ref{code:phase1_simt} shows how to perform a prefix-sum on blocks's counter, output of phase $1$.
  \lstset{language=C++,
 	caption=\texttt{Phase 2 implemented using a scan operation in \texttt{Thrust}.},
 	label={code:phase1_simt}, 
@@ -244,7 +244,7 @@ At this point  intra block scan operation is performed on \(warpOffset\) in orde
 As shown in the listing \ref{code:phase3_02}, a intra block scan operation is now performed on the the \(warpOffset\) vector in order to compute a per-block offset. It can be performed by just one warp (assuming the number of warps does not exceed the size of a warp (\( warpsize >= \frac{blocksize}{warpsize} \)). The scan operation is performed in \(log2(warpsize)\) steps because we are summing up numbers which max value is warpsize (each warp cannot perform more writes than the number of threads it is composed of). Usually in CUDA this number is $32$ hence bit scan performed in $5$ steps.
  \lstset{language=C++,
 	caption=\texttt{Intra warp prefix-sum using ballotting intrisic},
-	label={code:phase3_1}, 
+	label={code:phase3_02}, 
 	basicstyle=\ttfamily,
 	keywordstyle=\color{blue}\ttfamily,
 	stringstyle=\color{red}\ttfamily,
@@ -323,6 +323,6 @@ The final result for each warp is simply the sum of the $w_{i\,u}$ at all steps\
 \(w_3 = 1 + 2 + 0 + 0 + 48 = 51 = 16+18+17=51\)\\
 
 
-\section{Performance Tests}
+%\section{Performance Tests}
 
-TODO
+%TODO

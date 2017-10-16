@@ -1,0 +1,18 @@
+\chapter{Introduction}
+Over the last two decades lot has changed regarding the way modern scientific applications are designed, written and executed especially in the field of data-analytics, modeling and simulation, and visualization. The main reasons behind these changes are that the size of the problems that scientist try to tackle nowadays are much bigger and because of the amount of available raw data that can be analyzed. Data Analytics and Big Data techniques are applied in pretty much every field of science and have been exploited effectively by corporate organizations. 
+Traditionally performance improvements in computer architecture have come from cramming ever more functional units onto silicon, increasing clock speeds and transistors number. Coupled with increasing clock speeds, CPU performance has until recently doubled every two years.  But it is important to acknowledge that this trend cannot be sustained indefinitely or forever. Increased clock speed and transistor number require more power and consequently generate more heat, at the point that the heat emitted from the modern processor, measured in power density rivals the heat of a nuclear reactor core!
+But the power demand did not stop in these year, and is not going to stop in the near future, here the necessity of relying heavily on parallel architectures. Multicore (2,4,8,12, up to 40) CPUs  are ubiquitous at the point that even smart-phones are proper multi-core machines. Dedicated computing machine are nowadays large, powerful agglomerate of multi core computing nodes interconnected via network. Those kind of parallel machines are complex, their efficient programming is hard, bug-prone and time-consuming. 
+
+In the field of modeling and simulation parallel machines are used to obtain approximate numerical solution to Differential Equations that model real world problems. Numerical solution of these kind of problems often requires great programming effort in order to obtain an efficient solver targeting large computing cluster. This is especially true since GPGPU has become popular.
+
+The aim of this work is the investigation of seamless and efficient parallelization of numerical models on regular grid and their subsequent deployment on large heterogeneous  parallel clusters. 
+A framework, OpenCAL has been developed, exposing a set of API that allows the serial,multicore, GPU, and cluster implementation of a large class of numerical model, with little or no intervention from the programmer.
+Results show that the framework is effective in reducing programmer work and in producing efficient parallel code.
+
+Chapters \ref{ch:FDM} and \ref{ch:parallel_computing} introduces the main targeted numerical models, and parallel machines, respectively.
+Chapters \ref{ch:opencal} and \ref{ch:opencal_cluster} describe OpenCAL, its implementation, usage and performance on a number of benchmarks.
+Chapters \ref{ch:bacteria}, \ref{ch:flocking}, \ref{ch:stream_compaction} introduces some HPC numerical modeling and simulation applications that have been investigated.
+In particular, Chapter \ref{ch:bacteria} introduces a specialized framework based on OpenCAL for tracking particle-like objects from time-lapse video.
+
+
+

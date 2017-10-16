@@ -75,7 +75,7 @@ Other kind of boundary conditions are possible, such as for instance the Robin's
    
     	\end{tikzpicture}
     	 \label{fig:heat2d_bc}
-    	\caption[Heat Equation Boundary Conditions]{Heat Equation (see Equation \ref{eq:heat_equation}) Dirichlet Boundary Conditions. The perimeter of the square domain (highlighted in red) has fixed temperature, i.e. the solution $T$ is known at the boundary. In particular, $T(x,0)=T(0,y)=0$, $T(1,x)=3$ and $T(1,y)=2$ where $0\leq x,y\leq 1$. }\label{fig:heat2d_bc}
+    	\caption[Heat Equation - Dirichlet Boundary Conditions]{Heat Equation (see Equation \ref{eq:heat_equation}) Dirichlet Boundary Conditions. The perimeter of the square domain (highlighted in red) has fixed temperature, i.e. the solution $T$ is known at the boundary. In this particular case, $T(x,0)=T(0,y)=0$, $T(1,x)=3$ and $T(1,y)=2$ where $0\leq x,y\leq 1$. }\label{fig:heat2d_bc}
 	\end{figure}
 \end{center} 
 
@@ -98,16 +98,17 @@ where $g_0$ specifies the values at the boundaries.
 	\minipage{0.44\textwidth}
 	\begin{subfigure}{1.0\textwidth}
 		\includegraphics[width=\linewidth]{./images/CA_FDM/grid_custom_shape}
-		\label{fig:gridcustomshape}
 		\caption{Discretization of a curvilinear domain.}
+		\label{fig:gridcustomshape}
 	\end{subfigure}		
 	\endminipage\hfill
 	\minipage{0.53\textwidth}
 	\begin{subfigure}{1.0\textwidth}
 		\includegraphics[width=\linewidth]{./images/CA_FDM/gridcustom_shape2}
-		\label{fig:gridcustom_shape2}
 		\caption{Interpolation of boundary values on a non rectangular geometry domain.}
+		\label{fig:gridcustom_shape2}
 	\end{subfigure}
+	\caption{}
 	\endminipage\hfill
 \end{figure}
 
@@ -204,8 +205,8 @@ For the rest of the chapter, it can be assumed that grid points are identifies b
 \begin{figure}
 	\centering
 	\includegraphics[width=0.85\textwidth]{./images/CA_FDM/geometrical_interpretation_fd}
+	\caption{Explicit FDM discretization for the 1D heat conduction problem}
 	\label{fig:geometrical_intepretation}
-	\caption{Explicit FDM discretization for the 1D heat conduction problem}\label{torus}
 \end{figure} 
     
 Note that this approach in deriving FD formulas can be generalized in order to obtain FD approximation for derivatives of any order.
@@ -256,8 +257,9 @@ Extending the former method to higher dimensional mixed derivatives is straightf
  \begin{figure}[b]
  	\centering
  	\includegraphics[scale=0.5]{./images/CA_FDM/heatstencil}
- 	\label{fig:fdmheatequationstencil}
  	\caption{Explicit FDM discretization for the 1D heat conduction problem}\label{torus}
+ 	\label{fig:fdmheatequationstencil}
+ 
  \end{figure}   
  
  \begin{enumerate}
@@ -309,9 +311,9 @@ T^n_{j} - \frac{k \Delta t}{\Delta x^2} (T^n_{j+1}+T^n_{j-1}-2T^n_{j}) =   T^{n-
  \label{eq:discretizedheatequation1}
  \end{equation}
  In order to obtain values of T at time $n$ a system of non trivial algebraic equation has to be solved. 
- It can be rewritten in matrix form yielding to a tridiagonal matrix (see Section \ref{sec:tridiagonal})
+ It can be rewritten in matrix form yielding to a tridiagonal matrix (see Figure \ref{fig:tridiagonal_matrix}).
 
-\begin{equation}
+\begin{figure}
 \begin{tikzpicture}[baseline=(current bounding box.center)]
 \matrix (m) [matrix of math nodes,nodes in empty cells,right delimiter={]},left delimiter={[} ]{
   (1+2\lambda)  & -\lambda     &          &  &  &  & &  \\
@@ -355,9 +357,11 @@ T^n_{j} - \frac{k \Delta t}{\Delta x^2} (T^n_{j+1}+T^n_{j-1}-2T^n_{j}) =   T^{n-
 } ;
 \draw[line width=1pt,line cap=round,loosely dotted] (m-3-1)-- (m-8-1);
 \end{tikzpicture}
-\label{eq:eqq1}
-\\ \eqname{asdfsdf}
-\end{equation}
+\caption{Tridiagonal Matrix.}
+\label{fig:tridiagonal_matrix}
+\end{figure}
+
+
   where $\lambda = \frac{k\Delta t}{\Delta x^2}$ for which an efficient algorithms exist, Thomas's algorithm \cite{Datta:2010,Higham:2002}, which solves it in ${\Theta}(n)$ where $n$ is the number of unknowns.
  
 

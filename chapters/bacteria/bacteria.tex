@@ -2,12 +2,12 @@
 %***********************************Tracking particles *****************************
 %*******************************************************************************
 
-\chapter{Tracking Particles}  
+\chapter[A Tracking Algorithm for Particle-like Objects]{A Tracking Algorithm for Particle-like Objects}
 \label{ch:bacteria}
 \dictum[Gottfried Leibniz]{There are two kinds of truths: those of reasoning and those of fact. The truths of reasoning are necessary and their opposite is impossible; the truths of fact are contingent and their opposites are possible.}%
 \vskip 1em
 
-
+This chapter is adapted from \cite{dspataro:2017}.
 %\section{Introduction}
 \lettrine[lines=3,lhang=0.33,lraise=0,loversize=0.15]{S}{tudying} the movement of sub-micron particles, micro-spheres and molecules under microscopic observation often requires their time trajectories from which important kinematic and dynamic properties can be computed. 
 Several studies employ time-lapse microscopy, especially in the field of biophysics, as a tool to gather data and retrieve single particle time trajectories. The researcher usually relies on manual or semi-manual/interactive software to study such properties. However, this approach is unfeasible when the number of cells involved in the analysis is high.
@@ -339,7 +339,7 @@ It is worth to note that filters parameters are dataset dependent and the best s
 \subsection{Bacteria Tracking}
 
 Binary images are then used to extract the relevant information (shape and centroid) for each of the segmented bacteria.
-This is done by interpreting each image as a graph whose nodes are pixels and arc $(i,j)$ exists if pixels $i$ and $j$ are neighbours (according to \textit{Moore}'s relationship, see section \ref{sec:CA}).
+This is done by interpreting each image as a graph whose nodes are pixels and arc $(i,j)$ exists if pixels $i$ and $j$ are neighbours (according to \textit{Moore}'s relationship, see section \ref{ch:CA}).
 A bacterium corresponds to a connected component that can be easily individuated by using the DFS visiting algorithm.
 Once all pixels that make up the cell soma are individuated, a unique \textit{ID} $id_i$ which identifies the bacterium uniquely, a centroid $c_i$ and a bounding box $s_i$ which describe the location, the shape and the area, respectively, are computed for each bacterium $i$. All the bacteria whose extension is less than $M_e = 2$\textit{px} are ignored and no further considered.
 The creation and manipulation of all the geometrical entities involved in this latter phase are carried out by means of the computational geometry library \texttt{CGAL}  \cite{CGAL}.

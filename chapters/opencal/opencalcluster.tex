@@ -1,4 +1,5 @@
 \chapter{OpenCAL cluster}
+\label{ch:opencal_cluster}
 \dictum[Italo Calvino]{ In reality the space in which we moved was all
 	battlemented and perforated, with spires and pinnacles which spread out on every side, with cupolas and balustrades and peristyles, with rose windows, with double- and triplearched fenestrations, and while we felt we were plunging straight down, in reality we were racing along the edge of moldings and invisible friezes, like ants who, crossing a city, follow itineraries traced not on the street cobbles but along walls and ceilings and
 	cornices and chandeliers. Now if I say city it amounts to suggesting figures that are, in
@@ -28,8 +29,9 @@ An example of the unsupported model, consider the Lattice Boltzmann (LB) \cite{M
 Communication of such boundary points between the two devices is required.
 
 \section{OpenCAL cluster}
-This chapter described the distributed version of OpenCAL, OpenCAL cluster, which has been designed to take advantage of the modern multi-GPU capabilities of multi-node systems. This makes OpenCAL applications deployable on a variety of computer architectures, from a single CPU workstation to a large heterogeneous clusters. 
-Section \ref{sec:configuration_file} starts by describing the \textit{configuration file} that is used to dispatch data and computation across the machine. Then, Sections \ref{}and \ref{}  outline the adopted parallelization and domain decomposition strategies. Section \ref{} introduces a set API and number of examples that show how it can used to code OpenCAL cluster applications. Finally, Section \ref{sec:perfomance} discusses performance and tests.
+This chapter describes the distributed version of OpenCAL, OpenCAL cluster, which has been designed to take advantage of the modern multi-GPU capabilities of multi-node systems. This makes OpenCAL applications deployable on a variety of computer architectures, from a single CPU workstation to a large heterogeneous clusters. 
+Section \ref{sec:run_configuration} starts by describing the \textit{configuration file} that is used to dispatch data and computation across the machine. Sections 
+\ref{sec:domain_decomposition} and \ref{sec:opencal_cluster_implementation}  outline the adopted parallelization and domain decomposition strategies and introduce a set API and number of examples that show how OpenCAL can be used to code cluster applications. Finally, Section \ref{sec:perfomance} discusses performance and tests.
   \begin{figure}
 	\begin{center}
 		\includegraphics[width=0.67\textwidth]{./images/opencal/multigpu_domain_decomposition.png}
@@ -47,8 +49,7 @@ The running configuration is provided as a plain text file which syntaxt and str
 
 
 \captionsetup[table]{name=Listing}
-\begin{table*}
-
+\begin{table}
 \renewcommand{\arraystretch}{1} %<- modify value to suit your needs
 \centering
 \small
@@ -140,7 +141,8 @@ PLATFORM_NUMBER_MN DEVICE_NUMBER_KN_MN LOAD_M1_KN_MN
 		
 \end{tabular}
 \caption{File Format for  the OpenCAL cluster. It describes the size of the domain and the machine on which the model is executed. Note that for each node of the cluster, the IP address and a list of devices is listed. Each device is identified, \textit{\`a la} \textsc{OpenCL}, by platform and device number (within the platform).}
-\end{table*}
+\label{code:file_syntax}
+\end{table}
 %table name back to normal
 \captionsetup[table]{name=Table}
 
@@ -239,8 +241,8 @@ At each iteration, it must perform all the operations depicted in Figures \ref{f
 \draw (b2) -- (a3);
 \end{scope}
 \end{tikzpicture}
-\label{fig:communication_scheme}
 \caption{Communication scheme in a multi-GPU OpenCL application}
+\label{fig:communication_scheme}
 \end{figure}
 
 %\begin{enumerate}
@@ -269,6 +271,7 @@ For a communication step to take place, it is necessary to:
 
 
 \section{The OpenCAL cluster Parallel Implementation}
+\label{sec:opencal_cluster_implementation}
   In this section, OpenCL cluster parallel implementation
 of OpenCAL is described, which allows for the parallel execution on one or more accelerators installed on computing nodes interconnected via network and MPI.
 This section describes the difference between OpenCAL-CL and OpenCAL cluster and discusses only the set of the additional API calls that the cluster version exposes. 
@@ -332,7 +335,7 @@ void init(struct CALCLMultiGPU*, const Cluster*);
 \texttt{init} and \texttt{finalize} if defined, are executed by each MPI process (Node) at the initialization and finalization phases, respectively.
 Their definition is optional. They can be employed to perform operations that are hard to manage automatically on a per node basis. For example a certain node might need a particular initialization phase such as module loading for instance. The library can completely hide the initialization and allocation phases, but it is important to note that this behaviour can be changed and manual initialization can be enabled. When it is the case, the init functor can be employed to take car of making sure that each MPI process allocates all of its listed devices with the right resources in order to process the assigned domain. 
 
-Listing \ref{code:init} shows an example of init function that is part of the Opencal Julia Set generator example application shown in section \ref{sec:julia_set} and in listing \ref{code:julia_set}. It shows how manual initialization can be performed from the configuration file. Each nodes access its own list of devices using its MPI rank (lines 3-4)  and add them all to the pool using the \texttt{calclAddDevice} function (lines 7-11).
+Listing \ref{code:init} shows an example of init function that is part of the Opencal Julia Set generator example application shown in section \ref{sec:julia_math} and in listing \ref{code:julia_set}. It shows how manual initialization can be performed from the configuration file. Each nodes access its own list of devices using its MPI rank (lines 3-4)  and add them all to the pool using the \texttt{calclAddDevice} function (lines 7-11).
 \lstset{language=[OpenCL]C,frame=tb,
 	caption=OpenCAL cluster finalize example code for the Julia Set generator application. It outputs the node's portion of a substate to a file., 
 	label=code:init, 
@@ -412,8 +415,6 @@ A MultiNode is used in user code as shown in listing \ref{code:multinode_user_co
 
 \subsection{Kernel Side }
 Kernel side  API  and \textit{build-in} variables are added. Those additional variables and functions can be used to access and manage boundary cells belonging to neighboring devices, the so call \textit{ghost cells}. Each device keep an updated copy of  neighboring devices boundaries and offers to the programmer the abstraction of single domain. A \textit{built-in} variable, \texttt{border\_radius} is exposed in the kernel side, and can be used, from within the kernel, to retrieve the size of boundaries.
-
-Listing \ref{code:sciddica_border} shows as an  example  of how \texttt{border\_radius}.
 
 
 The following sections provides examples of usage of OpenCAL cluster. Section \ref{sec:opencal_julia} provides a complete code that generates large \texttt{BMP} images of Julia Sets.
@@ -782,7 +783,7 @@ Convolutional filtering is easily implemented in OpenCAL cluster in the followin
 This section briefly describes the implementation of the \textit{SciddicaT} landslide model introduces in Section \ref{sec:sciddicaT_model}.
 This example shows that it is possible to deploy any model written in OpenCAL-CL to OpenCAL cluster on multiple nodes and accellerators very easily. 
 Code shown for the implementation of sciddicaT  in Section \ref{sec:sciddica_cl} is used in this section, with few lines added.
-The additional lines take care of the definition of a cluster object, as shown in Listing \ref{code:sciddicat_configuration}, during of the initialization phase as shown in Listing \ref{code:sciddicat_initi}.
+The additional lines take care of the definition of a cluster object, as shown in Listing \ref{code:sciddicat_configuration}, during the initialization phase as shown in Listing \ref{code:sciddicat_initi}.
 Note that in this example no configuration file is used, as to show that is possible to set up a configuration launch programmatically.
 
 \lstset{language=[OpenCL]C,frame=tb,
@@ -826,6 +827,70 @@ void setUpParallelWork(Cluster& mn, const uint XDIM, const uint YDIM){
 	mn.nodes.push_back(n2);
 }
 \end{lstlisting}
+
+
+\lstset{language=[OpenCL]C,frame=tb,
+	caption=OpenCAL cluster sciddicaT launch configuration set up programmatically during the init (see Section \ref{sec:init_finalize}) phase., 
+	label={code:sciddicat_initi}, 
+	basicstyle=\footnotesize\ttfamily,
+	keywordstyle=\color{blue}\ttfamily,
+	stringstyle=\color{red}\ttfamily,
+	commentstyle=\color{green}\ttfamily,
+	backgroundcolor=\color{light-gray}, 
+	numbers=left,numbersep=3pt, 
+	numberstyle=\tiny\ttfamily\color{gray}
+	%	numberstyle=\tiny
+}
+\begin{lstlisting}
+void init( struct CALCLMultiGPU* multigpu , const Cluster* c){
+Node mynode = c->nodes[rank];
+auto devices = mynode.devices;
+struct CALCLDeviceManager * calcl_device_manager = calclCreateManager();
+
+calclSetNumDevice(multigpu,devices.size());
+for(auto& d : devices){
+	calclAddDevice(multigpu,calclGetDevice(calcl_device_manager, d.num_platform , d.num_device) ,  d.workload);
+}
+
+CALModel2D* host_CA;
+host_CA = calCADef2D(mynode.workload, mynode.columns, CAL_VON_NEUMANN_NEIGHBORHOOD_2D, CAL_SPACE_TOROIDAL, CAL_OPT_ACTIVE_CELLS_NAIVE);
+
+// Add substates
+Q.f[0] = calAddSubstate2Dr(host_CA);
+Q.f[1] = calAddSubstate2Dr(host_CA);
+Q.f[2] = calAddSubstate2Dr(host_CA);
+Q.f[3] = calAddSubstate2Dr(host_CA);
+Q.z = calAddSubstate2Dr(host_CA);
+Q.h = calAddSubstate2Dr(host_CA);
+
+int my_readoffset, my_writeoffset=0;
+my_readoffset = mynode.offset;
+// Load configuration
+calLoadSubstate2DrMulti(host_CA, Q.z, DEM_PATH,my_readoffset,my_writeoffset);
+calLoadSubstate2DrMulti(host_CA, Q.h, SOURCE_PATH,my_readoffset,my_writeoffset);
+
+// Initialization
+sciddicaTSimulationInit(host_CA);
+calUpdate2D(host_CA);
+
+
+// Define a device-side CAs
+calclMultiGPUDef2D(multigpu,host_CA,KERNEL_SRC,KERNEL_INC, 1, c->nodes.size() == 1);
+
+// Extract kernels from program
+calclAddElementaryProcessMultiGPU2D(multigpu, KERNEL_ELEM_PROC_FLOW_COMPUTATION);
+calclAddElementaryProcessMultiGPU2D(multigpu, KERNEL_ELEM_PROC_WIDTH_UPDATE);
+
+bufferEpsilonParameter = calclCreateBuffer(multigpu->context, &P.epsilon, sizeof(CALParameterr));
+bufferRParameter = calclCreateBuffer(multigpu->context, &P.r, sizeof(CALParameterr));
+
+calclAddSteeringFuncMultiGPU2D(multigpu,KERNEL_STEERING);
+calclSetKernelArgMultiGPU2D(multigpu,KERNEL_ELEM_PROC_FLOW_COMPUTATION, 0,sizeof(CALCLmem), &bufferEpsilonParameter);
+calclSetKernelArgMultiGPU2D(multigpu,KERNEL_ELEM_PROC_FLOW_COMPUTATION, 1, sizeof(CALCLmem), &bufferRParameter);
+}
+\end{lstlisting}
+
+
 In this case, a configuration \texttt{Cluster} specifiying two nodes and 4 devices overall is created. The 4 devices employed are: 
 \begin{itemize}
 	\item $2$ \textsc{nvidia} K$40$
@@ -839,6 +904,7 @@ The initialization phase is used here in order to allocate and initialize the li
 The kernel side of the application remain the same too, with the exception that boundaries cells are not considered, and are only used in read mode. 
 
 \section{Performance Analysis}
+\label{sec:perfomance}
 This section describes the computational results of \texttt{OpenCAL} cluster on the following benchmarks:
 
 \begin{enumerate}
@@ -863,9 +929,10 @@ If, compared to the \textit{balanced} ratio for the device at hand, the \textit{
 \end{description}
 
 The ratio for the Listing \ref{code:julia_set} has a value of roughly (assuming $MAXITERATION=10000$,and cost for \texttt{cl\_complex\_multiply} and \texttt{cl\_complex\_add} is equal to $2$ \texttt{fp32} instructions): $\approx 40000:1 >> 2.48$. Therefore, Listing \ref{code:julia_set} is a compute bound kernel for the $K40$ GPU.
-For the same reasons we can conclude that kernel shown in Listing  \ref{code:sobel_kernel} is memory bound: its \textit{instruction:byte} ratio for is $\approx 1:1$:  
+For the same reasons we can conclude that kernel shown in Listing  \ref{code:sobel_kernel} is memory bound: its \textit{instruction:byte} ratio for is $\approx 1:1$. 
 
 \subsection{Julia Set Generation}
+\label{sec:julia_performance}
 Fractal Generation is an example of perfectly parallelizable problem, since the computation of each point of the grid does not require any communication and does not depend on the value of any other grid points other than itself. Moreover the granularity of the work is small, making it a good candidate for GPU acceleration.
 The Julia generating function adopted is the following $z_{n+1} = z^2_n + c$ where $c=-0.391+-0.587i$. Each discrete point of the grid $(x,y)\; 0\leq x < S_x, 0\leq y < S_y$ is mapped to the complex plane using the following mapping:
 
@@ -896,17 +963,38 @@ Table \ref{tab:julia_single_GPU} shows timings and speedup obtained on a single 
 \end{tabular}
 \end{table}
 As expected speedup results are good, up to $\approx 500 \times$, thanks to the great parallelizability of the problem on GPU architecture.
+\begin{figure}
+	
+	\minipage{0.5\textwidth}
+	\begin{subfigure}{1.0\textwidth}
+		\caption{Fractal non-homgeneous scaling.}
+		\label{fig:fractal_true_scaling}
+		\includegraphics[width=1.0\textwidth]{./plots/fractal_true_scaling}
+	\end{subfigure}		
+	\endminipage
+	\minipage{0.5\textwidth}
+	
+	\begin{subfigure}{1.0\textwidth}
+		\caption{Fractal homogeneous work scaling}
+		\label{fig:fractal_false_scaling}
+		\includegraphics[width=1.0\textwidth]{./plots/fractal_false_scaling}
+	\end{subfigure}
+	\endminipage\hfill
+	\caption[]{Fractal Generation speed-ups obtained on single-GPU execution (\texttt{K40}, \texttt{GTX980}) and multi-GPU execution on two devices.
+	 }
+	\label{fig:fractal_scaling}
+\end{figure}
 
-Table \ref{tab:julia_two_GPU} and Figure \ref{fig:julia_two_GPU} show timings and speedups of the same application on two GPUs on the \textit{small} domain. Note that since the two devices adopted have substantial difference in hardware (see Table \ref{tab:tech_spec_nvidia}) it is not easy to determine in advance the best workload for each of the GPU in order to obtain the best load balancing. For this reason a number of experiments are performed in order to discover the optimal workloads for the considered GPUs and kernel.
+Table \ref{tab:julia_two_GPU}, Figures \ref{fig:julia_two_GPU} and \ref{fig:fractal_scaling} show timings and speedups of the same application on two GPUs on the \textit{small} domain. Note that since the two devices adopted have substantial difference in hardware (see Table \ref{tab:tech_spec_nvidia}) it is not easy to determine in advance the best workload for each of the GPU in order to obtain the best load balancing. For this reason a number of experiments are performed in order to discover the optimal workloads for the considered GPUs and kernel.
 The best speedup is obtained when only $25\%$ of the domain is assigned to the \texttt{GTX 980}.It can be seen that for this type of kernels, the $K40$ shows better performance, due to the fact that the \texttt{K40} has an higher number of processing cores and shows and better divergence management than the \texttt{GTX980}.
 Moreover, it also worth to note that the Julia set kernel is highly divergent and that work is not homogeneously spread across the domain, as can be seen from  and from Figure \ref{fig:fractal16k16k}. Pixel coloured in blue correnspond to a small number of iteration of the loop in Listing \ref{code:julia_set}, lines 23-26, while the ones coloured in red to higher number of iteration.
 Note that no communication whatsoever is performed during this application since, the problem is embarrassingly parallel.
 The rightmost part of Figure \ref{fig:julia_two_GPU_true} (from $9000$ to $12000$) shows a weird fluctuation in the speedups that is mainly due to the fact that pixels contained in rows from $1000$ to $2000$ corrensponds to \textit{black} ones i.e. to pixel with almost no work attached to them.
 In order to show that in the case of uniform work attached to each pixel the speedup curve behave normally, a variation of Listing \ref{code:julia_set} is used and shown in Listing \ref{code:julia_set_uniform} where each execution of the kernel is lasts for $1000$ iterations.
 Figure \ref{fig:julia_two_GPU_false} shows that fluctuation in this case are not present.
-
+\begin{minipage}{\linewidth}
  \lstset{language=[OpenCL]C,frame=tb,
- 	caption=OpenCAL cluster kernel for the generation of Julia Set., 
+ 	caption=OpenCAL cluster kernel for the generation of Julia Set. \texttt{volatile} keyword ensures that the object code for the while is emitted, 
  	label={code:julia_set_uniform}, 
  	basicstyle=\footnotesize\ttfamily,
  	keywordstyle=\color{blue}\ttfamily,
@@ -918,17 +1006,14 @@ Figure \ref{fig:julia_two_GPU_false} shows that fluctuation in this case are not
  }
  \begin{lstlisting}
  int evolveComplexPoint(cl_complex p,cl_complex c){
-  //volatile ensures that the object code for the while is 
- int it =1;
+ int it=1;
  volatile cl_complex p1={p.x,p.y};
- while(it <= 1000){
+ while(it++ <= 1000)
 	 p1=juliaFunctor(p1,c);
-	 it++;
- }
  return 100;
  }
  \end{lstlisting}
- 
+\end{minipage}
  
 %TABLE K40 -980 true and false
 \begin{table}[!htb]
@@ -1034,7 +1119,7 @@ Figure \ref{fig:julia_two_GPU_false} shows that fluctuation in this case are not
  	\end{subfigure}
  	\endminipage\hfill
 	
- 	\caption[Time and Speed-up for the \textit{small} case on two different GPU: $1$ \texttt{GTX980} and $1$ \texttt{K40}.]{Time and Speed-up for the \textit{small} case on two different GPU: $1$ \texttt{GTX980} and $1$ \texttt{K40}. The bottom and top horizontal axes indicate the amount of rows assigned to the \texttt{K40} and \texttt{GTX980}, respectively. In Figure \ref{fig:julia_two_GPU_false} are depicted time and speedup values from the modified version of the kernel \ref{code:julia_set} that force homogeneous work among the grid points.  }
+ 	\caption[Time in red (lower is better) and speed-up in blue (higher is better) for the \textit{small} case on two different GPU: $1$ \texttt{GTX980} and $1$ \texttt{K40}.]{Time and Speed-up for the \textit{small} case on two different GPU: $1$ \texttt{GTX980} and $1$ \texttt{K40}. The bottom and top horizontal axes indicate the amount of rows assigned to the \texttt{K40} and \texttt{GTX980}, respectively. In Figure \ref{fig:julia_two_GPU_false} are depicted time and speedup values from the modified version of the kernel \ref{code:julia_set} that force homogeneous work among the grid points.  }
  	\label{fig:julia_two_GPU}
  \end{figure}
 
@@ -1137,7 +1222,7 @@ It is not surprising that in this case best performance are achieved when the da
 \label{fig:fractal12k_980_980_true}
 	\end{subfigure}
 	\endminipage\hfill
-	\caption[Time and Speed-up for the \textit{small} case on two GTX980.]{Time and Speed-up for the \textit{small} case on two GTX980. The bottom and top horizontal axes indicate the amount of rows assigned to the first and second \texttt{GTX980}, respectively. In Figure \ref{fig:fractal12k_980_980_false} are depicted time and speedup values from the modified version of the kernel \ref{code:julia_set} that force homogeneous work among the grid points. Note that in this case the graph is almost perfectly symmetrical.}
+	\caption[Time and Speed-up for the \textit{small} case on two GTX980.]{Time and Speed-up for the \textit{small} case on two GTX980. The bottom and top horizontal axes indicate the amount of rows assigned to the first and second \texttt{GTX980}, respectively. In Figure \ref{fig:fractal12k_980_980_false} are depicted time and speedup values from the modified version of the kernel \ref{code:julia_set} that force homogeneous work among the grid points. Note that in this case the graph is almost perfectly symmetrical. Time in red (lower is better), speed-up in blue (higher is better).}
 	\label{fig:fractal12k_980_980}
 \end{figure}
 
@@ -1146,7 +1231,7 @@ Table \ref{tab:fractal12k_K40-980-980} and Figure \ref{fig:fractal12k_K40-980-98
 \begin{figure}
 	\minipage{1.0\textwidth}
 	\begin{subfigure}{1.0\textwidth}
-		\caption{Domain decomposition along one axis.}
+		\caption{Non homogeneous work. High divergent code. $3$ GPUs employed.}
 		\includegraphics[width=1.0\textwidth]{./plots/fractal12k_K40-980-980_true}
 				\label{fig:fractal12k_K40-980-980_true}
 	\end{subfigure}		
@@ -1155,13 +1240,12 @@ Table \ref{tab:fractal12k_K40-980-980} and Figure \ref{fig:fractal12k_K40-980-98
 	\vspace{5mm}
 	\begin{subfigure}{1.0\textwidth}
 				\includegraphics[width=1.0\textwidth]{./plots/fractal12k_K40-980-980_false}
-		\caption{Domain decomposition along one axis.}
+		\caption{Homogeneous work. No thread divergence.$3$ GPUs employed. }
 		\label{fig:fractal12k_K40-980-980_false}
 	\end{subfigure}
 	\endminipage\hfill
-\caption{6 Examples of Julia sets obtained variating the constant $c$.}
+\caption{Timings and Speed-up for the \textit{large} case. (a) shows non-homogeneous work i.e. the real fractal, (b) the homogeneous one. Time in red (lower is better), speed-up in blue (higher is better).}
 	\label{fig:fractal12k_K40-980-980}
-
 \end{figure}
 Achieved speedup are good, up to to $\approx 110 \times$, when workload division is s.t. $\approx 20\%$ of the total work is shared among the two \texttt{GTX980} (see Figure \ref{fig:fractal12k_K40-980-980_true}). 
 This is due to the non homogeneous distribution of the work along the domain and to the high number of divergent threads. Infact, when homogeneity of work if forced, i.e. all threads perform the same number of iterations, the best performance are obtained assigning $\approx 40\%$  of the domain  to the two \texttt{GTX980} (see Figure \ref{fig:fractal12k_K40-980-980_false}).
@@ -1173,7 +1257,7 @@ This is due to the non homogeneous distribution of the work along the domain and
 	\begin{subtable}{.5\linewidth}
 		\centering
 		\caption{Real Fractal}
-
+\label{tab:fractal12k_K40-980-980}
 \begin{tabular}{@{}LLLCC@{}}
 	
 	\toprule
@@ -1266,29 +1350,225 @@ This is due to the non homogeneous distribution of the work along the domain and
 	\end{tabular}
 \end{subtable}%
 
-
-
 \end{table}
-		
-	
+
 	
 \subsection{Convolutional Filtering}
 Convolutional filtering is not a perfectly parallelizable problem since grid points on the boundaries requires values from grid points that resides on different GPUs. The ratio of \textit{instruction:byte} is  usually low (it can vary depending on the convolutional kernel adopted), meaning that the problem is low compute intense and bandwith bound.
 Two filtering operation are taking in consideration for assessing the performance of OpenCAL cluster on this kind of algorithm:
 \begin{description}
-	\item[\textbf{Sobel Edge Detection}]:\\ Described in Section \ref{sec:convolutional_filters} and
-	\item[\textbf{Gaussian Blur}]:\\ that consists of a  uniform matrix  with coefficients equal to $\frac{1}{9}$. At each step of the the application change the value of a grid point with the average of its $8$ immediate neighboring points. It has a \textit{instruction:byte} ratio $\approx 1$.
+	\item[\textbf{Sobel Edge Detection}]:\\ Described in Section \ref{sec:convolutional_filters} and which kernel is shown in Listing \ref{code:sobel_kernel},
+	\item[\textbf{Gaussian Blur}]:\\ that consists of a  uniform matrix  with coefficients equal to $\frac{1}{9}$. At each step of the the application change the value of a grid point with the average of its $8$ immediate neighboring points. It has a \textit{instruction:byte} ratio $\approx 1$. See Figures \ref{fig:fractal_detail} and \ref{fig:gaussian}. Listing \ref{code:blur_kernel} shown the kernel code used for the
 \end{description}
+Both filters are applied on a computational grid of size $15000 \times 15000=225 \times10^6$ cells for a number of $100$ steps. The image upon which the filter are applied are generated using a the OpenCAL fractal application described in Sections \ref{sec:julia_math} and \ref{sec:julia_performance}.
 
-Dici che è compute bound e non del fatto che il lavoro non è uniforme sulla matrice 
-commenta tempi di esecuzione e soprattuto che non era possibile arrivato ad un certo punto eseguire nessun filtro perchè la memoria non bastava
+\begin{minipage}{\linewidth}
+ \lstset{language=[OpenCL]C,frame=tb,
+	caption=OpenCAL kernel implementing the Gaussian blur convolutional filter., 
+	label={code:blur_kernel}, 
+	basicstyle=\footnotesize\ttfamily,
+	keywordstyle=\color{blue}\ttfamily,
+	stringstyle=\color{red}\ttfamily,
+	commentstyle=\color{green}\ttfamily,
+	backgroundcolor=\color{light-gray}, 
+	numbers=left,numbersep=3pt,, 
+	numberstyle=\tiny\ttfamily\color{gray}
+}
+\begin{lstlisting}
+int convolutional_gaussian_blur(cl_complex p,cl_complex c){
+	int sum=0,n=0;
+	const int sizeOfX_ =calclGetNeighbor\right oodSize();
+	for(; n < sizeOfX_; ++n) 
+		sum+= calclGetX2Di(MODEL_2D,DEVICE_Q_red, i, j, n);
+	calclSet2Di(MODEL_2D, DEVICE_Q_red, i, j,sum/sizeOfX_);
+}
+\end{lstlisting}
+\end{minipage}
+\begin{figure}[!t]
+	\begin{subfigure}[t]{0.5\textwidth}
+		\centering
+		\includegraphics[width=0.9\textwidth]{./images/opencal/frattale0_detail}
+		\caption{Raw detail from a rendered image of a Julia Set.}
+			\label{fig:fractal_detail_raw}
+	\end{subfigure}%
+~
+	\begin{subfigure}[t]{0.5\textwidth}
+		\centering
+		\includegraphics[width=0.9\textwidth]{./images/opencal/frattale1_blur_100_detail}
+		\caption{Gaussian Blur rendered version of Figure \ref{fig:fractal_detail_raw}}
+				\label{fig:fractal_detail_blur}
+	\end{subfigure}
+\caption{Raw and blurred detail of the of the image upon which the OpenCAL cluster convolutional filter application is ran upon. Rendering of fractals are obtained using QGIS software \cite{QGIS_software}.}
+\label{fig:fractal_detail}
+\end{figure}
+
+table \ref{tab:sobel_performance} and Figure \ref{fig:sobel_performance_charts} shows performances for the \textit{sobel} filter on two (\ref{fig:sobel_k40_980}) and three (\ref{fig:sobel_k40_980_980}) devices respectively.
+Note that in this case the disparity in performance between the \text{K40} and the \texttt{GTX980} is not evident, in-fact, best performance are achieved when the domain is shared in a equal manner among the devices. This is due to the fact that the two devices have similar memory bandwidth and latency performances and that their differences in the number of cores is not relevant since the application is memory bound.
+Note that the speedup scales linearly as the number of GPUs increases as a $\approx 28 \times$ speed-up is obtained with $1$ GPU, $\approx 56 \times$ with $2$ GPUs and  $\approx 82 \times$ when $3$ devices are employed as shown in Figure \ref{fig:sobel_scaling}.
+
+
+
+
+\begin{figure}
+
+	\minipage{0.5\textwidth}
+	\begin{subfigure}{1.0\textwidth}
+		\caption{Blur Scaling}
+		\label{fig:blur_scaling}
+	\includegraphics[width=1.0\textwidth]{./plots/blur_scaling}
+	\end{subfigure}		
+	\endminipage
+	\minipage{0.5\textwidth}
+
+	\begin{subfigure}{1.0\textwidth}
+		\caption{Sobel Scaling}
+		\label{fig:sobel_scaling}
+		\includegraphics[width=1.0\textwidth]{./plots/sobel_scaling}
+	\end{subfigure}
+	\endminipage\hfill
+	\caption[]{Blur and Sobel Speed-up benchmark speedups linearly with the number of GPUs. }
+	\label{fig:scaling}
+\end{figure}
+
+
+\begin{figure}
+	\minipage{1.0\textwidth}
+	\begin{subfigure}{1.0\textwidth}
+		\caption{Performance on $2$ GPUs: \texttt{NVIDIA K40} and $1$ \texttt{GTX980}.}
+		\includegraphics[width=1.0\textwidth]{./plots/sobel_k40_980}
+		\label{fig:sobel_k40_980}
+	\end{subfigure}		
+	\endminipage \hfill
+	\minipage{1.0\textwidth}
+	\vspace{5mm}
+	\begin{subfigure}{1.0\textwidth}
+		\includegraphics[width=1.0\textwidth]{./plots/sobel_k40_980_980}
+		\caption{Performance on $3$ GPUs: \texttt{NVIDIA K40} and a pair of \texttt{GTX980}.}
+		\label{fig:sobel_k40_980_980}
+	\end{subfigure}
+	\endminipage\hfill
+	\caption[Sobel benchmark performance metrics.]{Sobel benchmark performance metrics on two (a) and three (b) GPUs. Time in red (lower is better), speed-up in blue (higher is better).}
+	\label{fig:sobel_performance_charts}
+\end{figure}
+\begin{table}[!htb]
+	\footnotesize
+	\caption{Sobel benchmark performance metrics on two (a) and three (b) GPUs. Best speed-up case is highlighted in dark gray.}
+	\label{tab:sobel_performance}
+	\begin{subtable}{.5\linewidth}
+		\centering
+		\caption{Performance on $2$ GPUs: \texttt{NVIDIA K40} and $1$ \texttt{GTX980}.}
+		
+		\begin{tabular}{@{}LLCC@{}}
+			\toprule
+			\multicolumn{2}{c}{\textsc{Workload}}\\ \cline{1-2}
+			\textsc{k40}& \textsc{gtx980} & \textsc{Time}$(\si{\milli\second})$ & \textsc{Speedup$(\times)$}  \\\midrule
+			\rowcolor{gray!15}
+			15000 & 0     & 97028 & 14.75 \\
+			\rowcolor{gray!5}
+			14000 & 1000  & 83304 & 17.18 \\
+			\rowcolor{gray!15}
+			13000 & 2000  & 46178 & 30.99 \\
+			\rowcolor{gray!5}
+			12000 & 3000  & 54814 & 26.11 \\
+			\rowcolor{gray!15}
+			11000 & 4000  & 41506 & 34.48 \\
+			\rowcolor{gray!5}
+			10000 & 5000  & 40067 & 35.72 \\
+			\rowcolor{gray!15}
+			9000  & 6000  & 32556 & 43.96 \\
+			\rowcolor{gray!5}
+			8000  & 7000  & 27314 & 52.39 \\
+			\rowcolor{gray!65}
+			7000  & 8000  & 26013 & 55.01 \\
+			\rowcolor{gray!5}
+			6000  & 9000  & 29330 & 48.79 \\
+			\rowcolor{gray!15}
+			5000  & 10000 & 29861 & 47.92 \\
+			\rowcolor{gray!5}
+			4000  & 11000 & 35657 & 40.13 \\
+			\rowcolor{gray!15}
+			3000  & 12000 & 38970 & 36.72 \\
+			\rowcolor{gray!5}
+			2000  & 13000 & 42851 & 33.39 \\
+			\rowcolor{gray!15}
+			1000  & 14000 & 46527 & 30.76 \\
+			\rowcolor{gray!5}
+			0     & 15000 & 50583 & 28.29 \\
+			\bottomrule
+		\end{tabular}
+	\end{subtable}%
+	\begin{subtable}{.5\linewidth}
+		\centering
+		\caption{Performance on $3$ GPUs: \texttt{NVIDIA K40} and a pair of \texttt{GTX980}.  }
+		
+		\begin{tabular}{@{}LLLCC@{}}
+			\toprule
+			\multicolumn{3}{c}{\textsc{Workload}}\\ \cline{1-3}
+			& \multicolumn{2}{c}{\textsc{gtx}}\\ \cline{2-3} 
+			\textsc{K40} &\textsc{\#1}& \textsc{\#2} & \textsc{Time}$(\si{\milli\second})$ & \textsc{Speedup$(\times)$}  \\\midrule
+			\rowcolor{gray!15}
+			14500 & 250  & 250  & 89033 & 16.07 \\
+			\rowcolor{gray!5}
+			13500 & 750  & 750  & 74482 & 19.21\\
+			\rowcolor{gray!15}
+			12500 & 1250 & 1250 & 55861 & 25.61\\
+			\rowcolor{gray!5}
+			11500 & 1750 & 1750 & 46666 & 30.66\\
+			\rowcolor{gray!15}
+			10500 & 2250 & 2250 & 39233 & 36.47\\
+			\rowcolor{gray!5}
+			9500  & 2750 & 2750 & 33240 & 43.05\\
+			\rowcolor{gray!15}
+			8500  & 3250 & 3250 & 29388 & 48.69\\
+			\rowcolor{gray!5}
+			7500  & 3750 & 3750 & 25364 & 56.41\\
+			\rowcolor{gray!15}
+			6500  & 4250 & 4250 & 22197 & 64.46\\
+			\rowcolor{gray!5}
+			5500  & 4750 & 4750 & 17678 & 80.94\\
+			\rowcolor{gray!65}
+			4500  & 5250 & 5250 & 17524 & 81.65\\
+			\rowcolor{gray!5}
+			3500  & 5750 & 5750 & 19415 & 73.70\\
+			\rowcolor{gray!15}
+			2500  & 6250 & 6250 & 21177 & 67.57\\
+			\rowcolor{gray!5}
+			1500  & 6750 & 6750 & 22856 & 62.60\\
+			\rowcolor{gray!15}
+			500   & 7250 & 7250 & 24364 & 58.73\\
+			\bottomrule
+		\end{tabular}
+	\end{subtable}%
+\end{table}
+
+Similar results are obtained for the \textit{Gaussian blur} kernel as can be seen from Figure \ref{fig:blur_performance}.
+The \textit{blur} kernel is even more memory bound than \textit{sobel}, which explains why performance are lower w.t.r to sobel. Note that the speedup scales super-linearly as the number of GPUs increases as a $\approx 10 \times$ speed-up is obtained with $1$ GPU, $\approx 36 \times$ with $2$ GPUs and  $\approx 53 \times$ when $3$ devices are employed as shown in Figure \ref{fig:blur_scaling}.
+
+\begin{figure}
+	\minipage{1.0\textwidth}
+	\begin{subfigure}{1.0\textwidth}
+		\caption{Performance on $2$ GPUs: \texttt{NVIDIA K40} and $1$ \texttt{GTX980}.}
+		\label{fig:blur_k40_980}
+		\includegraphics[width=1.0\textwidth]{./plots/blur_k40_980}
+		
+	\end{subfigure}		
+	\endminipage \hfill
+	\minipage{1.0\textwidth}
+	\vspace{5mm}
+	\begin{subfigure}{1.0\textwidth}
+		\includegraphics[width=1.0\textwidth]{./plots/blur_k40_980_980}
+		\caption{Performance on $3$ GPUs: \texttt{NVIDIA K40} and a pair of \texttt{GTX980}.}
+		\label{fig:blur_k40_980_980}
+	\end{subfigure}
+	\endminipage\hfill
+	\caption[Sobel benchmark performance metrics.]{Sobel benchmark performance metrics on two (a) and three (b) GPUs. Time in red (lower is better), speed-up in blue (higher is better).}
+	\label{fig:blur_performance}
+\end{figure}
 
 
 \subsection{Conclusion}
 This mechanism is correct and it is the one that is currently implemented in OpenCAL but it is not optimal mainly because of the the serialization of communication and computation and the involvement of the host in each transfer between two GPUs.
 
+%Dici che è compute bound e non del fatto che il lavoro non è uniforme sulla matrice 
+%commenta tempi di esecuzione e soprattuto che non era possibile arrivato ad un certo punto eseguire nessun filtro perchè la memoria non bastava
 
-
-
-
-\section{blablbl}

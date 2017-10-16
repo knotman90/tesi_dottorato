@@ -1,9 +1,10 @@
 \chapter{Multi-Agent System with Multiple Group Modelling for Bird Flocking
 	on GPU}
+\label{ch:flocking}
 \dictum[Gottfried Leibniz]{There are two kinds of truths: those of reasoning and those of fact. The truths of reasoning are necessary and their opposite is impossible; the truths of fact are contingent and their opposites are possible.}%
 \vskip 1em
 
-
+This chapter is adapted from \cite{rahmat:2016}.
 %\section{Introduction}
 
 \lettrine[lines=3,lhang=0.33,lraise=0,loversize=0.15]{T}{he} study of collective coherent motion of self-propelled biological organisms such as flocks of birds, schools of fish and swarms of insects has fascinated humans from ancient time. This kind of behaviour, often referred to as flocking, exists in nature at almost every
@@ -147,15 +148,17 @@ parameters and corresponding alongside.
 
 \begin{figure}[h!]
 	\includegraphics[scale=0.45]{./images/birdflocking/verticalFow.png}
-	\label{fig:vFOV}
 	\caption{Birds vertical field of view. \(d_s\) and \(s_v\) represent the sight distance and the vertical perceptual span, respectively. }
+	\label{fig:vFOV}
+	
 \end{figure}	
 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[scale=0.375]{./images/birdflocking/hFow.png}
-	\label{fig:hFOV}
 	\caption{Birds horizontal field of view. \(s_h\) represents the horizontal perceptual span. \(d_s\) as in Fig. \ref{fig:vFOV}. }
+	\label{fig:hFOV}
+	
 \end{figure}	
 
 
@@ -486,9 +489,9 @@ and those paths are executed in \emph{serial manner}\footnote{It is important to
 	stress that serial execution happens only when thread of the same warps 
 	diverge.}\cite{NvidiaprogGuide}. As a consequence, this serialization may result in significant performance loss.
 
-A series of workarounds have been implemented in order to mitigate this problem and more specifically, a number of $if$ construct have been substituted with an equivalent arithmetical operation that are performed by all threads and preserves the original semantic of the code. Listings \ref{list:divergent} and \ref{list:notDivergent} shows an example of such code transformation.
+A series of workarounds have been implemented in order to mitigate this problem and more specifically, a number of $if$ construct have been substituted with an equivalent arithmetical operation that are performed by all threads and preserves the original semantic of the code. Listings \ref{list:divergent} and \ref{list:notDivergent} show an example of such code transformation.
 
-\begin{lstlisting}
+\begin{lstlisting}[label={list:divergent}, caption={Example of thread divergent code.} ]
 private var;
 if(threadIdx.x > 16) then
 var:= A

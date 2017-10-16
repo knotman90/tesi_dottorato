@@ -66,7 +66,7 @@ postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
 % Bibliography
 \addbibresource{main.bib}
 
-%\addbibresource[label=ownpubs]{ownpubs.bib}
+%\addbibresource{ownpubs.bib}
 %\addbibresource{bibliography.bib}
 %\addbibresource{misc.bib}
 \usepackage{amssymb,graphicx}
@@ -97,9 +97,9 @@ postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
 \include{frontbackmatter/dirtytitlepage}
 \include{frontbackmatter/titlepage}
 \include{frontbackmatter/titleback}
-\cleardoublepage\include{frontbackmatter/dedication}
-\cleardoublepage\include{frontbackmatter/abstract}
-\cleardoublepage\include{frontbackmatter/acknowledgments}
+%\cleardoublepage\include{frontbackmatter/dedication}
+%\cleardoublepage\include{frontbackmatter/abstract}
+%\cleardoublepage\include{frontbackmatter/acknowledgments}
 \pagestyle{headings}
 \cleardoublepage\include{frontbackmatter/contents}
 
@@ -110,18 +110,20 @@ postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
 %CA
 \pagenumbering{arabic}
 \cleardoublepage
+\include{introduction}
+\cleardoublepage
 \part{Uniform Grid Numerical Methods and Parallel Computing}
-%\include{chapters/CA_FDM/fdm}
-%\include{chapters/CA_FDM/ca}
+\include{chapters/CA_FDM/fdm}
+\include{chapters/CA_FDM/ca}
 \cleardoublepage%
 
 \cleardoublepage
-%\include{chapters/parallel_programming/parallel_programming}
+\include{chapters/parallel_programming/parallel_programming}
 \cleardoublepage
 
 \part{Seamless Acceleration of Numerical Simulation: The \texttt{OpenCAL} framework}
 \cleardoublepage
-%\include{chapters/opencal/opencal}
+\include{chapters/opencal/opencal}
 
 \cleardoublepage
 
@@ -131,29 +133,29 @@ postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
 
 \part{Other Related HPC Applications}
 \cleardoublepage
-%\include{chapters/bacteria/bacteria}
+\include{chapters/bacteria/bacteria}
 \cleardoublepage
 
 \cleardoublepage
-%\include{chapters/birdflocking/birdflocking}
+\include{chapters/birdflocking/birdflocking}
 \cleardoublepage
 
 
 \cleardoublepage%
-%\include{chapters/stream_compaction/stream_compaction}
+\include{chapters/stream_compaction/stream_compaction}
 \cleardoublepage%
 \appendix
 \cleardoublepage%
-%\include{chapters/appendix/tech_spec}
+\include{chapters/appendix/tech_spec}
 
 \cleardoublepage%
 
-%\cleardoublepage\include{frontbackmatter/bibliography}
+\cleardoublepage\include{frontbackmatter/bibliography}
 \cleardoublepage%
 %\cleardoublepage\include{glossary}
 \bookmarksetup{startatroot}
 \pagenumbering{gobble}
 %\cleardoublepage\include{frontbackmatter/cv}
-%\cleardoublepage\include{frontbackmatter/publications}
+\cleardoublepage\include{frontbackmatter/publications}
 
 \end{document}

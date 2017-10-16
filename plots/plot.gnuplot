@@ -1,5 +1,5 @@
 # Scale font and line width (dpi) by changing the size! It will always display stretched.
-set terminal  pdf   enhanced color font 'Arial-Bold,10' 
+set terminal  pdf  enhanced color font 'Arial-Bold,10' 
 set size 1,1;
 
 
@@ -113,6 +113,109 @@ set x2label 'Workload - GTX980 #1 and #2'
 plot  "data_fractal12k_K40-980-980_false.dat" using 1:2 title 'Time' w lp ls 1 axes x1y1,\
 "data_fractal12k_K40-980-980_false.dat" using 1:3 title 'Speed-up' w lp ls 4 axes x1y2 ,\
 
+#SOBEL--------------------------------------------------
+
+set xrange [0 : 15000.0]
+set x2range [15000 : 0.0]
+
+#---------------------------------------------
+set output 'sobel_k40_980.pdf'
+set xlabel 'Workload - K40'
+set key center 
+set x2label 'Workload - GTX980'
+#set title "Time - Speedup 3 GPU"
+plot  "data_sobel_k40_980.dat" using 1:2 title 'Time' w lp ls 1 axes x1y1,\
+"data_sobel_k40_980.dat" using 1:3 title 'Speed-up' w lp ls 4 axes x1y2 ,\
+
+
+#---------------------------------------------
+set output 'sobel_k40_980_980.pdf'
+set xlabel 'Workload - K40'
+set key top center 
+set x2label 'Workload - GTX980 #1 and #2'
+#set title "Time - Speedup 3 GPU"
+plot  "data_sobel_k40_980_980.dat" using 1:2 title 'Time' w lp ls 1 axes x1y1,\
+"data_sobel_k40_980_980.dat" using 1:3 title 'Speed-up' w lp ls 4 axes x1y2 ,\
+
+
+#BLUR--------------------------------------------------
+
+#---------------------------------------------
+set output 'blur_k40_980.pdf'
+set xlabel 'Workload - K40'
+set key center 
+set x2label 'Workload - GTX980'
+#set title "Time - Speedup 3 GPU"
+plot  "data_blur_k40_980.dat" using 1:2 title 'Time' w lp ls 1 axes x1y1,\
+"data_blur_k40_980.dat" using 1:3 title 'Speed-up' w lp ls 4 axes x1y2 ,\
+
+
+#---------------------------------------------
+set output 'blur_k40_980_980.pdf'
+set xlabel 'Workload - K40'
+set key top center 
+set x2label 'Workload - GTX980 #1 and #2'
+#set title "Time - Speedup 3 GPU"
+plot  "data_blur_k40_980_980.dat" using 1:2 title 'Time' w lp ls 1 axes x1y1,\
+"data_blur_k40_980_980.dat" using 1:3 title 'Speed-up' w lp ls 4 axes x1y2 ,\
+
+
+#----------------BAR-----------------
+
+
+reset
+set terminal  pdf  enhanced color font 'Arial-Bold,10' size 2.5,3
+set boxwidth 0.6 
+set style fill   solid 1.00 border lt -1
+set grid nopolar
+set grid noxtics nomxtics ytics nomytics noztics nomztics nortics nomrtics \
+ nox2tics nomx2tics noy2tics nomy2tics nocbtics nomcbtics
+ set grid layerdefault   lt 0 linecolor 0 linewidth 0.500,  lt 0 linecolor 0 linewidth 0.500
+
+set lmargin at screen 0.15;
+set rmargin at screen 0.98;
+set bmargin at screen 0.259;
+set tmargin at screen 0.98;
+
+
+set style fill solid 
+set key top center
+set yrange [5:58]
+set style fill solid
+set xtics border in scale 0,0 nomirror rotate by -90  autojustify
+
+#set xlabel '#GPU'
+set ylabel 'Speed-up (X)'
 
 
 
+#-------------------------
+set output 'blur_scaling.pdf'
+set xtics rotate by 45 right 
+plot "data_blur_scaling.dat" using 1:3:xtic(2) t '' with boxes fillstyle pattern 1 lt -1 , 'data_blur_scaling.dat' using 1:3:3 with labels center boxed offset 0,1 notitle 
+
+
+#-------------------------
+set output 'sobel_scaling.pdf'
+set yrange [5:88]
+
+
+plot "data_sobel_scaling.dat" using 1:3:xtic(2)  t ''with boxes fillstyle pattern 1 lt -1 , 'data_sobel_scaling.dat' using 1:3:3 with labels center boxed offset 0,1 notitle
+
+
+#-------------------------
+set output 'fractal_true_scaling.pdf'
+set yrange [5:630]
+set lmargin at screen 0.16;
+set rmargin at screen 0.98;
+set bmargin at screen 0.175;
+set tmargin at screen 0.98;
+plot "data_fractal12k_scaling_true.dat" using 1:3:xtic(2)  t ''with boxes fillstyle pattern 1 lt -1 , 'data_fractal12k_scaling_true.dat' using 1:3:3 with labels center boxed offset 0,1 notitle
+
+
+
+#-------------------------
+set output 'fractal_false_scaling.pdf'
+set yrange [5:275]
+
+plot "data_fractal12k_scaling_false.dat" using 1:3:xtic(2)  t ''with boxes fillstyle pattern 1 lt -1 , 'data_fractal12k_scaling_false.dat' using 1:3:3 with labels center boxed offset 0,1 notitle
