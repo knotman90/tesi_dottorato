@@ -6,28 +6,29 @@
 \label{ch:FDM}
 \vskip 1em
 \dictum[Bertrand Russel]{%
-	All exact science is dominated by the idea of approximation. When a man tells you that he knows the exact truth about anything, you are safe in infering that he is an inexact man.. }%
+	All exact science is dominated by the idea of approximation. When a man tells you that he knows the exact truth about anything, you are safe in infering that he is an inexact man.}%
 \vskip 1em
 \dictum[John von Neumann]{%
 	Truth … is much too complicated to allow anything but approximations. }%
 \vskip 1em
 
-\lettrine[lines=3,lhang=0.33,lraise=0,loversize=0.15]{M}{ost} of the Partial Differential Equations (PDE) arising from formulation of physical problems are very hard to solve analytically, requiring approximate numerical solution.
-An important part of handling and solving PDEs is to be able to use local,accurate and stable algebraic expression as an approximation of the derivatives appearing in the equations retaining, at the same time, most of the global and continuous information of the original formulation.
-During the last half century several methods approximation methods have been developed and studied, such as the finite volume (FV), finite element (FE), and finite difference (FD) methods (FDM), each with specific approaches to discretization. 
-This chapter briefly describes the concept of differential equation and introduces their numerical solution using the Finite Difference Method. For a rigorous and complete descritpion of the topic of this chapter please refer to \cite{cita qui un paio di lavori}.
+\lettrine[lines=4]{M}{ost} of the Partial Differential Equations (PDE) arising from formulation of physical problems are very hard to solve analytically, requiring approximate numerical solution.
+An important part of handling and solving PDEs is to be able to use local, accurate and stable algebraic expression as an approximation of the derivatives appearing in the equations while retaining, at the same time, most of the global and continuous information of the original formulation.
+During the last half century several methods approximation methods have been developed and studied, such as the finite volume (FV), finite element (FE), and finite difference (FD) methods (FDM), each with its specific approach to discretization and strength. 
+
+This chapter briefly describes the concept of differential equation and introduces their numerical solution using the finite difference method. For a rigorous and complete description of the topic of this chapter please refer to \cite{doi:10.1137/1.9780898717839,CNM:CNM1630060303,Mazumder2016103}.
 
 \subsection{Differential Equation}
-A differential equation is an equation where the unknown is a function itself and where derivatives ot the unknown appears in the equation \cite{Larsoon:2004} \cite{Mcowen:2002}. Differential Equations can be divided into two main classes:
-
+A differential equation\cite{Larsoon:2004,Mcowen:2002} is an equation where the unknown is a function itself and where derivatives ot the unknown appears in the equation.
+Differential Equations can be divided into two main classes:
 \begin{description}
-\item[Ordinary Differential Equation (ODE)] where the unknown function contains only derivatives with the respect of a single variable. As example of ODE is the following
+\item[Ordinary Differential Equation (ODE):] \hfil \\ where the unknown function contains only derivatives with the respect of a single variable. As example of ODE is the following equation,
 \[
   \frac{d T}{d x} = \alpha T(x) +b
-\] where $a$ and $b$ are some constant.
+\] where $a$ and $b$ are real constants.
 
-\item [Partial Differential Equations (PDE)] which is an extremely large and rich of functions class each of them with a different behavior and properties. Examples of classes in of this kind of differential equations are parabolic, elliptic or hyperbolic equations. PDEs search for a multidimensional function of several variables, and this means that partial derivatives may now appears in the equation. 
-Examples of famous PDEs are:
+\item [Partial Differential Equations (PDE):] \hfil \\ a class that is extremely large and rich in functions, each of them with different behavior and properties. Examples of classes of this kind of differential equations are \textit{parabolic}, \textit{elliptic} or \textit{hyperbolic} equations. PDEs search for a multidimensional function of several variables, and this means that partial derivatives may now appears in the equation. 
+The following equations are among the most famous and popular PDEs:
    \begin{descritpion}
      \item [Transport Equation:] \hfil \\
      \begin{equation}
@@ -40,6 +41,7 @@ Examples of famous PDEs are:
      \item [1D wave equation:]\hfil \\  
      	\begin{equation}
      	\frac{\partial^2 T}{\partial t^2} -\frac{\partial^2 T}{\partial x^2}=0
+     	\label{eq:1dwave_equation}
      	\end{equation}
      \item [Laplace's equation:]\hfil \\  
      	\begin{equation}
@@ -52,12 +54,13 @@ Examples of famous PDEs are:
      	\end{equation}
    \end{descritpion}
 \end{description}
-Note that there is a missing piece that would allow all these equation to be solved unequivocally. The initial condition and/or boundary. For example, regarding the 1D wave equation, what is the reflection coefficient at the ends of the string? 
-Initial condition must be provided whenever the differential equation is time dependent. Boundary conditions must be specified whenever spacial dependency occurs. Boundary conditions specify the behavior of the equation at the boundary of the domain $\partial \Gamma$ (which has to be compact). Most common boundary conditions are of two kind:
+
+Note that there is a missing piece that would allow all these equation to be solved unequivocally, namely the initial condition and/or boundary. For example, regarding the $1$D wave equation (Equation \ref{eq:1dwave_equation}), is not clear what is the reflection coefficient at the ends of the string. 
+\textit{Initial} condition must be provided whenever the differential equation is time dependent and, \textit{boundary} conditions must be specified whenever spacial dependency occurs. The latter, in particular specifies the behavior of the equation at the boundary of the domain $\partial \Gamma$ (which has to be compact). The most commonly used boundary conditions defining a PDE are of two kind:
 \begin{description}
 	\item [Dirichlet:] \hfil \\ in which the values of the functions at $\partial \Gamma$ are hard-coded, i.e. $T(\partial \Gamma)$  is known.
 	
-	\item [Neumann:] specifies values of the derivatives at $\partial \Gamma$.
+	\item [Neumann:] \hfil \\ specifies values of the derivatives at $\partial \Gamma$.
 	
 \end{description} 
 Other kind of boundary conditions are possible, such as for instance the Robin's boundary conditions which is a mix of Dirichlet and Neumann ones. See Figure \ref{fig:heat2d_bc} for an example of Dirichlet boundary conditions for the equation \ref{eq:heat_equation}.
@@ -95,23 +98,19 @@ A refinement on the treatment of complex geometries and curvilinear boundaries i
 \end{equation}
 where $g_0$ specifies the values at the boundaries.
 \begin{figure}
-	\minipage{0.44\textwidth}
-	\begin{subfigure}{1.0\textwidth}
+\label{fig:approximation_complex_geometries}
+\caption{Approximation of curvilinear geometries on a square uniform computational grid. }
+	\begin{subfigure}[t]{0.381\textwidth}
 		\includegraphics[width=\linewidth]{./images/CA_FDM/grid_custom_shape}
 		\caption{Discretization of a curvilinear domain.}
 		\label{fig:gridcustomshape}
-	\end{subfigure}		
-	\endminipage\hfill
-	\minipage{0.53\textwidth}
-	\begin{subfigure}{1.0\textwidth}
+	\end{subfigure}\hspace{0.4cm}	
+	\begin{subfigure}[t]{0.52\textwidth}
 		\includegraphics[width=\linewidth]{./images/CA_FDM/gridcustom_shape2}
 		\caption{Interpolation of boundary values on a non rectangular geometry domain.}
 		\label{fig:gridcustom_shape2}
 	\end{subfigure}
-	\caption{}
-	\endminipage\hfill
 \end{figure}
-
 Figure \ref{fig:schematic_repr_fdm} is a schematic representation of how FDM are used to obtain a numerical solution. The continuous differential operators and the domain are discretized. The approximation is computed solving the difference formulas on grid points using.
 
    

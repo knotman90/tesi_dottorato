@@ -8,11 +8,11 @@ set size 1,1;
 # ps = point size
 set style line 1 lt 1 lc rgb "#A00000" lw 2.5 pt 3 ps 1.1
 set style line 4 lt 1 lc rgb "#0000A0" lw 2.5 pt 6 ps 1.1
-
+set style line 5 lt 1 lc rgb "#D0D000" lw 2.5 pt 4 ps 1.1
 #--------other styles--------
 #set style line 2 lt 1 lc rgb "#00A000" lw 2.5 pt 11 ps 1.1
 #set style line 3 lt 1 lc rgb "#5060D0" lw 2.5 pt 9 ps 1.1
-#set style line 5 lt 1 lc rgb "#D0D000" lw 2.5 pt 4 ps 1.1
+
 #set style line 6 lt 1 lc rgb "#00D0D0" lw 2.5 pt 12 ps 1.1
 #set style line 7 lt 1 lc rgb "#B200B2" lw 2.5 pt 5 ps 1.1
 
@@ -158,6 +158,36 @@ set x2label 'Workload - GTX980 #1 and #2'
 #set title "Time - Speedup 3 GPU"
 plot  "data_blur_k40_980_980.dat" using 1:2 title 'Time' w lp ls 1 axes x1y1,\
 "data_blur_k40_980_980.dat" using 1:3 title 'Speed-up' w lp ls 4 axes x1y2 ,\
+
+
+
+#----------sciddicaT---------
+set xrange [0 : 3600.0]
+set x2range [3600 : 0.0]
+#---------------------------------------------
+set output 'sciddica_k40_980.pdf'
+set xlabel 'Workload - K40'
+set key top right 
+set x2label 'Workload - GTX980'
+#set title "Time - Speedup 2 GPU"
+plot  "data_sciddicaT-k40_980.dat" using 1:2 title 'Time' w lp ls 1 axes x1y1,\
+"data_sciddicaT-k40_980.dat" using 1:3 title 'Speed-up' w lp ls 4 axes x1y2 ,\
+
+
+#---------------------------------------------
+set output 'sciddica_980_980.pdf'
+set xlabel 'Workload - K40'
+set key top right 
+set x2label 'Workload - GTX980'
+#set title "Time - Speedup 2 GPU"
+plot  "data_sciddicaT-980_980.dat" using 1:2 title 'Time' w lp ls 1 axes x1y1,\
+"data_sciddicaT-980_980.dat" using 1:3 title 'Speed-up 1' w lp ls 4 axes x1y2 ,\
+"data_sciddicaT-980_980.dat" using 1:4 title 'Speed-up 16' w lp ls 5 axes x1y2 ,\
+
+
+
+
+
 
 
 #----------------BAR-----------------
