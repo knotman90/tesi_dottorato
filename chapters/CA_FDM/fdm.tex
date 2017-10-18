@@ -18,7 +18,7 @@ During the last half century several methods approximation methods have been dev
 
 This chapter briefly describes the concept of differential equation and introduces their numerical solution using the finite difference method. For a rigorous and complete description of the topic of this chapter please refer to \cite{doi:10.1137/1.9780898717839,CNM:CNM1630060303,Mazumder2016103}.
 
-\subsection{Differential Equation}
+\section{Differential Equation}
 A differential equation\cite{Larsoon:2004,Mcowen:2002} is an equation where the unknown is a function itself and where derivatives ot the unknown appears in the equation.
 Differential Equations can be divided into two main classes:
 \begin{description}
@@ -91,7 +91,7 @@ Other kind of boundary conditions are possible, such as for instance the Robin's
 \end{center} 
 
 %------------------Finite difference Formulas-------------------------------
-    \section{Finite Difference Method}
+\section{Finite Difference Method}
 The finite difference approximation for derivatives is one of the simplest oldest method to solve differential equations numerically. It was used since 1768 by \textit{L. Euler} to solve one dimensional problems and extended by \textit{C. Runge} to two dimension in 1910. Since the advent of computers in 1950, FDM  popularity skyrocketed also thanks to the theoretical results that have been obtained regarding stability, convergence and other of its properties during the last five decades.
 
 The general idea behind FDM is that the differential operator is approximated by replacing the derivatives using difference quotients. The differential operator is approximated constituting the field equation locally, among a number of finite function values. Therefore, the space and time domain are \textit{partitioned} in a grid like fashion in order to store the local field quantities, and approximated solutions are computed only for those discrete grid points. The numerical solution is known only at a finite number of points in the physical domain. 
@@ -150,20 +150,19 @@ Figure \ref{fig:schematic_repr_fdm} is a schematic representation of how FDM are
     
     
 \subsection{Finite Difference Formulas}
-The differential operators appearing in a PDE problem can be approximated at a given point by a difference formula which is a linear function of its neighboring grid points. Finite difference formula can be defined and derived in a number of ways deriving but some of them are more widely and commonly used then others. The rest of this section shows how these common formulas are derived along with their basic properties. 
+The differential operators appearing in a PDE problem can be approximated at a given point by a difference formula which is a linear function of its neighboring grid points. Finite difference formula can be defined and derived in a number of ways  but some of them are more widely and commonly used then others. The rest of this section shows how these common formulas are derived along with their basic properties. 
 
 For the sake of simplicity the formulas are refereed to a one-dimensional space and time domain since the generalization to several dimensions is obvious.
-Both space and time domain are partitioned into a finite discrete mesh as follows:    
+Both space and time domains are partitioned into a finite discrete mesh as follows:    
  \begin{equation}
     		t_n = n\Delta t, \: n = 0,1,\ldots,L,\; \Delta t= \frac{1}{L}
     \end{equation}
     \begin{equation}
     		x_j = j\Delta x, \: j = 0,1,\ldots,M,\;\Delta x = \frac{1}{M}
     \end{equation}
-
 For the rest of the chapter, it can be assumed that grid points are identifies by two indices (see Figure \ref{fig:fdmheatequationstencil}) and $T_j^n$ is the value the function at time $n$ at grid point $j$.
 
-\subsection{Forward Scheme}
+\subsubsection{Forward Scheme}
     The \textit{forward} scheme is probably the most common FD formula and can be derived from Taylor's expansion of $T^n_{j+1}$ in terms of $T^n_{j}$ and its derivatives as:
     \begin{equation}
     T^n_{j+1} = T^n_{j} +
@@ -177,9 +176,9 @@ For the rest of the chapter, it can be assumed that grid points are identifies b
     \frac{\partial T(t,x)}{\partial x}  = \frac{T^n_{j+1} - T^n_{j}}{\Delta x} + \mathcal{O}(\Delta x)
     \label{eq:fdmforward}
     \end{equation}    
-    Equation \ref{eq:fdmforward} is called fist \textbf{forward} finite difference approximation. Other approximations are possible and are easily obtainable by expanding different and/or more points of the grids in the Taylor expression.
+    Equation \ref{eq:fdmforward} is called \textbf{first order forward} finite difference approximation. Other approximations are possible and are easily obtainable by expanding different and/or more points of the grids in the Taylor's expression.
     
-  \subsection{Backward Scheme}  
+  \subsubsection{Backward Scheme}  
     \textbf{Backward} finite difference quotient can be obtained from the Taylor's expansions of  $T^n_{j-1}$  in terms of $T^n_{j}$ and its derivatives:
     \begin{equation}
     T^n_{j-1} = T^n_{j} - 
@@ -187,10 +186,9 @@ For the rest of the chapter, it can be assumed that grid points are identifies b
     \frac{1}{2!}  \frac{\partial^2 T}{\partial x^2}\bigg\rvert_j \Delta x^2 + \ldots + 
      \frac{1}{k!}  \frac{\partial^k T}{\partial x^k}\bigg\rvert_j \Delta x^k + \ldots
      \label{eq:taylorexp2}
-    \end{equation}
-    
+    \end{equation}    
     which can be rearranged in the following manner
-        \begin{equation}
+    \begin{equation}
     \frac{\partial T}{\partial x}\bigg\rvert_j  = \frac{T^n_{j} - T^n_{j-1}}{\Delta x} + \mathcal{O}(\Delta x)
     \label{eq:fdmfbackward}
     \end{equation}
@@ -210,7 +208,7 @@ For the rest of the chapter, it can be assumed that grid points are identifies b
 \end{figure}     
 Note that this approach in deriving FD formulas can be generalized in order to obtain FD approximation for derivatives of any order.
 
- \subsection{Mixed Derivatives}
+ \subsubsection{Mixed Derivatives}
 
 Mixed derivatives con also be approximated using FDM, e.g. for two dimensions by means of the following property of mixed derivatives:
 \begin{equation}
@@ -239,32 +237,21 @@ A second order 2 variables finite difference approximation for the mixed derivat
 Extending the former method to higher dimensional mixed derivatives is straightforward.
 
     %------------------HEAT Equation-------------------------------
-    \section{Heat Equation}
-        As an example a simple FDM scheme for an initial-boundary condition problem for the heat conduction problem is derived. 
-    
+\section{Heat Equation}
+        As an example, a simple FDM scheme for the heat conduction initial-boundary value problem shown in Equation \ref{eq:heatconduction} is derived. 
 \begin{equation}
     \frac{\partial T(t,x)}{\partial t}= \kappa\frac{\partial^2
       T(t,x)}{\partial x^2}
       \label{eq:heatconduction}
-\end{equation}
- 
-    where $0 \leq t \leq L$ and $0 \leq x \leq
-    M$. 
- In order to construct a FD approximation for equation \ref{eq:heatconduction} 
- 
- \begin{figure}[b]
- 	\centering
- 	\includegraphics[scale=0.5]{./images/CA_FDM/heatstencil}
- 	\caption{Explicit FDM discretization for the 1D heat conduction problem}\label{torus}
- 	\label{fig:fdmheatequationstencil}
- 
- \end{figure}   
- 
- \begin{enumerate}
- 
- \item Discretize the domain into a finite regular mesh where each point $x_j$ is identified with a unique index $j$.
+\end{equation} 
+    where $0 \leq t \leq L$ and $0 \leq x \leq M$. 
     
- \item  First and second order derivative appearing in \ref{eq:heatconduction} are substituted by forward and central difference formulas, respectively, leading to Equation \ref{eq:discretizedheatequation} (see Figure  \ref{fig:fdmheatequationstencil}):
+ In order to construct a FD approximation for equation \ref{eq:heatconduction} is it necessary to:  
+ \begin{enumerate}
+  
+  \item discretize the domain into a finite uniform and regular mesh where each point $x_j$ is identified with a unique index $j$.
+   
+ \item  first and second order derivative appearing in Equation \ref{eq:heatconduction} are substituted by forward and central difference formulas, respectively, leading to Equation \ref{eq:discretizedheatequation} 
  
  \begin{equation}
   \frac{T^{n+1}_{j} - T^n_{j}}{\Delta t} = \kappa \frac{T^n_{j+1}- 2T^n_{j} + T^n_{j-1}}{\Delta x^2}
@@ -274,43 +261,44 @@ Extending the former method to higher dimensional mixed derivatives is straightf
  \item Equation \ref{eq:heatconduction} is evaluated at grid point $(n\Delta t, j \Delta x)$ 
     
 \end{enumerate}    
-    
-
-    
+Figure  \ref{fig:fdmheatequationstencil} depicts the set of points that play a role in the difference formula \ref{eq:discretizedheatequation}, commonly refeered as to the \textit{stencil}. Each point of the stencil is used at time $m$ in order to compute grid values at time $m+1$ as shown in Figure \ref{fig:heat_equation_time_space_partitioning}.
+\begin{figure}[b]
+  	\centering
+  	\includegraphics[scale=0.5]{./images/CA_FDM/heatstencil}
+  	\caption{Explicit FDM stencil for the considered discretization of the 1D heat conduction problem.}\label{torus}
+   	\label{fig:fdmheatequationstencil}
+\end{figure}   
 \begin{figure}
 \centering
 \includegraphics[width=0.6\textwidth]{./images/CA_FDM/fdmgrid}
-\caption{1D heat equation FDM grid space and time partitioning.}\label{torus}
+\caption[1D-heat equation FDM space and time partitioning]{1D-heat equation FDM space and time partitioning. The solution for  grid point $(i,m+1)$ is explicitely computed by considering points $(i,m),(i-1,m),(i+1,m)$}
+\label{fig:heat_equation_time_space_partitioning}
 \end{figure}
-
 Solution to equation \ref{eq:heatconduction} using the discretization \ref{eq:discretizedheatequation} is called \textit{forward time, centered space or FTCS} approximation and requires the specification of initial conditions at $t=0$ and boundary condition at $x=0$ and $x=M$ (see Figure \ref{fig:heat2d_bc}).
 
 It can be shown that in order to the solution to be stable $\Delta t$ must not be too large and in particular the following condition must hold to ensure a stable solution \cite{isaacson:1994,anderson:1994,crank:1996}:
 \[ 
  r= k \frac{\Delta t}{\Delta x^2}< \frac{1}{2}
 \]
-
-This scheme is also called explicit because values the the next time are explicitly computable from the values at the current time as it is shown in the equation \ref{eq:discretizedheatequation1}.
+This scheme is also called \textit{explicit} because values the the next time are explicitly computable from the values at the current time as it is shown in the equation \ref{eq:discretizedheatequation1}.
  \begin{equation}
   T^{n+1}_{j} = T^n_{j} + \frac{k \Delta t}{\Delta x^2} (T^n_{j+1}+T^n_{j-1}-2T^n_{j})
  \label{eq:discretizedheatequation1}
  \end{equation}
 
 %%backward heat equation
-When the backward difference formula is used for approximating the time derivative the following approximation is obtained
-
+When the backward difference formula is used for approximating the time derivative the following approximation is obtained:
  \begin{equation}
   \frac{T^{n}_{j} - T^{n-1}_{}}{\Delta x} = k \frac{T^n_{j+1}- 2T^n_{j} + T^n_{j-1}}{\Delta x^2}
  \label{eq:discretizedheatequation_implicit}
  \end{equation}
- This stepping scheme is called implicit because values at time $n$ are given implicitly as can be seen if equation \ref{eq:discretizedheatequation_implicit} is rearranged to obtain the following: 
+ This stepping scheme is called \textit{implicit} because values at time $n$ are given implicitly as can be seen if equation \ref{eq:discretizedheatequation_implicit} is rearranged to obtain the following: 
  \begin{equation}
 T^n_{j} - \frac{k \Delta t}{\Delta x^2} (T^n_{j+1}+T^n_{j-1}-2T^n_{j}) =   T^{n-1}_{j}
  \label{eq:discretizedheatequation1}
  \end{equation}
- In order to obtain values of T at time $n$ a system of non trivial algebraic equation has to be solved. 
- It can be rewritten in matrix form yielding to a linear tridiagonal system (see Figure \ref{fig:tridiagonal_matrix}).
-
+ In order to obtain values of $T$ at time $n$ a system of non trivial algebraic equations has to be solved. 
+ It can be rewritten in matrix form yielding to a linear tridiagonal system asshown in Figure \ref{fig:tridiagonal_matrix}.
 \begin{figure}
 \begin{tikzpicture}[baseline=(current bounding box.center)]
 \matrix (m) [matrix of math nodes,nodes in empty cells,right delimiter={]},left delimiter={[} ]{
@@ -358,27 +346,25 @@ T^n_{j} - \frac{k \Delta t}{\Delta x^2} (T^n_{j+1}+T^n_{j-1}-2T^n_{j}) =   T^{n-
 \caption{Tridiagonal Matrix.}
 \label{fig:tridiagonal_matrix}
 \end{figure}
+where $\lambda = \frac{k\Delta t}{\Delta x^2}$ for which an efficient algorithms exist, the \textit{Thomas's algorithm} \cite{Datta:2010,Higham:2002}, which solves it in ${\Theta}(n)$ where $n$ is the number of unknowns.
 
-
-  where $\lambda = \frac{k\Delta t}{\Delta x^2}$ for which an efficient algorithms exist, Thomas's algorithm \cite{Datta:2010,Higham:2002}, which solves it in ${\Theta}(n)$ where $n$ is the number of unknowns.
- 
 
 
         
     %%XCA and finite difference method-----------------------------------
 \section[Solving FDM with XCA]{Solving Finite Difference Problems FDM with Extended Cellular Automata}
-    XCA can be employed for both explicit and implicit schemes to
-    represent FDM models in formal terms. In fact, in case of an
+    XCA can be employed for both explicit and implicit schemes to formally
+    represent FDM models. In fact, with reference to the definitions given in Chapter \ref{ch:CA}, in case of an
     explicit scheme, the computational domain can be represented by
     means of the $R$ cellular space and the coordinates of the grid
     points involved in the recurrence formula defined by means of the
-    $X$ neighbourhood relationship. Moreover, the values of involved
+    $X$ neighborhood relationship. Moreover, the values of the involved
     variables can be represented in terms of substates and the
     explicit recurrence formula easily expressed in terms of
-    elementary processes. Instead, while dealing with a linear system
+    elementary processes. On the other hand, when dealing with a linear system
     resulting from an implicit FDM scheme, a steering function can be
-    employed instead of elementary processes, together with an
-    external linear algebra solver.
+    employed in association with together with an
+    external linear algebra solver e.g. BLAS\cite{2002:USB:567806.567807} or other dedicated libraries\cite{Kestur:2010:BCF:1848074.1848496} .
 
     It is worth to recall that physically-based models laying on a XCA
     direct discrete approach (i.e., not going through the
@@ -393,7 +379,7 @@ T^n_{j} - \frac{k \Delta t}{\Delta x^2} (T^n_{j+1}+T^n_{j-1}-2T^n_{j}) =   T^{n-
     equation system would allow a greater level of convergence with
     respect to traditional methods if an irregular mesh is used
     and a not linear (e.g., quadratic) interpolation of the hydraulic
-    head on the cells is adopted (e.g., Tonti proved it for the Finite
+    head on the cells is adopted (e.g., \citeauthor{Tonti2001237} proved it for the Finite
     Element Method \cite{Tonti2001237}). 
 
 
