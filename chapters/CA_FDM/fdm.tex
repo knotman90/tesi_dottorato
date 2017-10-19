@@ -12,11 +12,11 @@
 	Truth … is much too complicated to allow anything but approximations. }%
 \vskip 1em
 
-\lettrine[lines=4]{M}{ost} of the Partial Differential Equations (PDE) arising from formulation of physical problems are very hard to solve analytically, requiring approximate numerical solution.
-An important part of handling and solving PDEs is to be able to use local, accurate and stable algebraic expression as an approximation of the derivatives appearing in the equations while retaining, at the same time, most of the global and continuous information of the original formulation.
-During the last half century several methods approximation methods have been developed and studied, such as the finite volume (FV), finite element (FE), and finite difference (FD) methods (FDM), each with its specific approach to discretization and strength. 
+\lettrine[lines=4]{M}{ost} of the Partial Differential Equations (PDE) arising from formulation of physical problems are very hard to solve analytically, requiring approximate numerical solutions.
+An important part of handling and solving PDEs is to be able to use local, accurate and stable algebraics expression as an approximation of the derivatives appearing in the equations while retaining, at the same time, most of the global and continuous information of the original formulation.
+During the last half century several approximation methods have been developed and studied, such as the finite volume (FV), finite element (FE), and finite difference (FD) methods (FDM), each with its specific approach to discretization and strength. 
 
-This chapter briefly describes the concept of differential equation and introduces their numerical solution using the finite difference method. For a rigorous and complete description of the topic of this chapter please refer to \cite{doi:10.1137/1.9780898717839,CNM:CNM1630060303,Mazumder2016103}.
+This chapter briefly describes the concept of differential equations and introduces their numerical solution using the finite difference method. For a rigorous and complete description of the topic of this chapter please refer to \cite{doi:10.1137/1.9780898717839,CNM:CNM1630060303,Mazumder2016103}.
 
 \section{Differential Equation}
 A differential equation\cite{Larsoon:2004,Mcowen:2002} is an equation where the unknown is a function itself and where derivatives ot the unknown appears in the equation.
@@ -27,7 +27,7 @@ Differential Equations can be divided into two main classes:
   \frac{d T}{d x} = \alpha T(x) +b
 \] where $a$ and $b$ are real constants.
 
-\item [Partial Differential Equations (PDE):] \hfil \\ a class that is extremely large and rich in functions, each of them with different behavior and properties. Examples of classes of this kind of differential equations are \textit{parabolic}, \textit{elliptic} and \textit{hyperbolic} equations. PDEs search for a multidimensional function of several variables, and this means that partial derivatives may now appears in the equation. 
+\item [Partial Differential Equations (PDE):] \hfil \\ a class that is extremely large and rich in functions, each of them with different behaviors and properties. Examples of classes of this kind of differential equations are \textit{parabolic}, \textit{elliptic} and \textit{hyperbolic} equations. PDEs search for a multidimensional function of several variables, and this means that partial derivatives may now appears in the equation. 
 The following equations are among the most famous and popular PDEs:
    \begin{descritpion}
      \item [1D Transport Equation:] \hfil \\
@@ -63,15 +63,15 @@ The following equations are among the most famous and popular PDEs:
    \end{descritpion}
 \end{description}
 
-Note that there is a missing piece that would allow all these equation to be solved unequivocally, namely the initial condition and/or boundary. For example, regarding the $1$D wave equation (Equation \ref{eq:1dwave_equation}), is not clear what is the reflection coefficient at the ends of the string or with  regarding the heat equation (Equation \ref{eq:heat_equation}) what is the initial temperature at time $t=0$. 
-\textit{Initial} condition must be provided whenever the differential equation is time dependent and, \textit{boundary} conditions must be specified whenever spacial dependency occurs. The latter, in particular specifies the behavior of the equation at the boundary of the domain $\partial \Gamma$ (which has to be compact). The most commonly used boundary conditions defining a PDE are of two kind:
+Note that there is a missing piece that would allow all these equations to be solved unequivocally, namely the initial condition and/or boundary. For example, regarding the $1$D wave equation (Equation \ref{eq:1dwave_equation}), it is not clear what the reflection coefficient at the ends of the string is, or with  regarding the heat equation (Equation \ref{eq:heat_equation}) what  the initial temperature at time $t=0$ is. 
+\textit{Initial} conditions must be provided whenever the differential equation is time dependent and, \textit{boundary} conditions must be specified whenever spacial dependency occurs. The latter, in particular specifies the behavior of the equation at the boundary of the domain $\partial \Gamma$ (which has to be compact). The most commonly used boundary conditions defining a PDE are of two kinds:
 \begin{description}
 	\item [Dirichlet:] \hfil \\ in which the values of the functions at $\partial \Gamma$ are hard-coded, i.e. $T(\partial \Gamma)$  is known.
 	
 	\item [Neumann:] \hfil \\ specifies values of the derivatives at $\partial \Gamma$.
 	
 \end{description} 
-Other kind of boundary conditions are possible, such as for instance the Robin's boundary conditions\cite{Estep:1996:CDE:548037} which is a mix of Dirichlet and Neumann ones. See Figure \ref{fig:heat2d_bc} for an example of Dirichlet boundary conditions for the equation \ref{eq:heat_equation}.
+Other kinds of boundary conditions are possible, such as for instance the Robin's boundary conditions\cite{Estep:1996:CDE:548037} which is a mix of Dirichlet and Neumann ones. See Figure \ref{fig:heat2d_bc} for an example of Dirichlet boundary conditions for the equation \ref{eq:heat_equation}.
 
     \begin{center}
 	\begin{figure}
@@ -92,11 +92,11 @@ Other kind of boundary conditions are possible, such as for instance the Robin's
 
 %------------------Finite difference Formulas-------------------------------
 \section{Finite Difference Method}
-The finite difference approximation for derivatives is one of the simplest oldest method to solve differential equations numerically. It was used since 1768 by \textit{L. Euler} to solve one dimensional problems and extended by \textit{C. Runge} to two dimension in 1910. Since the advent of computers in 1950, FDM  popularity skyrocketed also thanks to the theoretical results that have been obtained regarding stability, convergence and other of its properties during the last five decades.
+The finite difference approximation for derivatives is one of the simplest oldest methods to solve differential equations numerically. It is used since 1768 by \textit{L. Euler} to solve one dimensional problems and extended by \textit{C. Runge} to two dimensions in 1910. Since the advent of computers in 1950, FDM  popularity skyrocketed also thanks to the theoretical results that have been obtained regarding stability, convergence and other of its properties during the last five decades.
 
-The general idea behind FDM is that the differential operator is approximated by replacing the derivatives using difference quotients. The differential operator is approximated constituting the field equation locally, among a number of finite function values. Therefore, the space and time domain are \textit{partitioned} in a grid like fashion in order to store the local field quantities, and approximated solutions are computed only for those discrete grid points. The numerical solution is known only at a finite number of points in the physical domain. 
-Difference quotients are linear combination of function values at neighboring grid points. The number of different points appearing in the quotient directly dictates the order ot the differential operator.
-We can always assume rectangular grid since we can always  specify boundary conditions for the grid points such that they mimic the real shape of the boundary at hand, (see Figure \ref{fig:gridcustomshape}).
+The general idea behind FDM is that the differential operator is approximated by replacing the derivatives using difference quotients. The differential operator is approximated constituting the field equation locally, among a number of finite function values. Therefore, the space and time domain are \textit{partitioned} in a grid-like fashion in order to store the local field quantities, and approximated solutions are computed only for those discrete grid points. The numerical solution is known only at a finite number of points in the physical domain. 
+Difference quotients are a linear combination of function values at neighboring grid points. The number of different points appearing in the quotient directly dictates the order ot the differential operator.
+We can always assume that the domain is discretized via a rectangular grid since we can always specify boundary conditions for the grid points such that they mimic the real shape of the boundary at hand, (see Figure \ref{fig:gridcustomshape}).
 Complex geometries and curvilinear boundaries can be treated computing the value of such points that lie on the boundary as a linear interpolation of neighboring boundary \textbf{grid points} as shown in Figure \ref{fig:gridcustom_shape2} and Equation \ref{eq:interpolateboundary}.
 
 \begin{equation}
@@ -118,7 +118,7 @@ where $g_0$ specifies the values at the boundaries.
 		\label{fig:gridcustom_shape2}
 	\end{subfigure}
 \end{figure}
-Figure \ref{fig:schematic_repr_fdm} is a schematic representation of how FDM are used to obtain a numerical solution. The continuous differential operators and the domain are discretized. The approximation is computed solving the difference formulas on grid points using.
+Figure \ref{fig:schematic_repr_fdm} is a schematic representation of how FDM is used to obtain a numerical solution. The continuous differential operators and the domain are discretized. The approximation is computed solving the difference formulas on grid points using.
 
    
 
@@ -137,7 +137,7 @@ Figure \ref{fig:schematic_repr_fdm} is a schematic representation of how FDM are
     \label{fig:schematic_repr_fdm}
 \end{figure}
     
-    The error, between the numerical solution and the exact solution is determined by the difference formula utilized and is commonly refeered as \textit{truncation}\footnote{The term truncation comes from the fact that a finite difference quotient is a truncation of the Taylor expansion.} or \textit{discretization} error.  Increasing the resoution of the grid increases the accuracy of the numerical solution since the error associated with the finite difference formulas directly depends on the distance between grid points.
+    The error between the numerical solution and the exact solution is determined by the difference formula utilized and is commonly refeered to as \textit{truncation}\footnote{The term truncation comes from the fact that a finite difference quotient is a truncation of the Taylor expansion.} or \textit{discretization} error.  Increasing the resoution of the grid increases the accuracy of the numerical solution since the error associated with the finite difference formulas directly depends on the distance between grid points.
     
         
     Depending on how the derivatives are approximated, explicit or implicit FDM schemes are
@@ -160,7 +160,7 @@ Both space and time domains are partitioned into a finite discrete mesh as follo
     \begin{equation}
     		x_j = j\Delta x, \: j = 0,1,\ldots,M,\;\Delta x = \frac{1}{M}
     \end{equation}
-For the rest of the chapter, it can be assumed that grid points are identifies by two indices (see Figure \ref{fig:fdmheatequationstencil}) and $T_j^n$ is the value the function at time $n$ at grid point $j$.
+For the rest of the chapter, it can be assumed that grid points are identified by two indices (see Figure \ref{fig:fdmheatequationstencil}) and $T_j^n$ is the value the function at time $n$ at grid point $j$.
 
 \subsubsection{Forward Scheme}
     The \textit{forward} scheme is probably the most common FD formula and can be derived from Taylor's expansion of $T^n_{j+1}$ in terms of $T^n_{j}$ and its derivatives as:
@@ -179,7 +179,7 @@ For the rest of the chapter, it can be assumed that grid points are identifies b
     Equation \ref{eq:fdmforward} is called \textbf{first order forward} finite difference approximation. Other approximations are possible and are easily obtainable by expanding different and/or more points of the grids in the Taylor's expression.
     
   \subsubsection{Backward Scheme}  
-    \textbf{Backward} finite difference quotient can be obtained from the Taylor's expansions of  $T^n_{j-1}$  in terms of $T^n_{j}$ and its derivatives:
+    The \textbf{Backward} finite difference quotient can be obtained from the Taylor's expansions of  $T^n_{j-1}$  in terms of $T^n_{j}$ and its derivatives:
     \begin{equation}
     T^n_{j-1} = T^n_{j} - 
     \frac{\partial T}{\partial x}\bigg\rvert_j \Delta x +
@@ -194,12 +194,12 @@ For the rest of the chapter, it can be assumed that grid points are identifies b
     \end{equation}
     
    The same approach can be used to derive approximation for higher order derivatives.
-   For example equation \ref{eq:fdmcentral}, known called \textbf{central difference formula}, is an approximation for the second order derivative and can be obtained retaining the firsts four terms in both equations \ref{eq:taylorexp1} and \ref{eq:taylorexp2} and adding the resulting expression:   
+   For example equation \ref{eq:fdmcentral}, known as \textbf{central difference formula}, is an approximation for the second order derivative and can be obtained retaining the first four terms in both equations \ref{eq:taylorexp1} and \ref{eq:taylorexp2} and adding the resulting expression:   
     \begin{equation}
 		\frac{\partial^2 T}{\partial x^2}\bigg\rvert_j = \frac{T^n_{j+1}- 2T^n_{j} + T^n_{j-1}}{\Delta x^2} + \mathcal{O}(\Delta x^2)
 		\label{eq:fdmcentral}
     \end{equation}    
-    Figure \ref{fig:geometrical_intepretation} show how finite difference formulas can be interpreted geometrically.
+    Figure \ref{fig:geometrical_intepretation} shows how finite difference formulas can be interpreted geometrically.
 \begin{figure}
 	\centering
 	\includegraphics[width=0.70\textwidth]{./images/CA_FDM/geometrical_interpretation_fd}
@@ -246,7 +246,7 @@ Extending the former method to higher dimensional mixed derivatives is straightf
 \end{equation} 
     where $0 \leq t \leq L$ and $0 \leq x \leq M$. 
     
- In order to construct a FD approximation for equation \ref{eq:heatconduction} is it necessary to:  
+ In order to construct a FD approximation for equation \ref{eq:heatconduction} it is necessary to:  
  \begin{enumerate}
   
   \item discretize the domain into a finite uniform and regular mesh where each point $x_j$ is identified with a unique index $j$.
@@ -261,7 +261,7 @@ Extending the former method to higher dimensional mixed derivatives is straightf
  \item Equation \ref{eq:heatconduction} is evaluated at grid point $(n\Delta t, j \Delta x)$ 
     
 \end{enumerate}    
-Figure  \ref{fig:fdmheatequationstencil} depicts the set of points that play a role in the difference formula \ref{eq:discretizedheatequation}, commonly refeered as to the \textit{stencil}. Each point of the stencil is used at time $m$ in order to compute grid values at time $m+1$ as shown in Figure \ref{fig:heat_equation_time_space_partitioning}.
+Figure  \ref{fig:fdmheatequationstencil} depicts the set of points that play a role in the difference formula \ref{eq:discretizedheatequation}, commonly refeered to as the \textit{stencil}. Each point of the stencil is used at time $m$ in order to compute grid values at time $m+1$ as shown in Figure \ref{fig:heat_equation_time_space_partitioning}.
 \begin{figure}[b]
   	\centering
   	\includegraphics[scale=0.5]{./images/CA_FDM/heatstencil}
@@ -280,14 +280,14 @@ It can be shown that in order to the solution to be stable $\Delta t$ must not b
 \[ 
  r= k \frac{\Delta t}{\Delta x^2}< \frac{1}{2}
 \]
-This scheme is also called \textit{explicit} because values the the next time are explicitly computable from the values at the current time as it is shown in the equation \ref{eq:discretizedheatequation1}.
+This scheme is also called \textit{explicit} because values at the subsequent  time step are explicitly computable from the values at the current time as it is shown in the equation \ref{eq:discretizedheatequation1}.
  \begin{equation}
   T^{n+1}_{j} = T^n_{j} + \frac{k \Delta t}{\Delta x^2} (T^n_{j+1}+T^n_{j-1}-2T^n_{j})
  \label{eq:discretizedheatequation1}
  \end{equation}
 
 %%backward heat equation
-When the backward difference formula is used for approximating the time derivative the following approximation is obtained:
+When the backward difference formula is used to approximate the time derivative the following approximation is obtained:
  \begin{equation}
   \frac{T^{n}_{j} - T^{n-1}_{}}{\Delta x} = k \frac{T^n_{j+1}- 2T^n_{j} + T^n_{j-1}}{\Delta x^2}
  \label{eq:discretizedheatequation_implicit}
@@ -298,7 +298,7 @@ T^n_{j} - \frac{k \Delta t}{\Delta x^2} (T^n_{j+1}+T^n_{j-1}-2T^n_{j}) =   T^{n-
  \label{eq:discretizedheatequation1}
  \end{equation}
  In order to obtain values of $T$ at time $n$ a system of non trivial algebraic equations has to be solved. 
- It can be rewritten in matrix form yielding to a linear tridiagonal system asshown in Figure \ref{fig:tridiagonal_matrix}.
+ It can be rewritten in matrix form yielding to a linear tridiagonal system as shown in Figure \ref{fig:tridiagonal_matrix}.
 \begin{figure}
 \begin{tikzpicture}[baseline=(current bounding box.center)]
 \matrix (m) [matrix of math nodes,nodes in empty cells,right delimiter={]},left delimiter={[} ]{
@@ -346,7 +346,7 @@ T^n_{j} - \frac{k \Delta t}{\Delta x^2} (T^n_{j+1}+T^n_{j-1}-2T^n_{j}) =   T^{n-
 \caption{Tridiagonal Matrix.}
 \label{fig:tridiagonal_matrix}
 \end{figure}
-where $\lambda = \frac{k\Delta t}{\Delta x^2}$ for which an efficient algorithms exist, the \textit{Thomas's algorithm} \cite{Datta:2010,Higham:2002}, which solves it in ${\Theta}(n)$ where $n$ is the number of unknowns.
+where $\lambda = \frac{k\Delta t}{\Delta x^2}$ for which an efficient algorithm exists, the \textit{Thomas's algorithm} \cite{Datta:2010,Higham:2002}, which solves it in ${\Theta}(n)$ where $n$ is the number of unknowns.
 
 
 
@@ -363,7 +363,7 @@ where $\lambda = \frac{k\Delta t}{\Delta x^2}$ for which an efficient algorithms
     explicit recurrence formula easily expressed in terms of
     elementary processes. On the other hand, when dealing with a linear system
     resulting from an implicit FDM scheme, a steering function can be
-    employed in association with together with an
+    employed in association with an
     external linear algebra solver e.g. BLAS\cite{2002:USB:567806.567807} or other dedicated libraries\cite{Kestur:2010:BCF:1848074.1848496} .
 
     It is worth to recall that physically-based models laying on a XCA
@@ -374,13 +374,12 @@ where $\lambda = \frac{k\Delta t}{\Delta x^2}$ for which an efficient algorithms
     approach. \cite{Mendicino2006} proved that
     their direct discrete formulation of the Darcy equation for
     modelling unsaturated flow in a three-dimensional cubic cell
-    system is similar to the one achieved using an explicit FDM or
+    system is similar to the one achieved using an explicit FDM or a
     finite volume scheme. However, the same discrete governing
     equation system would allow a greater level of convergence with
-    respect to traditional methods if an irregular mesh is used
+    respect to traditional methods if an irregular mesh were used
     and a not linear (e.g., quadratic) interpolation of the hydraulic
-    head on the cells is adopted (e.g., \citeauthor{Tonti2001237} proved it for the Finite
-    Element Method \cite{Tonti2001237}). 
+    head on the cells were adopted (e.g., \citeauthor{Tonti2001237} proved it for the Finite  Element Method \cite{Tonti2001237}). 
 
 
 

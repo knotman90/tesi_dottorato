@@ -25,70 +25,49 @@ the famous \textit{Conway's} game of life\cite{conway1970} appeared, and since t
 
 \section{Informal Definition}
 
-Informally a \emph{cellular automata} (CA) is a mathematical model that
+A \emph{cellular automata} (CA) is a mathematical model that
 consists of a discrete lattice of sites  and a value, the state, that is
-updated in a sequence of discrete timestamps (steps) according to some logical rules that
-depend on a neighbor  sites of the cell. Hence CA describe systems whose the
-overall behavior and evolution of the system may be exclusively described on the basis of local
-interactions\cite{wolfram1984}, property also called centrism.
-The most stringent and typical characteristic of the CA-model is the restriction
-that the local function does not depend on the time t or the place i: a cellular automaton has homogeneous
-space/time behavior. It is for this reason that ca are sometimes referred to as
-\textit{shift-dynamical} or \textit{translation invariant} systems. From another
-point of view we can say that in each lattice site resides a finite state
-automaton\footnote{A simple and well know computational model. It has inputs,
-outputs and a finite number of states (hence a finite amount of memory);
-An automata changes state at regular time-steps.}  that take as
-input only the states of the cells in its neighborhood (see figure \ref{amod3Automata}).
+updated in a sequence of subsequents discrete timestamps (steps) according to some  rules that depend on a neighbor sites of the cell. Hence CA describe systems whose the overall behavior and evolution may be exclusively described on the basis of local interactions\cite{wolfram1984}, property also called \textit{centrism}.
+The most stringent and typical characteristic of the CA model is the restriction
+that the local function does not depend on the time $t$ or the cell site $i$: a cellular automaton has homogeneous space and time behavior. It is for this reason that ca are sometimes referred to as \textit{shift-dynamical} or \textit{translation invariant} systems. From another point of view we can say that in each lattice site resides a  deterministic finite (state) automaton (DFA)\cite{Hopcroft:2006:IAT:1177300} that take as input only the states of the cells in its neighborhood (see \ref{amod3Automata} and section\ref{DFA}).
 
 \subsection{Cellular space dimension and geometry}
-The cellular space is a \emph{discrete} d-dimensional lattice of sites (see
+The cellular space is a \emph{discrete} $d$-dimensional lattice of sites (see
 figure \ref{spazioCellulare}).
-For 1-D automaton the only way to discretize the space is in a one-dimensional
+For $1D$ automaton the only way to discretize the space is in a one-dimensional
 grid. For automaton with dimensionality higher than 1 the shape of each cell can
-be different than squared. In 2D tessellation for example each cell can be
-hexagonal or triangular instead of squared. Each tessellation present advantages
-and disadvantages. For instance the squared one does not give any graphical
-representation problem\footnote{Each cell could be easily mapped onto a
-pixel.}, but present problems of anisotropy for some kind of
-simulations\footnote{The HPP model for fluid simulation was highly anisotropyc due to the squared tessellation.}\cite{Frisch1986}.
-An Hexagonal tessellation can solve the anisotropy problem\cite{wolfram1986} but
-presents obvious graphical issues. Often, to avoid complications
-due to a boundary, periodic boundary conditions are used, so that a two-dimensional grid
-is the surface of a torus (see picture \ref{torus}).
-
+be different than squared. In $2D$ tessellation for example, each cell can be
+hexagonal or triangular, and each tessellation presents its own advantages and disadvantages. For instance the squared can be easily visualized on a screen as each cell is easily mapped onto a pixel.}, but may present problems of anisotropy for some kind of fluid simulations as in the case of the \textit{HPP} model for fluid simulation\cite{Frisch1986}. An Hexagonal tessellation can solve the anisotropy problem\cite{wolfram1986} but presents obvious graphical challenges. Often, to avoid complications due to a boundaries, periodic boundary conditions are used, so that a two-dimensional grid is the surface of a torus as shown in Figure \ref{torus}.
 
 \subsection{Neighborhood}
-\begin{figure}
-\centering
-\caption{Examples of cellular spaces. (a) 1-D, (b) 2-D squared cells,
-(c) 2-D hexagonal cells, (d) 3-D cubic cells.}\label{spazioCellulare}
-\includegraphics[scale=0.23]{./images/CA_FDM/spazioCellulare}
-\end{figure}
 The evolution of a cell's state is function of the states of the neighborhood's
 cells. The geometry and the number of cells that are part of the neighborhood
 depends on the tessellation type, but it has to have three fundamental
 properties:
 \begin{enumerate}
-  \item \textbf{Locality}. It should involve only a 'limited' number of cells.
-  \item \textbf{Invariance}. It should not be changed during the evolution.
-  \item \textbf{Homogeneity}. It has to be the same for each cell of the
+  \item \textbf{Locality}: it should involve only a \textit{limited} or \textit{finite} finite number of cells.
+  \item \textbf{Invariance}: it should not be changed during the evolution.
+  \item \textbf{Homogeneity}: it has to be the same for each cell of the
   automaton.
 \end{enumerate}
-Typically neighborhood ``surrounds'' the central cell. For 1-D cellular automata
-its borders are identified with a number \begin{math}r \end{math} called
-\textit{radius}\cite{wolfram1983}. A \begin{math}r=2\end{math} identify
+Typically, the neighborhood of a cell ``surrounds'' the cell itself. For $1D$ cellular automata, neighborhood are identified with a number \begin{math}r\end{math} called
+\textit{radius}\cite{wolfram1983}. A \begin{math}r=2\end{math} identifies
 \begin{math}n=2r+1\end{math} cells in a 1D lattice: the central cell plus the
 right and left cells. Typical 2D cellular space neighborhood are the those of
-Moore and von Neumann neighborhood. The number of cells in the Moore
-neighborhood of range r is the odd squares \begin{math}(2r+1)^2,\end{math} the
-first few of which are 1, 9, 25, 49, 81, and so on as r is increased.
+\textit{Moore} and \textit{J. Von Neumann} neighborhood. The number of cells in the Moore neighborhood of range $r$ is the odd squares \begin{math}(2r+1)^2,\end{math} the
+first few of which are 1, 9, 25, 49, 81, and so on as $r$ is increased.
 Von Neumann's one consist of the central cell plus the cell at north, south,
 east, and west of the central cell itself. Moore's (\begin{math}r=1\end{math})
 one add  the farther cells at north-east, south-east, south-west and north-west
 (see figure \ref{mooreNeigh}).
 
 
+\begin{figure}
+	\centering
+	\caption{Examples of cellular spaces. (a) 1-D, (b) 2-D squared cells,
+		(c) 2-D hexagonal cells, (d) 3-D cubic cells.}\label{spazioCellulare}
+	\includegraphics[scale=0.23]{./images/CA_FDM/spazioCellulare}
+\end{figure}
 
 \begin{figure}
 \centering
@@ -232,7 +211,7 @@ On the input \begin{math}S^1=\{abababb\}\end{math} the DFA accept:
 \begin{figure}
 \begin{center}
   \includegraphics[scale=0.17]{./images/CA_FDM/amod3Automata}
-  \caption{Graph representation of a DFA}
+  \caption[Graph representation of a DFA.]{Graph representation of a DFA an that accepts the following language: $\{b^*ab^*ab^*a\}$.}
   \label{amod3Automata}
 \end{center}
 \end{figure}
