@@ -50,14 +50,14 @@ properties:
   \item \textbf{Homogeneity}: it has to be the same for each cell of the
   automaton.
 \end{enumerate}
-Typically, the neighborhood of a cell ``surrounds'' the cell itself. For $1D$ cellular automata, neighborhood are identified with a number \begin{math}r\end{math} called
-\textit{radius}\cite{wolfram1983}. A \begin{math}r=2\end{math} identifies
-\begin{math}n=2r+1\end{math} cells in a 1D lattice: the central cell plus the
+Typically, the neighborhood of a cell ``surrounds'' the cell itself. For $1D$ cellular automata, neighborhood are identified with a number $r$ called
+\textit{radius}\cite{wolfram1983}. A $r=2$ identifies
+$n=2r+1$ cells in a 1D lattice: the central cell plus the
 right and left cells. Typical 2D cellular space neighborhood are the those of
-\textit{Moore} and \textit{J. Von Neumann} neighborhood. The number of cells in the Moore neighborhood of range $r$ is the odd squares \begin{math}(2r+1)^2,\end{math} the
+\textit{Moore} and \textit{J. Von Neumann} neighborhood. The number of cells in the Moore neighborhood of range $r$ is the odd squares $(2r+1)^2,$ the
 first few of which are 1, 9, 25, 49, 81, and so on as $r$ is increased.
 Von Neumann's one consist of the central cell plus the cell at north, south,
-east, and west of the central cell itself. Moore's (\begin{math}r=1\end{math})
+east, and west of the central cell itself. Moore's ($r=1$)
 one add  the farther cells at north-east, south-east, south-west and north-west
 (see figure \ref{mooreNeigh}).
 
@@ -77,27 +77,16 @@ different radius values.}\label{mooreNeigh}
 \end{figure}
 
 \subsection{Transition Function}
-The evolution of the cell's state is decided by the transition function that
-is applied at the same time and on each cell. Usually that transition function
-is deterministic and defined by a \textit{look-up} table only when the total
-number of state for each cell is small\footnote{Otherwise the dimension of that table would be enormous because the number of entries is exponential in the number of
-states.} otherwise is defined by an algorithmic procedure.
-It may be probabilistic, in the case of stochastic cellular automata.
+The evolution of the cell's state is specified in the so called \textit{transition function} that is applied at the same time and on each cell. Usually the transition function is \textit{deterministic} and usually defined by a look-up table only when the total number of state for each cell is small, otherwise the resulting table would have enormous size because the number of possible state transition is exponential in the number of states. Alternatively, a transition function is defined by an algorithmic procedure that may be probabilistic, in the case of \textit{stochastic cellular automata}\cite{Arrighi:2013:SCA:2637657.2637659}.
 
 \section{Formal Definition}
-Cellular automata are dynamic models that are
-discrete in time, space and state. A simple cellular
-automaton A is defined by a lattice of cells each containing a finite state
-automaton so we briefly give its definition.
+Cellular automata are dynamic discrete in time, space and state models, defined by a lattice of cells each containing a finite state automaton.
 
 \subsection{Finite State Automaton}\label{DFA}
 Also known as deterministic finite automata (DFAs) or as deterministic finite
-state machines, are ones of the most studied and simple computational model
-known.
- It is a theoretical model of computation\footnote{Language recognition
-problem solvers.} that can be in a finite number of states, only one at a time,
-the current state. Its state can change in response of inputs taken by a
-transition function that describe the state change given the current state and
+state machines, DFAs are among the simplest and better studied computational models.
+A DFA is a theoretical model of computation with limited capability. It can only recognize regular languages (the family of languages in the third category of the \textit{Chomsky} classification and that can be obtained by regular expressions) and can only be in one of the finite number of states at a time, namely the \textit{current state}. Its state can change in response of the input taken by a
+transition function, describe all possible state changes, and of the current state.
 \begin{table}
 \scalebox{1.2}{
 \begin{tabular}{|c|ccccc|}\hline
@@ -109,84 +98,59 @@ transition function that describe the state change given the current state and
 \hline 
  \end{tabular}
 }
- \caption{Tabular representation of a DFM's next-state function}
+ \caption{Tabular representation of a DFM transition function}
  \label{tab:tabularTransitionFunction}
 \end{table} 
-the received input of the automata.
-Its a much more restrictive in its capabilities than a Turing
-machines,\footnote{For example we can show that is not possible for an
-automaton to determine whether the input consist of a prime number of symbols.}
-but they are still capable to solve simpler problems, and hence to recognize
-simpler languages, like well parenthesized string; More in general they are capable
-to recognize the so called \emph{Regular languages}\footnote{Languages
-defined by regular expressions and generated by regular grammar, Class 3 in
-Chomsky classification. We can prove that for each language L accepted by a DFA
-exists a grammar \begin{math}L_G \end{math} s.t. \begin{math} L=L_G\end{math}},
-but they fail for example in parsing \emph{context-free} languages.
-More formally a DFA is a 5-tuple:
-\[M = <Q,\Sigma,\delta,q_0,F>\] 
+It is a much more restrictive model in its computational capabilities than a Turing
+machines, for example it is possible to prove that it is not possible for a DFA to determine whether the input consists of a prime number of symbols,
+but they are still powerful enough to solve simpler problems, and hence to recognize
+simpler languages, as for example the following: $L=\{w \in \{0,1\}^*\}$, the language composed by strings with an even number of $0$ and $1$; they are only capable
+to recognize languages in the class $3$ of the \textit{Chomsky} classification\cite{Chomsky:1956}. Infact it can be proven the for each language $L$ accepted by a DFA exists a grammar $L_G$ s.t. $ L=L_G$ i.e. $L_G$ generates $L$,
+but they fail for example, in accepting \emph{context-free} languages.
 
+Formally, a DFA is defined as a 5-tuple:
+\[M = <Q,\Sigma,\delta,q_0,F>\] 
+where:
 \begin{itemize}
   \item \textit{Q} is a finite, nonempty, set of states.
-\item \begin{math}\Sigma\end{math} is the alphabet
-\item \begin{math} \delta : Q \times \Sigma \longmapsto Q  \end{math} is the
-transition function (also called next-state function, may be represented in
-tabular form  (see table
-\ref{tab:tabularTransitionFunction})
-\item \begin{math}q_0 \end{math} is the initial (or starting) state :
-\begin{math} q_0 \in  Q \end{math}
-\item  \begin{math}F \end{math} is the set, possibly empty, of final states :
-\begin{math} F \subseteq Q \end{math}
+\item $\Sigma$ is the alphabet
+\item $ \delta : Q \times \Sigma \longmapsto Q  $ is the
+transition function, also called next-state function, and can be represented in
+tabular form  as  in \ref{tab:tabularTransitionFunction}
+\item $q_0 $ is the initial (or starting) state :
+$ q_0 \in  Q $
+\item  $F $ is the set, possibly empty, of final states:
+$ F \subseteq Q $
 
 \end{itemize}
+Note that we can also assume that $F$ is composed by a single state i.e. $\left\vert{F}\right\vert=1$ because a DFA can always transformed into another one that accepts exactly the same set of strings and has only one final state. The transformation consists in adding an additional state $q_f$, and for each of the previous final states $q_i \in
+F$ a new rule of the type $\delta(q_i,*)=q_f, * \in I $ is added to the transition function.
 
-
-
-A run of DFA on a input string \begin{math}u = a_0,a_1,\ldots,a_n\end{math} is a
-sequence of states \\ \begin{math} q_0,q_1,\ldots,q_n\end{math} s.t.
-\begin{math}q_i  \overset{a_i}{\longmapsto} q_{i+1} \end{math},
-\begin{math} 0 \leq i \le n\end{math}. It means that for each couple of state
+A run of DFA on a input string $u = a_0,a_1,\ldots,a_n$ is a
+sequence of states  $ q_0,q_1,\ldots,q_n$ s.t.
+$q_i  \overset{a_i}{\longmapsto} q_{i+1} $,
+$ 0 \leq i \le n$. It means that for each couple of state
 and input the transition function deterministically return the next DFA's
-state \\ \begin{math}q_i=\delta(q_{i-1},a_{i}) \end{math}.
-For a given word \begin{math}\textit{w}\in \Sigma^* \end{math} the DFA has a
-unique run (it is deterministic), and we say that it \textbf{accepts} w if the
-last state \begin{math}q_n \in F \end{math}. A DFA recognizes the
-language L(M) consisting of all accepted strings.
+state  $q_i=\delta(q_{i-1},a_{i}) $.
+For a given word $\textit{w}\in \Sigma^* $, the DFA has a
+unique run (because of its deterministic nature), and is it said that it \textbf{accepts} $w$ if the last state $q_n \in F$. A DFA recognizes the
+language $L(M)$ consisting of \textit{all the accepted} strings.
 
+Figure \ref{amod3Automata} shows an example of DFA represented graphically as a graph where nodes are the states and the labeled edges are the possible state transitions from a state $u$ to a state $w$.
+Note that, because the automaton is deterministic, it is not possible for two
+edges with the same label to point to two different nodes.
+It accepts the language  generate by regular expression $E=\{b^*ab^*ab^*a\}$.
+In this example, $ \Sigma = \{a,b\}$ is the alphabet, $ Q = \{t_0,t_1,t_2\}$ is the set of states, $ q_0 = t_0$ is the initial state and $ F = \{t_0\} $, is the set of final or accepting states.
+If it is  executed on the input string $S=\{aaabba\}$ it can be seen that at time
+$t=0$ the DFA is in the initial state $t_0$ and the first
+symbol of $S$ is read i.e. $a$.
+The transition function is applied once per each symbol of $S$
+i.e. $\left\vert{S}\right\vert$ times. The only rule that matches 
+the current state $t_0$ the current input $a$ is $\delta=(t_0,a)=t_1 $ hence the new state of the DFA becomes $t_1$. 
+The DFA accepts the string only if  there is not any input left and the current state is in the set of final states $F$.
 
-Figure \ref{amod3Automata} is an example of DFA\footnote{Graph representation
-is the most common way to define and design DFA. Nodes are the states, and
-the labelled edges are the possible states transition from a state \textit{u}
-to a state \textit{w} given a certain input.
-Note that, because the automaton is deterministic is not possible for two
-edges to point to two different nodes if same labelled.}.
-It accepts the language made up of strings with a number N s.t \begin{math}N
-\;mod\; 3 = 0 \end{math}
-\begin{itemize}
-  \item\begin{math} \Sigma = \{a,b\}\end{math}
-  \item \begin{math} Q = \{t_0,t_1,t_2\}\end{math}
-  \item \begin{math} q_0 = t_0\end{math}
-  \item \begin{math} F = \{t_0\} \end{math}
-\end{itemize}
-
-
-If we execute the DFA on an input string S=\{aaabba\} we can see that at time
-t=0 the DFA is in the initial state \begin{math}t_0\end{math} and the first
-symbol of S is read.
-The transition function is applied once per each symbol is S
-(i.e. \begin{math}\left\vert{S}\right\vert\end{math}). The only rule that match 
-the current state and input is \begin{math}\delta=(t_0,a)=t_1 \end{math} hence the
-new state is \begin{math}t_1\end{math}. The DFA accept the string only if  there
-is not any input left and the current state is the final state
-\begin{math}q_f\end{math}\footnote{Previously we stated that F was a set but
-we can assume that there is only one final state
-(\begin{math}\left\vert{F}\right\vert=1\end{math}), because it is easy prove
-that exist a DFA with only one final state given a generic DFA
-(\begin{math}\left\vert{F}\right\vert \geq 1\end{math}). We add one more state
-\begin{math}q_f\end{math} and for each final state \begin{math}q_i \in
-F\end{math} we define new rules of the type \begin{math}\delta(q_i,*)=q_f, * \in I \end{math}.}.
 S is not accepted by the DFA defined in the example \ref{amod3Automata} because
-at the end of the computation the reached state is \begin{math}t_1\end{math}
+at the end of the computation the reached state is $t_1$
 that is not a final state.
  \[
  t_0\overset{\delta(t_0,a)}
@@ -197,7 +161,7 @@ that is not a final state.
  {\longmapsto}t_{0}\overset{\delta(t_0,a)}
  {\longmapsto} t_{1}
 \]
-On the input \begin{math}S^1=\{abababb\}\end{math} the DFA accept:
+On the input $S^1=\{abababb\}$ the DFA accept:
  \[
  t_0\overset{\delta(t_0,a)}
  {\longmapsto}t_{1}\overset{\delta(t_1,b)}
@@ -219,84 +183,76 @@ On the input \begin{math}S^1=\{abababb\}\end{math} the DFA accept:
 
 
 \section{Homogeneous Cellular Automata}\label{homogeneousCellularAutomata}
-Formally a CA \emph{A} is a quadruple \begin{math} A=<Z^d,X,Q,\sigma>\end{math}
+Formally a CA \emph{A} is a quadruple $ A=<Z^d,X,Q,\sigma>$
 where:
 \begin{itemize}
-  \item \begin{math}\mathbb{Z}^d=\{i=(i_1,i_1,\ldots,i_d)\mid i_k \in
-  \mathbb{Z}, \forall k=1,2,\ldots,d \}\end{math} is the set of cells of the d-dimensional
+  \item $\mathbb{Z}^d=\{i=(i_1,i_1,\ldots,i_d)\mid i_k \in
+  \mathbb{Z}, \forall k=1,2,\ldots,d \}$ is the set of cells of the d-dimensional
    Euclidean space.
-  \item \begin{math}X\end{math} is the neighborhood, or neighborhood template; a
-  set of m d-dimensional vectors (one for each neighbor)
+  \item $X$ is the neighborhood, or neighborhood template; a
+  set of $m$ $d$-dimensional vectors (one for each neighbor)
   \[\xi_j=\{\xi_{j1},\xi_{j2},\ldots,\xi_{jd}\} \;,\: 1\leq j \leq m\] that
   defines the set of the neighbors cells of a generic cell
-  \begin{math}i=(i_1,i_1,\ldots,i_d)\end{math}
+  $i=(i_1,i_1,\ldots,i_d)$
   \[
   N(X,i)=\{i+\xi_0,i+\xi_2,\ldots,i+\xi_d\}
-  \] where \begin{math}\xi_0\end{math} is the null vector. It means that the
-  cell \begin{math}i\end{math} is always in its neighborhood and we refer to it
-  cell as \emph{central cell}  (see example below).
+  \] where $\xi_0$ is the \textit{null vector}. $\xi_0$ ensures that the
+  cell $i$ is always in its own neighborhood.  Cell $i$ is refeered as to \emph{central cell}.
+
 \item Q is the finite set of states of the elementary automaton EA.
   
-  \item \begin{math}\sigma=Q^m \rightarrow Q \end{math} is the transition
-  function of the EA. \begin{math}\sigma\end{math} must specify
-  \begin{math}q_k \in Q \end{math} as successor  state of the central cell.
-  If there are \begin{math}m\end{math} cells in the neighborhood of the central
+  \item $\sigma=Q^m \rightarrow Q $ is the transition
+  function of the EA. $\sigma$ must specify
+  $q_k \in Q $ as successor  state of the central cell.
+  If there are $m$ cells in the neighborhood of the central
   cell including itself, then there are
-  \begin{math}{\left\vert{Q}\right\vert}^m\end{math} possible neighborhood's
+  ${\left\vert{Q}\right\vert}^m$ possible neighborhood's
   state configuration. It  means that there are
-  \begin{math}{\left\vert{Q}\right\vert}^{{\left\vert{Q}\right\vert}^m}\end{math}
+  ${\left\vert{Q}\right\vert}^{{\left\vert{Q}\right\vert}^m}$
   possible transition functions. Plus we can see that the tabular definition of
   the next-state function is unsuitable for practical purpose. It should have
-  \begin{math}\left\vert{\sigma}\right\vert={\left\vert{Q}\right\vert}^m\end{math}
+  $\left\vert{\sigma}\right\vert={\left\vert{Q}\right\vert}^m$
   entries, an exceedingly large number.
-  \item \begin{math}\tau=C \longrightarrow C \longmapsto
-  \sigma(c(N(X,i))) \end{math} where 
+  \item $\tau=C \longrightarrow C \longmapsto
+  \sigma(c(N(X,i))) $ where 
   where $C=\{c \colon Z^d
   \rightarrow Q\}$
   is called the set of the possible configuration and 
-  \begin{math}
-  C(N(X,i)))\end{math} is the set of states of the neighborhood of \textit{i}.
+  $
+  C(N(X,i)))$ is the set of states of the neighborhood of \textit{i}.
 \end{itemize}
+As an example, consider a $2$D cellular automaton, a
+generic cell $c=(10,10)$ in its cellular space $Z^2$, 5 cell states  ${\left\vert{Q}\right\vert}=5$ with Moore's neighborhood  $X$ defined as follows:
+\begin{gather*}
+X=\{\xi_{0},\xi_{1},\xi_{2},\xi_{3},\xi_{4},\xi_{5},\xi_{6},\xi_{7},\xi_{8}\}
+=\\ \{(0,0),(-1,0),(0,-1),(1,0),(0,1),(-1,-1),(1,-1),(1,1),(-1,1)\}
+\end{gather*}
+The set of cells belonging to the neighborhood of $c=(10,10)$ is:
+\begin{gather*}
+V(X,c)=\{(0,0)+c,(-1,0)+c,(0,-1)+c,(1,0)+c,(0,1)+c,(-1,-1)+c,(1,-1)\\
++c,(1,1)+c,(-1,1)+c= \{(10,10),(9,10),(10,9),(11,10),(10,11),(9,9),(11,9),(11,11),(9,11)\}
+\end{gather*}
+The total number of entries of a tabular definition of a
+transition function, taken from the set of all the ${\left\vert{Q}\right\vert}^{{\left\vert{Q}\right\vert}^{\left\vert{X}\right\vert}}=
+5^{5^9}=5^{1953125}$ possible transition functions, is  ${\left\vert{Q}\right\vert}^{\left\vert{X}\right\vert}=
+5^9=1953125$.
 
 
 
-For example consider a 2D cellular automata with Moore neighborhood and a
-generic cell c=(10,10) and \begin{math}{\left\vert{Q}\right\vert}=5\end{math}
-possible state for each cell .
-\[X=\{\xi_{0},\xi_{1},\xi_{2},\xi_{3},\xi_{4},\xi_{5},\xi_{6},\xi_{7},\xi_{8}\}
-=\]\[=\{(0,0),(-1,0),(0,-1),(1,0),(0,1),(-1,-1),(1,-1),(1,1),(-1,1)\}
-\]
-Hence the set of the cells belonging to the neighborhood(defined by X) of
-c=(10,10) is:
-\begin{math}V(X,c)=\{(0,0)+c,(-1,0)+c,(0,-1)+c,(1,0)+c,(0,1)+c,(-1,-1)+c,(1,-1)+c,(1,1)+c,(-1,1)+c\}
-\end{math} 
-\[=\{(10,10),(9,10),(10,9),(11,10),(10,11),(9,9),(11,9),(11,11),(9,11)\}
-\]
-and the total number of entries for the tabular definition of the
-transition-function is  \begin{math}{\left\vert{Q}\right\vert}^{\left\vert{X}\right\vert}=
-5^9=1953125\end{math} and the total number of possible transition functions
-is
-\begin{math}{\left\vert{Q}\right\vert}^{{\left\vert{Q}\right\vert}^{\left\vert{X}\right\vert}}=
-5^{5^9}=5^{1953125}\end{math}.
-
-
-
-\section{Theories and studies}
-
-\subsection{Elementary cellular automata}
+\section{Elementary cellular automata}
 The most simple AC we can imagine are the elementary cellular
 automata\cite{wolfram1983}. They are one-dimensional periodic N cells array
-\begin{math}\{C_i \mid 1\leq i \leq N, C_i \in \{0,1\} \}\end{math} each
+$\{C_i \mid 1\leq i \leq N, C_i \in \{0,1\} \}$ each
 with 2 possible state (0,1), and rules that depend only on nearest neighbor
 value hence a radius r=1 neighborhood with a total number of involved cell
-\begin{math}2r+1=2\times1+1=3\end{math} (central, right and left cells).
-Since there are only \begin{math}2\times2\times2\times=2^{2r+1}=2^3=8\end{math} possible states for
+$2r+1=2\times1+1=3$ (central, right and left cells).
+Since there are only $2\times2\times2\times=2^{2r+1}=2^3=8$ possible states for
 the neighborhood of a given cell there are a total of
-\begin{math}2^{2^3}=2^8=256\end{math} possible elementary automata (each of
+$2^{2^3}=2^8=256$ possible elementary automata (each of
 which may be identified with a 8-bit binary number\cite{wolfram2002}).
 
-\subsubsection{Wolfram's code}
-The transition function  is \begin{math}F(C_{i-1},C_i,C_{i+1})\end{math} is
+\subsection{Wolfram's code}
+The transition function  is $F(C_{i-1},C_i,C_{i+1})$ is
 defined by a look-up table of the form stated in table
 \ref{wolframcodeGeneral}, and an example of an instance of a function is given
 (rule 110, an important rule on which \cite{cook2004} proved universal
@@ -313,31 +269,31 @@ right the instance 110.}
 
 \hfill \\
 \hline
-  \begin{math}F(1,1,1)=\{0,1\}\end{math}  \\
-  \begin{math}F(1,1,0)=\{0,1\}\end{math}  \\
-  \begin{math}F(1,0,1)=\{0,1\}\end{math}  \\
-  \begin{math}F(1,0,0)=\{0,1\}\end{math}  \\
-  \begin{math}F(0,1,1)=\{0,1\}\end{math}  \\
-  \begin{math}F(0,1,0)=\{0,1\}\end{math}  \\
-  \begin{math}F(0,0,1)=\{0,1\}\end{math}  \\
-  \begin{math}F(0,0,0)=\{0,1\}\end{math}  \\
+  $F(1,1,1)=\{0,1\}$  \\
+  $F(1,1,0)=\{0,1\}$  \\
+  $F(1,0,1)=\{0,1\}$  \\
+  $F(1,0,0)=\{0,1\}$  \\
+  $F(0,1,1)=\{0,1\}$  \\
+  $F(0,1,0)=\{0,1\}$  \\
+  $F(0,0,1)=\{0,1\}$  \\
+  $F(0,0,0)=\{0,1\}$  \\
 \hline
 \end{tabular}
 \quad
-\begin{math}\overset{instance}{\longrightarrow}\end{math}
+$\overset{instance}{\longrightarrow}$
 \begin{tabular}{l}
 
 \label{wolframcoderule}
 \hfill \\
 \hline
-  \begin{math}F(1,1,1)=0\end{math}  \\
-  \begin{math}F(1,1,0)=1\end{math}  \\
-  \begin{math}F(1,0,1)=1\end{math}  \\
-  \begin{math}F(1,0,0)=0\end{math}  \\
-  \begin{math}F(0,1,1)=1\end{math}  \\
-  \begin{math}F(0,1,0)=1\end{math}  \\
-  \begin{math}F(0,0,1)=1\end{math}  \\
-  \begin{math}F(0,0,0)=0\end{math}  \\
+  $F(1,1,1)=0$  \\
+  $F(1,1,0)=1$  \\
+  $F(1,0,1)=1$  \\
+  $F(1,0,0)=0$  \\
+  $F(0,1,1)=1$  \\
+  $F(0,1,0)=1$  \\
+  $F(0,0,1)=1$  \\
+  $F(0,0,0)=0$  \\
 \hline
 \end{tabular}
 \end{table}
@@ -488,7 +444,7 @@ Langton in his famous paper, \textit{Computation at the edge of chaos: phase
 transition and emergent computation}\cite{Langton1990},was able to
 identify, simply parametrizing the rule space, the various AC classes, the
 relation between them and to ``couple'' them with the classical complexity classes.
-He introduced the parameter \begin{math}\lambda\end{math}\cite{LangtonThesis1990}that, informally, is simply
+He introduced the parameter $\lambda$\cite{LangtonThesis1990}that, informally, is simply
 the fraction of the entries in the transition rule table that are mapped  the
 not-quiescent state.
 \[\lambda=\frac{K^N-n_q}{K^N}\]
@@ -496,8 +452,8 @@ where:
 \begin{itemize}
   \item K is the number of the cell states
   \item N the arity of the neighborhood
-  \item \begin{math}n_q\end{math} the number of rules mapped to the quiescent
-  state \begin{math}q_q\end{math}
+  \item $n_q$ the number of rules mapped to the quiescent
+  state $q_q$
 \end{itemize}
 
 \begin{figure}
@@ -507,16 +463,16 @@ behaviors-Wolfram's classes.}\label{lambdaWolframClass}
 \includegraphics[scale=0.4]{./images/CA_FDM/edgeofchaos}
 \end{figure}
 Langton's major finding was that a simple measure such as it correlates with the
-system behavior: as it goes from 0 to \begin{math} 1-\frac{1}{K}\end{math}(respectively the most
+system behavior: as it goes from 0 to $ 1-\frac{1}{K}$(respectively the most
 homogeneous and the most heterogeneous rules table scenario), the average
 behavior of the system goes from freezing to periodic patterns to chaos and functions with an average 
-value of \begin{math}\lambda\end{math} (see \cite{Langton1990} for a
+value of $\lambda$ (see \cite{Langton1990} for a
 more general discussion) are being on \emph{on the edge}(see figure \ref{lambdaWolframClass}).
 
-He studied a entire family of totalistic CA with \begin{math}k=4
-\end{math} and \begin{math}N=5\end{math} with \begin{math}\lambda\end{math}
-varying in \begin{math}[0,0.75]\end{math}. He was able to determine that values
-of \begin{math}\lambda\approx0.45\end{math} raise up to class 4 cellular
+He studied a entire family of totalistic CA with $k=4
+$ and $N=5$ with $\lambda$
+varying in $[0,0.75]$. He was able to determine that values
+of $\lambda\approx0.45$ raise up to class 4 cellular
 automata.
 Computational system must to provide fundamental properties if it is
 to support computation. Only CA  \emph{on the edge} show these properties on
@@ -543,7 +499,7 @@ dependent with one mimicking the other supporting computation in all its aspects
 and requirements. Moreover class 4 CA are very dependent from the initial
 configuration opening to the possibility to encode programs in it.
 
-\subsection{Game of life}
+\section{Game of life}
 \label{sect:GOL}
 CA are suitable for representing many physical, biological, social and other
 human phenomena. But they are a good tool to study under which condition a
@@ -554,7 +510,7 @@ computation capacity.
 
 
 
-\subsubsection{Game of life - brief definition} 
+\subsection{Game of life - brief definition} 
 The Game of Life is totalistic CA\footnote{A totalistic cellular automaton is a cellular automata in which the rules depend only on the	total (or equivalently, the average) of the values of the cells in a neighborhood.} that can be thought as an infinite two-dimensional orthogonal grid of square cells, each of which is in one of two possible states, \emph{dead} or \emph{alive}. Every cell interacts with the eight adjacent neighbors belonging to the Moore neighborhood. At each time step, one of the following transitions occur:
 	\begin{itemize}
 	\item \emph{Birth}: If the cell is in the state \textbf{\textit{dead}} and
@@ -669,7 +625,7 @@ neighborhood or transition functions.
 Probabilist CA is are an extension of the common CA paradigm. They share all
 the basic concept of an ordinary homogeneous
 CA with an important difference in the transition function.
-\begin{math}\sigma\end{math} is a stochastic-function that choose the next-state
+$\sigma$ is a stochastic-function that choose the next-state
 according to some probability distributions. They are used in a wide class of
 problems like in modelling ferromagnetism, statistical mechanics
 \cite{Vichniac1984} or the cellular Potts model\footnote{Is a computational
@@ -683,9 +639,9 @@ Russian mathematician Andrey Markov best known for his work on stochastic
 processes.}. A Markov process, is a stochastic process that exhibits
 memorylessness \footnote{Also called Markov property.} and it means that the
 future state is conditionally independent\footnote{Two event
-\begin{math}A\end{math} and \begin{math}B\end{math} are independent if
-\begin{math}P(A B)=P(A)P(B)\end{math} or in other words that the conditional
-probability \begin{math}P(A|B)=P(A)\end{math}.} of the past.
+$A$ and $B$ are independent if
+$P(A B)=P(A)P(B)$ or in other words that the conditional
+probability $P(A|B)=P(A)$.} of the past.
 This property of the process means that future probabilities of an event may be
 determined from the probabilities of events at the current time.
 More formally if a process has this property following  equation holds:
@@ -698,8 +654,8 @@ In PCA analysis we are more interested in Markov chain because each cell has a
 discrete set of possible value for the status variable.
 In terms of chain a CA is a process that starts in one of these states and moves
 successively from one state to another. If the chain is currently in state
-\begin{math}s_i\end{math}, than it evolve to state \begin{math}s_j\end{math} at
-the next step with probability \begin{math}p_{ij}\end{math}.The changes of state
+$s_i$, than it evolve to state $s_j$ at
+the next step with probability $p_{ij}$.The changes of state
 of the system are called transitions, and the probabilities associated with
 various state changes are called transition probabilities usually represented
 in the Markov chain transition matrix :
@@ -714,10 +670,10 @@ p_{31} & p_{32} & p_{33} &\cdots \\
 \]
 
 This could seems to be a good way to analyze the probabilistic CA but, a
-small grid  \begin{math}10\times10\end{math} (common models model use grid
-\begin{math}100\times100\end{math} or larger) identify
-\begin{math}2^{10\times10}\end{math}possible states and the resulting matrix
-dimension of \begin{math}2^{10\times10}\times2^{10\times10}\end{math} that is a
+small grid  $10\times10$ (common models model use grid
+$100\times100$ or larger) identify
+$2^{10\times10}$possible states and the resulting matrix
+dimension of $2^{10\times10}\times2^{10\times10}$ that is a
 very large number!
 
 
