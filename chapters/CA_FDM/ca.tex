@@ -319,60 +319,54 @@ automata in his classes seems to be related to the presence of different types
 of attractors.
 In figures \ref{class12} and \ref{class34} some elementary automata are divided in their respective classes.
  \begin{figure}
- \caption{Class 1 (a,b) and 2 (c,d) elementary cellular automata}
+ \caption[Example of elementry CA in Wolfram's four classes.]{Examples of Wolfram's class 1 (a,b),  2 (c,d), 3 (e,f) and 4 (g,h) elementary cellular automata}
  \label{class34}
 \centering
-    \begin{subfigure}[b]{0.275\textwidth}
+    \begin{subfigure}[b]{0.25\textwidth}
 		\centering
 		\includegraphics[scale=0.32]{./images/CA_FDM/rule250}
-   \caption[]{}
+   \caption[]{Rule 250}
    \end{subfigure}%
-    \begin{subfigure}[b]{0.275\textwidth}
+    \begin{subfigure}[b]{0.25\textwidth}
 		\centering
 		\includegraphics[scale=0.32]{./images/CA_FDM/rule254}
-		\caption[]{}%
+		\caption[]{Rule 254}%
    \end{subfigure}%
-   \hfill
-       \begin{subfigure}[b]{0.275\textwidth}
+       \begin{subfigure}[b]{0.25\textwidth}
    	\centering
    	\includegraphics[scale=0.32]{./images/CA_FDM/rule4}
-   	\caption[]{}%
+   	\caption[]{Rule 4}%
    \end{subfigure}%
-   \begin{subfigure}[b]{0.275\textwidth}
+   \begin{subfigure}[b]{0.25\textwidth}
    	\centering
    	\includegraphics[scale=0.32]{./images/CA_FDM/rule108}
-   \caption[]{}%
+   \caption[]{Rule 108}%
    \end{subfigure}%
-\end{figure}
-
-\begin{figure}
-	\caption{Class 3 (a,b) and 4 (c,d) elementary cellular automata}
-	\label{class12}
-	\centering
-	\begin{subfigure}[b]{0.275\textwidth}
-		\centering
-		\label{fig:first}
-		
-		\includegraphics[scale=0.32]{./images/CA_FDM/rule30}
-		\caption[]{}%
-	\end{subfigure}%
-	\begin{subfigure}[b]{0.275\textwidth}
-		\centering
-		\includegraphics[scale=0.32]{./images/CA_FDM/rule90}
-		\caption[]{}%
-	\end{subfigure}%
-	\hfill
-	\begin{subfigure}[b]{0.275\textwidth}
-		\centering
-		\includegraphics[scale=0.32]{./images/CA_FDM/rule54}
-		\caption[]{}%
-	\end{subfigure}%
-	\begin{subfigure}[b]{0.275\textwidth}
-		\centering
-		\includegraphics[scale=0.32]{./images/CA_FDM/rule110}
-		\caption[]{}%
-	\end{subfigure}%
-	
+   \\
+   	\begin{subfigure}[b]{0.25\textwidth}
+   		\centering
+   		\label{fig:first}
+   		
+   		\includegraphics[scale=0.32]{./images/CA_FDM/rule30}
+   		\caption[]{Rule 30}%
+   	\end{subfigure}%
+   	\begin{subfigure}[b]{0.275\textwidth}
+   		\centering
+   		\includegraphics[scale=0.32]{./images/CA_FDM/rule90}
+   		\caption[]{Rule 90}%
+   	\end{subfigure}%
+   		\begin{subfigure}[b]{0.25\textwidth}
+   			\centering
+   			\includegraphics[scale=0.32]{./images/CA_FDM/rule54}
+   			\caption[]{Rule 54}%
+   		\end{subfigure}%
+   		\begin{subfigure}[b]{0.25\textwidth}
+   			\centering
+   			\includegraphics[scale=0.32]{./images/CA_FDM/rule110}
+   			\caption[]{Rule 110}%
+   		\end{subfigure}%
+   	
+   	
 \end{figure}
 It is clear from these examples that automata from class $1$ end up very quickly having the same value i.e. in a \textit{homogeneous state} while automata
 from class 2 in a simple final periodic patterns.
@@ -459,8 +453,8 @@ computation capacity, which has been perhaps proved.
 
 \subsection{Definition} 
 The Game of Life (GOL) is totalistic CA.
-A totalistic cellular automaton is a one in which the rules depend only on thetotal, or equivalently, the average, of the values of the cells in the neighborhood. 
-GOL can be thought as an infinite two-dimensional orthogonal and regular grid of square cells, each of which is in one of two possible states, \emph{dead} or \emph{alive}.
+A totalistic cellular automaton is a one in which the rules depend only on the total, or equivalently, the average, of the values of cells in the neighborhood. 
+GOL can be thought as an infinite two-dimensional orthogonal and regular grid of square cells, each taking one of two possible states, \emph{dead} or \emph{alive}.
 Every cell interacts with the nine adjacent neighbors belonging to the Moore neighborhood. At each time step, one of the following transitions occur:
 	\begin{itemize}
 	\item \emph{Birth}: if the cell is in the state \textbf{\textit{dead}} and
@@ -469,7 +463,7 @@ Every cell interacts with the nine adjacent neighbors belonging to the Moore nei
 	\item \emph{Survival}: if the cell is in the state \textbf{\textit{alive}}
 	and the number of alive neighbors is \textbf{\textit{2 or 3}}, then the cell
 	state is still alive (1) .
-	\item \emph{Dead}: If the cell is in the state \textbf{\textit{alive}} and
+	\item \emph{Death}: If the cell is in the state \textbf{\textit{alive}} and
 	the number of alive neighbors is \textbf{\textit{less than 2 or higher
 			than 3}}, then the cell state becomes dead (0).
 \end{itemize}
@@ -483,78 +477,68 @@ repeatedly to create further generations.
 Formally the Game of Life automaton is be defined as follows:
 $$Life = < R, X, Q, \sigma >$$ where:
 \begin{itemize}
-	\item $R$ is the set of points, with integer coordinates, which
-	defines a two-dimensional toroidal cellular space. The generic
-	cell in $R$ is individuated by means of a couple of integer
-	coordinates $(i, j)$, where $0 \leq i < i_{max}$ and $0 \leq j <
-	j_{max}$. The first coordinate, $i$, represents the row, while
+	\item $R$ is the set of cells, forming a two-dimensional toroidal cellular space. A generic
+	cell in $R$ is individuated by means of a pair of integer
+	coordinates $(i, j)$ s.t. $0 \leq i < i_{max}$ and $0 \leq j <
+	j_{max}$ where $i_{max},j_{max}$ are the sizes of $R$ in the horizonthal and vertical directions, respectively.
+	The first coordinate, $i$, represents the row, while
 	the second, $j$, the column. The cell at coordinates $(0,0)$ is
 	located at the top-left corner of the computational grid
-	(cf. Figure \ref{fig:2Dneighborhood}b).
+	(cf. Figure \ref{spazioCellulare}).
 	
 	\item $X = \{(0,0), (-1, 0), (0, -1), (0, 1), (1, 0), (-1,-1),
-	(1,-1), (1,1), (-1,1)\}$ is the Moore neighborhood relation. The
-	neighborhood coordinates of the generic cell of coordinate $(i,
-	j)$ is given by
+	(1,-1), (1,1), (-1,1)\}$ is the Moore neighborhood pattern. The
+	coordinates of neighbors of $(i,j)$ are given by:
 	$$N(X, (i, j)) = $$
 	$$= \{(i, j)+(0,0), (i, j)+(-1, 0), \dots, (i, j)+(-1,1)\} =$$
-	$$= \{(i, j), (i-1, j), \dots, (i-1,j+1)\}$$ Here, a subscript
-	operator can be used to index cells belonging to the
+	$$= \{(i, j), (i-1, j), \dots, (i-1,j+1)\}$$ .
+	A subscript	can be used to index cells belonging to the
 	neighborhood. Let $|X|$ be the number of elements in X, and $n
 	\in \mathbb{N}$, $0 \leq n < |X|$; the notation
-	
 	$$N(X, (i, j), n)$$
-	
-	represents the coordinates of the $n^{th}$ neighborhood of the
-	cell $(i,j)$. Thereby, $N(X, (i, j), 0) = (i, j)$, i.e. the
+	represents the coordinates of the $n$-th neighbor of  $(i,j)$.
+	Thereby, $N(X, (i, j), 0) = (i, j)$, i.e. the
 	central cell, $N(X, (i, j), 1) = (i-1, j)$, i.e. the first
-	neighbor, and so on (cf. Figure \ref{fig:2Dneighborhood}b).
+	neighbor, and so on (cf. Figure \ref{mooreNeigh}b).
 	
-	\item $Q = \{0, 1\}$ is the set of cell states, 0 representing the
-	dead state, 1 the alive one.
+	\item $Q = \{0, 1\}$ is the set of cell states, $0$ representing the
+	dead state, $1$ the alive one.
 	
 	\item $\sigma : Q^9 \rightarrow Q$ is the deterministic cell
-	transition function. It is composed by one elementary process,
-	which implements the aforementioned transition rules.
+	transition function. It is composed by a single elementary process,
+	which implements the aforementioned evolution rules.
 \end{itemize}
-
-The Game of Life is a class 4 Wolfram's taxonomy CA, because
+The Game of Life belongs to the class 4 of the Wolfram's taxonomy, because (quoting the words of Wolfram)
 \say{rich and complex structures, stable blocks and moving patterns come into existence even starting from a completely random configuration}. 
+Among many patterns and blocks appearing in the GOL, one of the most common is the so called \emph{glider} (see Figure \ref{fig:glider}) that is a periodic pattern with a period of $5$ steps that is capable of moving into the cellular space and thus of transmitting information.
 \begin{figure}
 \centering
-\caption{GOL execution example.}
+\caption[GOL execution example.]{An execution of the Game of Life. Many common patterns are visible as blikers, gliders and beacons.}
 \label{gameoflife}
 \includegraphics[width=1.0\textwidth]{./images/CA_FDM/game-of-life}
 \end{figure}
-A famous block for example is the \emph{glider} ( see picture \ref{fig:glider}) that is a 5-step-period pattern that is capable of moving into the cellular space.
 
 \subsubsection{Game of life as Turing machine}
-Every CA con be considered a device capable of supporting computation and the
-initial configuration can encode an input string (a program for example). At
-some point the current configuration can be interpreted as the result of the
-computation and decoded in a output string. But as we stated before in section
-\ref{DFA} not all the computational device have the same computational power. So
-which is the one of the game of life? Life was proved can compute everything a
-universal Turing machine can, and under Turing-Church's thesis, everything can
-be computed by a computer\cite{berlekamp1982}.
+Every CA con be considered as a device capable of supporting computation where the
+initial configuration  encodes an input string (the source code of a program ). At
+some point in time, the current configuration can be interpreted as the result of the
+computation and decoded into an output string. As mentioned in Section
+\ref{DFA}, not all the computational devices have the same (computational) power.
+So which is the one of the game of life? GOL is proved to be capable of universal computation.
+Therefore the Game of life is computationally equivalent to a Turing machine\cite{berlekamp1982}.
 \begin{figure}
 \centering
-\caption{Glider in Conway's game of life.}
+\caption[The \textit{Glider} block in the Conway's game of life.]{Glider in Conway's game of life.}
 \label{fig:glider}
 \setlength{\fboxrule}{1pt}%
 \fbox{\includegraphics[width=1.0\textwidth]{./images/CA_FDM/glider}}
 \end{figure}
-
-
-
-This raises a computational issue; given the \emph{Halting
-Theorem}\footnote{There can not be any algorithm to decide whether, given an
-input, a Turing machine will accept or not.} the evolution of \emph{Life} is
-unpredictable (as all the universal computational systems) so it means that is
-not possible to use any algorithmically shortcuts to anticipate the resulting
-configuration given an initial input. The most efficient way is to let the
-system run.
-
+This result raises a interesting issue; since the \emph{Halting
+Theorem} is undecidable i.e. no algorithm can ever decides whether a Turing Maching will accept a certain input or not,
+the evolution of the GOL is \textbf{unpredictable} (as all the universal computational systems) practically meaning that is
+not possible to use any algorithmic shortcuts to anticipate the resulting
+configuration given an initial input. 
+The most efficient way to know the outcome of an execution of GOL, is to let the system run.
 \begin{quotation}
 \em Life, like all computationally universal systems, defines the most efficient
 simulation of its own behavior\cite{Ilachinski2001}
@@ -562,52 +546,31 @@ simulation of its own behavior\cite{Ilachinski2001}
 
 
 
-
-
-\section{Extension of the Cellular automata model}
-It is possible to relax some of the assumptions in the general characterization
-of CA provided in the ordinary CA definitions and get interesting results.
-Asynchronous updating of the cell, non homogenous lattice with different
-neighborhood or transition functions.
-
-\subsection{Probabilistic CA}
-Probabilist CA is are an extension of the common CA paradigm. They share all
-the basic concept of an ordinary homogeneous
-CA with an important difference in the transition function.
-$\sigma$ is a stochastic-function that choose the next-state
-according to some probability distributions. They are used in a wide class of
+\section{Extension of the Cellular automata model - Probabilistic CA}
+If some of the assumptions of the ordinary CA characterization are relaxed interesting results are obtained.
+As an example, the following are extensions that have proved to be useful in many cases: \textit{asynchronous update}, \textit{non-homogenous cellular space and neighborhood} or  transition function that depends on the coordinates of a cell. An interesting class of CA is obtained when the transition function is based on some stocastic process. 
+Probabilistic CA\cite{MAIRESSE201442} have a single key difference w.t.r. to ordinary CA i.e. the transition function $\sigma$ is a stochastic-function that decides the next-state according to some probability distributions.
+They are used in a wide class of
 problems like in modelling ferromagnetism, statistical mechanics
-\cite{Vichniac1984} or the cellular Potts model\footnote{Is a computational
-lattice-based model to simulate the collective behavior of cellular structures.}
+\cite{Vichniac1984} or the cellular Potts model\footnote{Lattice-based model adopted for the simulation of the collective behavior of cellular structures.}\cite{RevModPhys.54.235}
 
-
-\subsubsection{Cellular automata as Markov process}
-Another approach in studying CA, even if it is probably not a practical
-way to study the CA is to see CA as a Markov process\footnote{Name for the
-Russian mathematician Andrey Markov best known for his work on stochastic
-processes.}. A Markov process, is a stochastic process that exhibits
-memorylessness \footnote{Also called Markov property.} and it means that the
-future state is conditionally independent\footnote{Two event
-$A$ and $B$ are independent if
-$P(A B)=P(A)P(B)$ or in other words that the conditional
-probability $P(A|B)=P(A)$.} of the past.
-This property of the process means that future probabilities of an event may be
-determined from the probabilities of events at the current time.
-More formally if a process has this property following  equation holds:
-\begin{align*}
-P(X(t_n)&= x \,| X\,(t_1) = x_1,X(t_2) = x_2, \ldots,X(t_{n-1})=x_{n-1}) \\
-&= P(X(t_n)=x | X(t_{n-1}=x_{n-1})
-\end{align*}
-
-In PCA analysis we are more interested in Markov chain because each cell has a
+Probabilistic CA (PCA) evolution can be studied if interpreted as of Markov processes.
+A Markov process, is a stochastic process that exhibits
+memorylessness, also  called Markov property, which means that the
+future state of  a system is conditionally independent from the past.
+ Two events $A$ and $B$ are independent if
+ $P(A B)=P(A)P(B)$ or in other words, that the probability of the event $A$ to occurs does not depends on the event $B$ i.e. $P(A|B)=P(A)$. 
+The property of this kind of  processes allows  future probabilities of an event to be
+determined from the probabilities of events at the \textit{current time} only.
+In PCA analysis, homogeneous Markov chains are adopted because each cell has a
 discrete set of possible value for the status variable.
-In terms of chain a CA is a process that starts in one of these states and moves
+In terms of such  type of chain a CA is a process that starts in one of these states and moves
 successively from one state to another. If the chain is currently in state
 $s_i$, than it evolve to state $s_j$ at
 the next step with probability $p_{ij}$.The changes of state
 of the system are called transitions, and the probabilities associated with
-various state changes are called transition probabilities usually represented
-in the Markov chain transition matrix :
+various state changes are named transition probabilities and are usually represented
+in the \textit{Markov chain transition matrix} of the form shown below:
 \[
 M =
 \left( {\begin{array}{cccc}
@@ -617,12 +580,8 @@ p_{31} & p_{32} & p_{33} &\cdots \\
 \vdots & \vdots  &\vdots& \ddots\\
 \end{array} } \right)
 \]
-
-This could seems to be a good way to analyze the probabilistic CA but, a
-small grid  $10\times10$ (common models model use grid
-$100\times100$ or larger) identify
-$2^{10\times10}$possible states and the resulting matrix
-dimension of $2^{10\times10}\times2^{10\times10}$ that is a
-very large number!
-
-
+Markov chain transition matrix are useful in analyzing very small PCA but they prove to be impractical for larger sizes as for instance, a
+CA on a small celular space of size $10\times10$  has
+$2^{10\times10}$ possible states and the resulting chain transition matrix
+has size of $2^{10\times10}\times2^{10\times10}$ that is a
+huge number! 
