@@ -16,16 +16,27 @@
 \vskip 1em
 
 
-\lettrine[lines=3,lhang=0.33,lraise=0,loversize=0.15]{F}{or} most problems in physics and engineering there is a huge demand in improving the time needed to solve a certain problem. For instance some numerical meteorological models are so complex that even executed on powerful computers the execution time would be so long that by the time the result are available the prediction would be of no practical use. But speed is not the only important factor in scientific computing. Sometimes the accuracy of a solution need to be improved and that usually translates to a bigger and more dense discretization of the problem. It is clear that in order to overcome these limitations more computing power needs to be employed. 
+\lettrine[lines=4]{F}{or} most problems in physics and engineering there is a huge demand in improving the time needed to solve a certain problem. For instance some numerical meteorological models are so complex that even executed on powerful computers the execution time would be so long that by the time the result are available the prediction would be of no practical use.
+But speed is not the only important key aspect in scientific computing.
+Sometimes, the accuracy of a solution need to be improved and that usually translates to a bigger and more dense discretization of the problem.
+It is clear that in order to overcome these limitations more computing power needs to be employed. 
 %\section{Introduction}
 
-Nowadays, computing systems are often equipped with more than one GPU. From high-end workstation, that are able to accommodate up to 8 GPUs or more on the same motherboard to large clusters, that are usually composed of several computing nodes (see Figure \ref{fig:distribuiteMemory} and Section \ref{sec:flynn_tax} at page \pageref{fig:distribuiteMemory} and \pageref{sec:flynn_tax} respectively) each of them equipped with one or more accelerators possibly of different kind and nature. Programming distributed memory machines is complex especially for non HPC computer scientist because of the intrisic complexity introduced by the parallelism and because of the hardware heterogeneousness, and this is especially true since large cluster are equipped with several accelerators. However is important to fully and effectively utilize such computing power, especially since having multiple GPUs per node improves the ratio performance over Watt and  price over Watt. For these reasons multi-GPU programming is becoming more and more important.
+Nowadays, computing systems are often equipped with more than one GPU.
+From high-end workstation, that are able to accommodate up to 8 GPUs or more on the same motherboard to large clusters, that are usually composed of several computing nodes (see Figure \ref{fig:distribuiteMemory} and Section \ref{sec:flynn_tax} at page \pageref{fig:distribuiteMemory} and \pageref{sec:flynn_tax} respectively) each of them equipped with one or more accelerators possibly made by different manufacturers and with different unerlying architecture.
+Programming distributed memory machines is complex especially for non HPC computer scientist because of the intrisic complexity introduced by the parallelism and because of the hardware heterogeneousness, and this is especially true since large cluster are equipped with several accelerators.
+However is important to fully and effectively utilize such computing power, especially since having multiple GPUs per node improves the ratio performance over Watt and  price over Watt.
+For these reasons multi-GPU programming is becoming more and more important.
 
-Unfortunately, neither \textsc{CUDA} or \textsc{OpenCL} supports natively a multi-GPU model. The model they support is based on a \textit{single core}-\textit{single GPU} relationship and works really well for tasks that are independent one from the other.
+Unfortunately, neither \textsc{CUDA} or \textsc{OpenCL} supports natively a multi-GPU model.
+The model they support is based on a \textit{single core}-\textit{single GPU} relationship and works really well for tasks that are independent one from the other.
 On the other hand, the aforementioned model makes things  more difficult when a task need to have several GPUs cooperate in some way in order to solve a problem instance.
-As an example of an application of the supported model, the \textsc{BOINC} application \cite{anderson:2004} allows a user to donate computing power and time to solve relevant problems. In a multi GPU environment, it works spawning $N$ independent tasks and each of them is scheduled on one of the $N$ available GPUs.
-When a task is finished, the application simply requests another task to the central server, the task dispatcher. No cooperation or communication is required between the GPUs as the tasks to be solved is self-contained, meaning that it does not need any external input or information.
-An example of the unsupported model, consider the Lattice Boltzmann (LB) \cite{McNamara&Zanetti-1988} \cite{Aidun2010439} \cite{Higuera&Jimenez-1989} method on a domain that is decomposed along one axis, let's say the $x$ axis, as depicted in Figure \ref{fig:multigpu_domain_decomposition}, so that each GPU is responsible for a subset of the whole mesh. Computation for a grid point that lies on the boundary of the domain portion assigned to the GPU $2$ needs information about neighboring points that are stored on different GPUs ($1$ and $3$ in this case).
+As an example of an application of the supported model, the \textsc{BOINC} application \cite{anderson:2004} allows a user to donate computing power and time to solve relevant problems.
+In a multi-GPU environment, it works spawning $N$ independent tasks and each of them is scheduled on one of the $N$ available GPUs.
+When a task is finished, the application simply requests another task to the central server, the \textit{task dispatcher}.
+No cooperation or communication is required between the GPUs as the tasks to be solved is self-contained, meaning that it does not need any external input or information to be fully completed.
+An example of the unsupported model, consider the Lattice Boltzmann (LB) \cite{McNamara&Zanetti-1988} \cite{Aidun2010439} \cite{Higuera&Jimenez-1989} method on a domain that is decomposed along one axis, let's say the $x$ axis, as depicted in Figure \ref{fig:multigpu_domain_decomposition}, so that each GPU is responsible for a subset of the whole mesh.
+Computation for a grid point that lies on the boundary of the domain portion assigned to the GPU $2$ needs information about neighboring points that are stored on different GPUs ($1$ and $3$ in this case).
 Communication of such boundary points between the two devices is required.
 
 \section{OpenCAL cluster}

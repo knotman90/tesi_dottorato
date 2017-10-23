@@ -12,12 +12,14 @@ This chapter is adapted from \cite{dspataro:2017}.
 \lettrine[lines=3,lhang=0.33,lraise=0,loversize=0.15]{S}{tudying} the movement of sub-micron particles, micro-spheres and molecules under microscopic observation often requires their time trajectories from which important kinematic and dynamic properties can be computed. 
 Several studies employ time-lapse microscopy, especially in the field of biophysics, as a tool to gather data and retrieve single particle time trajectories. The researcher usually relies on manual or semi-manual/interactive software to study such properties. However, this approach is unfeasible when the number of cells involved in the analysis is high.
 
-In this paper we present an original algorithm for detecting and tracking particles that is based on image processing techniques and to shape difference and centroid displacement analysis to reconstruct the trajectories. To our knowledge this is the first study regarding semi-automatic detection of particles-like objects adopting parallel CA. In particular, the method works for $n$-dimensional input data provided that particles are represented by at least a centroid space coordinate and a geometrical entity which describe its shape. 
+In this Chapter  an original algorithm for detecting and tracking particles that is based on image processing techniques and to shape difference and centroid displacement analysis to reconstruct the trajectories is presented.
+To our knowledge this is the first study regarding semi-automatic detection of particles-like objects adopting parallel CA.
+In particular, the method works for $n$-dimensional input data provided that particles are represented by at least a centroid space coordinate and a geometrical entity which describe its shape. 
 Since $2$D images are a common source of such data we also present framework for image-manipulation based on the Extended Cellular Automata(XCA) paradigm .
 
 \texttt{TraCCA} has been successfully applied for the investigation of the motility of \textit{B. subtilis.} injected in a micro-fluidic device using 4100 images taken at 100 frames per second, as reported in Section \ref{sect:bacteriaanalysis}.
 
-The paper is organized as follows: Sections  \ref{trackalgorithm} and \ref{manipulating} outline the proposed tracking algorithm and cellular automata based image processing framework, respectively; Section \ref{sect:bacteriaanalysis} shows a detailed application of \texttt{TraCCA} referred to a real case study regarding bacterial motility, while conclusions and possible future works are reported in Section \ref{conclusions}.
+The Chapter is organized as follows: Sections  \ref{trackalgorithm} and \ref{manipulating} outline the proposed tracking algorithm and cellular automata based image processing framework, respectively; Section \ref{sect:bacteriaanalysis} shows a detailed application of \texttt{TraCCA} referred to a real case study regarding bacterial motility, while conclusions and possible future works are reported in Section \ref{conclusions}.
 
 
 \section{Tracking Algorithm}\label{trackalgorithm}
@@ -61,7 +63,8 @@ If after the $\lozenge$ application a particle $p^* \in {M_i} \cup P_i $ remains
 \end{enumerate}
  
 The pseudo-code reported in Algorithm \ref{matching} shows how the matching procedure is implemented. Note that the \texttt{NEIGH} procedure filters the possible candidates for a particle only to those which the euclidean spatial distance is less than a threshold parameter. In many real life applications particle displacement between two subsequent time-steps are small, so it would be useless trying to match a particle at time $i$ with one at time $i+1$ which are spatially far apart.
-\begin{algorithm}[h]
+
+\begin{algorithm}[H]
     \SetKwInOut{Input}{Input}
     \SetKwInOut{Output}{Output}
    \underline{Function MATCH} $(M_i,P_{i+1})$\;
@@ -333,7 +336,11 @@ More specifically, color values that are above or below this range are saturated
 
 Eventually, all the images go through a noise reduction stage which employs a combinations of \textit{gaussian}, \textit{laplacian} and \textit{blurring} filters \cite{Deng:1993}.
 It is worth to note that filters parameters are dataset dependent and the best set of values experimentally determined. 
-
+    \begin{figure}
+    	\includegraphics[width=0.6\textwidth]{./images/bacteria/runtumble.png}
+    	\caption{An example of tracked trajectory of a single bacterium. Blue-yellow colors levels are proportional to the velocity, while dark red segments represent the individuated tumbles.}
+    	\label{runtumbledetection}
+    \end{figure}
 
 
 \subsection{Bacteria Tracking}
@@ -362,13 +369,6 @@ Starting from the relationship $D_b=  \frac{v^2 t_t}{2}$  \cite{Berg:1993} that 
 we have partitioned each trajectory into running and tumbling events. 
 These events allow the swimming speed to be calculated as difference between subsequent bacteria positions and average tumbling time as the overall time spent tumbling over by the number of tumbling events. 
 Inspired by the work of \textit{Wong-Ng et al.} \cite{Wong2016} and \textit{B. Masson et al.} \cite{Masson:2011} an algorithm, implemented in \textit{MATLAB}, was adopted for detecting such running/tumbling events (see Figure \ref{runtumbledetection})  which in turn were used to extract all the relevant bacterial motility parameters from the tracked trajectories\footnote{Tumbles are associated both to a decrease in advancing velocity and an abrupt change in the angular velocity (i.e. in the direction of the motion). By fixing a threshold on both advancing and angular velocities it is possible to identify running/tumbling and use them to compute the mean values $t_t$ and $v$ over all the trajectories of the experiment.}.
-%REVIEW
-    \begin{figure}[htp]
-         \includegraphics[width=9.3cm,height=7cm]{./images/bacteria/runtumble.png}
-        \caption{An example of tracked trajectory of a single bacterium. Blue-yellow colors levels are proportional to the velocity, while dark red segments represent the individuated tumbles.}
-        \label{runtumbledetection}
-        \vspace{-1.5em}
-    \end{figure}
 
 The main parameters that were considered as as descriptors of the motion of the bacteria were: 
 \begin{itemize}
@@ -383,12 +383,16 @@ By analyzing the entire trajectory set produced by \texttt{TraCCA} on the datase
 \item $\overline{t_t}$= \SI{0.18}{\second}.
 \end{itemize}
 These experimental values\footnote{These motility parameters were also calculated using the \textit{Mean Square Displacement} (\texttt{MSD}) in time (which for the sake of brevity is only outlined here) by means of the MATLAB \texttt{@msdanalyzer} implementation \cite{msdanalyzer} and considering the following relationship $MSD(t)=\frac{1}{2}\frac{v^2 t_R^2}{2t/t_R +e^{\frac{-2t}{t_R}-1}}$ \cite{Howse2007} where $v$ is the swimming speed, $t_R$ is the timescale associated to rotational diffusion that is $t_R=2t_t$, it is possible to obtain $t_R $ and $v$ via fitting. $t_t$ and $v$ are then used to compute $D_b$.} are in accordance with those available in the literature as for instance in the work of \textit{Cisneros et al.} \cite{Cisneros:2011}.
+\begin{figure}
+	\begin{center}
+		\includegraphics[width=0.85\textwidth]{./images/bacteria/result.png}
+		\caption{Final collective view of all the tracked bacteria tracjectories as obtained by processing all 4100 images of the case study dataset. For the sake of figure clarity, a random color is associated to each bacterium trajectory.}\label{result}
+	\end{center}
+\end{figure}
 
 \section{Conclusion}\label{conclusions}
-In this preliminary work, a cellular-automata based tracking framework composed by a tracking algorithm and a CA support model for image processing, is presented for reconstructing trajectories of particle-like objects. The paper reports the application to a real case study concerning the tracking of \textit{B. subtilis}, by evaluating  standard motility parameters (average swimming velocity, running and tumble times) in a microfluidic device. Results that were obtained during experimentation, proved that the \texttt{TraCCA} framework has correctly reconstructed bacterial trajectories. The tracking algorithm described in this work can also be effectively adopted in other fields as, for instance, crowd dynamics, provided that traceable elements can be described by means of a bounding box and a position.
+In this preliminary work, a cellular-automata based tracking framework composed by a tracking algorithm and a CA support model for image processing, is presented for reconstructing trajectories of particle-like objects. This work reports the application to a real case study concerning the tracking of \textit{B. subtilis}, by evaluating  standard motility parameters (average swimming velocity, running and tumble times) in a microfluidic device. Results that were obtained during experimentation, proved that the \texttt{TraCCA} framework has correctly reconstructed bacterial trajectories. The tracking algorithm described in this work can also be effectively adopted in other fields as, for instance, crowd dynamics, provided that traceable elements can be described by means of a bounding box and a position.
 \begin{figure}
-	\vspace{-0.6cm}
-	\hspace{-0.9cm}
 	\setlength{\tabcolsep}{-0.02cm}
 	\begin{tabular}{cccc}
 		\subfloat{\includegraphics[width=0.25\textwidth]{./images/bacteria/1.png}} &
@@ -407,18 +411,9 @@ In this preliminary work, a cellular-automata based tracking framework composed 
 		\subfloat {\includegraphics[width = 0.25\textwidth]{./images/bacteria/14.png}} &
 		\subfloat {\includegraphics[width = 0.25\textwidth]{./images/bacteria/15.png}} &
 		\subfloat {\includegraphics[width = 0.25\textwidth]{./images/bacteria/16.png}}\\
-		
 	\end{tabular}
-	
-	\caption{4 different tracked bacterial trajectories shown at different times. }\label{4traj}
-\end{figure}
-
-
-\begin{figure}
-	\begin{center}
-		\includegraphics[width=1.0\textwidth]{./images/bacteria/result.png}
-		\caption{Final collective view of all the tracked bacteria tracjectories as obtained by processing all 4100 images of the case study dataset. For the sake of figure clarity, a random color is associated to each bacterium trajectory.}\label{result}
-	\end{center}
+	\caption{4 different tracked bacterial trajectories shown at $4$ different subsequent times. }
+	\label{4traj}
 \end{figure}
 Due to the large number of particles often involved in such applications, a preliminary parallel GPGPU + MPI version of the framework is currently being developed which has provided promising results in terms of scalability and speed up, allowing much larger dataset to be analyzed. Eventually, it is worth to note that under the assumption of associativity of the \textit{assignment operator} $\lozenge$, the tracking algorithm could be implemented using the \textit{parallel reduction} design pattern.
 
