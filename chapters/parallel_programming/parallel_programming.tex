@@ -175,7 +175,7 @@ MIMD architecture can be further divided by considering the  layout organization
 
 		\end{figure}
 	\end{itemize}
-	SM architecture provides an easy perspective to memory,	data sharing across processors and parallelism since no explicit communication is involved. Memory accesses and communications are fast due to the proximity of memory to CPUs, but it is not scalable because adding more CPUs to the pool can geometrically increases the traffic on the bus and makes cache management harder. Additionally, ensuring the correctness of accesses to global memory , in order to avoid race-conditions, is up to the programmer.
+	SM architecture provides an easy perspective to memory,	data sharing across processors and parallelism since no explicit communication is involved. Memory accesses and communications are fast due to the proximity of memory to CPUs, but it is not scalable because adding more CPUs to the pool can geometrically increases the traffic on the bus and makes cache management harder. Additionally, ensuring the correctness of accesses to global memory, in order to avoid race-conditions, is up to the programmer.
 	As an example of real world SM modern processor, Figure \ref{fig:intelPhi} shows the Intel \textit{Knights Landing} architecture for the Intel Phi processor family which is armed with 72 cores, $8$ billions transistors at \SI{14}{\nano\metre}, AVX-512 and is able to executes 240 threads simultaneously.
 	Coupled with this architecture many software model can be used to program
 	SM machines. Among all, the most used are:
@@ -223,8 +223,8 @@ MIMD architecture can be further divided by considering the  layout organization
 \end{figure}
 
 
-\section{Parallel Programming Models}
-\subsection{The \texttt{OpenMP} Parallel Computing Paradigm for Shared Memory Computers}
+
+\section{The \texttt{OpenMP} Parallel Computing Paradigm for Shared Memory Computers}
 \label{sec:openmp}
     \texttt{OpenMP} is a portable API providing compiler directives and library
     functions for shared memory parallel programming in \texttt{C/C++} and
@@ -368,7 +368,7 @@ omp_destroy_lock(&writelock);
     The main goal of the computer graphics is to render and then display $3D$ images onto the screen, which translates to refreshing pixels at rate of sixty or more $\si{Hz}$ \cite{Akenine-Moller:2002:RR:553838}.
     Each pixel has to be processed goes through a number of stages, and this process is commonly referred as to the \emph{graphic processing pipeline}.
     The peculiarity of this task is that the computation of each pixel is independent of the other's.
-    This specific task is thus suitable for distribution over parallel processing elements as it can be categorized as  a \textbf{embarassingly , perfect} or \textbf{pleasingly} \textit{parallel} problem\cite{Foster:1995:DBP:527029} (see Section \ref{sec:opencal_julia} and Listing \ref{code:julia_set} at pages \pageref{sec:opencal_julia} and \pageref{code:julia_set} respectively, for an example of a perfectly parallel problem).
+    This specific task is thus suitable for distribution over parallel processing elements as it can be categorized as  a \textbf{embarassingly, perfect} or \textbf{pleasingly} \textit{parallel} problem\cite{Foster:1995:DBP:527029} (see Section \ref{sec:opencal_julia} and Listing \ref{code:julia_set} at pages \pageref{sec:opencal_julia} and \pageref{code:julia_set} respectively, for an example of a perfectly parallel problem).
     To support extremely fast processing of large graphics data sets (which mainly consists of vertices and fragments), modern GPUs employ a stream processing model with parallelism.
     The game industry boosted the development of  GPUs, that offer today greater performance than CPUs and are improving faster too as shown in Figures  \ref{CPU-VS-GPU_GFLOP} and \ref{CPU-VS-GPU_MEMORY}.
     The reason behind the discrepancy in floating-point capabilities between CPU and  GPU is that GPUs are designed such that more transistors are devoted to data crunching and processing rather than caching, flow control, branch prediction, etc..
@@ -436,7 +436,7 @@ omp_destroy_lock(&writelock);
     GPUs are nowadays, well suited for data-parallel problems because they are very effective at executing the same code on many data elements at the same time  in a \textit{Single Instruction, Multiple Threads} (SIMT) fashion or using a more general definition as \textit{Parallel Random-Access Machine in which each thread Can Read or Write a memory location} (\texttt{CRCW PRAM}).
     
     
-    \section{The OpenCL Parallel Computing Paradigm on Heterogeneous Devices}
+\section{The OpenCL Parallel Computing Paradigm on Heterogeneous Devices}
     Released on December 2008 by the Kronos Group, \texttt{OpenCL} \cite{Gaster:2011:HCO:2046379,Stone:2010:OPP:622179.1803953,Munshi:2011:OPG:2049883} is an open standard for programming heterogeneous computers built from CPUs, GPUs and other processors. It allows to define the intended computation using the \textit{platform} abstraction. A platform is composed by an host and one or more compute devices. A C-like language is used to program and orchestrate the various components of the platform (see Figure \ref{fig:openCL_platform}).
     
     One of the advantages of \texttt{OpenCL} is that it is not restricted, as in the case of CUDA\cite{NvidiaprogGuide}, to the use of GPUs only but it takes each computing resource in the system as computational peer unit, interposing a uniform set of API between them and the programmer, easing the process of interfacing with them. Another big advantage is that it is  open, free, and cross-compatible across vendors since is supported by all major hardware producers.

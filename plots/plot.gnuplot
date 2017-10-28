@@ -182,27 +182,52 @@ set label 1 "Speed-up GTX980" at 1300,second 9.55 center font "Courier-Bold,8"
 set arrow 2 from 0,second 5.51  to 3600, second 5.51 as 8
 set label 2 "Speed-up K40" at 2500,second 5.72 center font "Courier-Bold,8" 
 
-plot  "data_sciddicaT-k40_980.dat" using 1:2 title 'Time K40+GTX980' w lp ls 1 axes x1y1,\
-"data_sciddicaT-k40_980.dat" using 1:3 title 'Speed-up K40+GTX980' w lp ls 4 axes x1y2 ,\
+plot  "data_sciddicaT_stressR-k40_980.dat" using 1:2 title 'Time K40+GTX980' w lp ls 1 axes x1y1,\
+"data_sciddicaT_stressR-k40_980.dat" using 1:3 title 'Speed-up K40+GTX980' w lp ls 4 axes x1y2 ,\
 
 
 
 #---------------------------------------------
 set output 'sciddica_980_980.pdf'
-set xlabel 'Workload - K40'
+set xlabel 'Workload - 980 #1'
 set key top right 
-set x2label 'Workload - GTX980'
+set x2label 'Workload - 980 #2'
 #set title "Time - Speedup 2 GPU"
 
-
-plot  "data_sciddicaT-980_980.dat" using 1:2 title 'Time GTX980+GTX980' w lp ls 1 axes x1y1,\
-"data_sciddicaT-980_980.dat" using 1:3 title 'Speed-up GTX980+GTX980' w lp ls 4 axes x1y2 ,\
-
+unset arrow 2
+unset label 2
+plot  "data_sciddicaT_stressR-980_980.dat" using 1:2 title 'Time GTX980+GTX980' w lp ls 1 axes x1y1,\
+"data_sciddicaT_stressR-980_980.dat" using 1:3 title 'Speed-up GTX980+GTX980' w lp ls 4 axes x1y2 ,\
 
 unset arrow 1
-unset arrow 2
 unset label 1
-unset label 2
+
+
+#---------------------------------------------
+set output 'sciddica_k40_980_980.pdf'
+set xlabel 'Workload - K40'
+set key top center 
+set x2label 'Workload - GTX980 #1 and #2'
+#set title "Time - Speedup 3 GPUs"
+plot  "data_sciddicaT_stressR_K40-980-980.dat" using 1:2 title 'Time' w lp ls 1 axes x1y1,\
+"data_sciddicaT_stressR_K40-980-980.dat" using 1:3 title 'Speed-up' w lp ls 4 axes x1y2 ,\
+
+
+
+#STANDARD TEST SCIDDICAT
+set xrange [0 : 610]
+set x2range [610 : 0.0]
+#---------------------------------------------
+set output 'sciddica_standard_k40_980.pdf'
+set xlabel 'Workload - K40'
+set key top center 
+set x2label 'Workload - GTX980'
+#set title "Time - Speedup 2 GPUs"
+plot  "data_sciddicaT_standard-k40_980.dat" using 1:2 title 'Time' w lp ls 1 axes x1y1,\
+"data_sciddicaT_standard-k40_980.dat" using 1:3 title 'Speed-up' w lp ls 4 axes x1y2 ,\
+
+
+
 
 
 #----------------BAR-----------------
@@ -278,11 +303,13 @@ set tmargin at screen 0.98;
 set arrow  from 0.1,7.7  to 0.71,10.5 
 set label  "1.75x" at 0.2, 9.5 center font "Arial-Bold,8" 
 
-set arrow  from 1.1,12  to 1.71,16 
-set label  "1.54x" at 1.17, 14.2 center font "Arial-Bold,8" 
+set arrow  from 1.1,12  to 1.65,15.8 
+set label  "1.54x" at 1.12, 14.2 center font "Arial-Bold,8" 
 
-set arrow  from 2.1,17  to 2.7,26.5 
-set label  "1.69x" at 2.15, 21.7 center font "Arial-Bold,8" 
+set arrow  from 2.1,17  to 2.65,20.5 
+set label  "0.79x" at 2.1, 19.1 center font "Arial-Bold,8" 
 
+set arrow  from 3.1,22  to 3.65,26.5 
+set label  "0.77x" at 3, 24 center font "Arial-Bold,8" 
 
-plot "data_sciddicaT_scaling.dat" using 1:3:xtic(2)  t ''with boxes fillstyle pattern 1 lt -1 , 'data_sciddicaT_scaling.dat' using 1:3:3 with labels center boxed offset 0,1 notitle
+plot "data_sciddicaT_stressR_scaling.dat" using 1:3:xtic(2)  t ''with boxes fillstyle pattern 10 lt -1 , 'data_sciddicaT_stressR_scaling.dat' using 1:3:3 with labels center boxed offset 0,1 notitle

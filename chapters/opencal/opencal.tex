@@ -522,8 +522,7 @@ callback functions are:
 	before the simulation loop.
 	\item \verb'globalTransition()': It can be used to redefine the
 	execution order of the registered elementary processes and to
-	perform selective substate updating. The
-	\verb'calApplyElementaryProcess{2D|3D}()' function can be used
+	perform selective substate updating.\hfil \\The \texttt{calApplyElementaryProcess{2D|3D}()} function can be used
 	within the registered callback to apply a registered elementary
 	process to each cell of the computational domain, while the
 	\verb'calUpdateSubstate{2D|3D}{b|i|r}' to update a registered
@@ -1231,7 +1230,7 @@ device-side model object. It takes a pointer to an host-side
 \verb'CALModel{2D|3D}' serial model, an OpenCL context, an OpenCL
 program, and a compliant device as parameters.
 
-Kernels can be extracted from an OpenCL program by means of the
+Kernels can be extracted from an OpenCL program by means of the\hfil \\
 \verb'calclGetKernelFromProgram()' function and then registered to
 the device-side model by means of the
 \verb'calclAddElementaryProcess{2D|3D}()' function, which adds the
@@ -1476,7 +1475,7 @@ where:
 According to OpenCAL/ and OpenCAL-OMP, the XCA programming model, substates,
 parameters and the simulation object can be declared as:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_life}]
 struct CALModel2D* sciddicaT;
 
 struct sciddicaTSubstates {
@@ -1504,7 +1503,7 @@ function, by specifying the dimensions of the computational domain,
 the neighborhood pattern, the boundary topology and the optimization
 to be used:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_life}]
 sciddicaT = calCADef2D(ROWS,
 COLS,
 CAL_VON_NEUMANN_NEIGHBORHOOD_2D,
@@ -1521,7 +1520,7 @@ cell optimization is not employed.
 Substates are therefore registered to the XCA model by means of the
 \verb'calAddSubstate2Dr()' function:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_life}]
 Q.z = calAddSubstate2Dr(sciddicaT);
 Q.h = calAddSubstate2Dr(sciddicaT);
 for (i = 0; i < NUMBER_OF_OUTFLOWS; i++)
@@ -1531,7 +1530,7 @@ Q.f[i] = calAddSubstate2Dr(sciddicaT);
 \noindent as well as elementary processes through the
 \verb'calAddElementaryProcess2D()' function:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_life}]
 calAddElementaryProcess2D(sciddicaT, flowsComputation);
 calAddElementaryProcess2D(sciddicaT, widthUpdate);
 \end{lstlisting}
@@ -1541,7 +1540,7 @@ are callback functions implementing the $\sigma_1$ and $\sigma_2$
 elementary processes, respectively. A snippet of the $\sigma_1$
 elementary process is shown below:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 void flowsComputation(struct CALModel2D* model, int i, int j)
 {
 CALreal f[NUMBER_OF_OUTFLOWS];
@@ -1569,7 +1568,7 @@ corresponding substates by means of the \verb'calSet2Dr()'
 function. The implementation of the $\sigma_2$ elementary processes
 is also shown below:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 void widthUpdate(struct CALModel2D* model, int i, int j )
 {
 CALint n;
@@ -1593,7 +1592,7 @@ order to perform a simulation, a simulation object must be defined,
 by means of the \verb'calRunDef2D()' function, permitting the model
 evolve step by step:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 sciddicaT_simulation = calRunDef2D(sciddicaT,
 1,
 STEPS,
@@ -1610,7 +1609,7 @@ object therefore registers two global callbacks for initialization
 and steering purposes through the \verb'calRunAddInitFunc2D()' and
 \verb'calRunAddSteeringFunc2D()' functions, respectively:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 calRunAddInitFunc2D(sciddicaT_simulation, simulationInit);
 calRunAddSteeringFunc2D(sciddicaT_simulation, steering);
 \end{lstlisting}
@@ -1623,7 +1622,7 @@ the callback simply subtracts the thickness of the mass, represented
 by the $Q_h$ substate, from the surface over which it will
 flow down, represented by the $Q_z$ substate:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 void simulationInit(struct CALModel2D* sciddicaT)
 {
 CALreal z, h;
@@ -1645,7 +1644,7 @@ end of each computational step (cf. Algorithm \ref{algo:simuloop})
 and is here simply used to reset the outflow substates, as needed,
 by means of the \verb'calInitSubstate2Dr()' function:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 void steering(struct CALModel2D* sciddicaT)
 {
 for(n=0; n<NUMBER_OF_OUTFLOWS; n++)
@@ -1657,7 +1656,7 @@ calInitSubstate2Dr(sciddicaT, Q.f[n], 0);
 computational steps by simply calling the \verb'calRun2D()'
 function:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 calRun2D(sciddicaT_simulation);
 \end{lstlisting}
 
@@ -1674,14 +1673,14 @@ parameters are defined host-side exactly as before, as well as the
 initial conditions of the system. A device-side model is therefore
 declared as an object of type \verb'CALCLModel2D':
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 struct CALCLModel2D* device_CA;
 \end{lstlisting}
 
 \noindent and then defined by means of the \verb'calclCADef2D()'
 function:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 device_CA = calclCADef2D(host_CA, context, program, device);
 \end{lstlisting}
 
@@ -1694,7 +1693,7 @@ particular, the OpenCAL-CL implementation of $SciddicaT_{naive}$
 define both the $\sigma_1$ and $\sigma_2$ elementary processes and
 the steering global functions as kernels. The kernel defining the
 $\sigma_1$ elementary process is defined as:
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 __kernel void flowsComputation(__CALCL_MODEL_2D, __global CALParameterr* Pepsilon, __global CALParameterr* Pr )
 {
 calclThreadCheck2D();
@@ -1741,7 +1740,7 @@ to update the values of the corresponding substates by means of the
 parameters, they can be defined host-side by means of the
 \verb'calclSetKernelArg2D()' function:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 calclSetKernelArg2D(&flow_computation_kernel,
 0,
 sizeof(CALParameterr),
@@ -1763,7 +1762,7 @@ excluded), and both the size and the host-side parameter.
 Similarly to $\sigma_1$, the $\sigma_2$ elementary process is
 defined by an OpenCAL-CL kernel as:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 __kernel void widthUpdate(__CALCL_MODEL_2D) {
 calclThreadCheck2D();
 
@@ -1791,7 +1790,7 @@ Once defined as kenels, elementary processes are added to the
 device-side model by means of the
 \verb'calclAddElementaryProcess2D()' function:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 calclAddElementaryProcess2D(device_CA, &flow_computation_kernel);
 calclAddElementaryProcess2D(device_CA, &width_update_kernel);
 \end{lstlisting}
@@ -1800,14 +1799,14 @@ calclAddElementaryProcess2D(device_CA, &width_update_kernel);
 here omitted, can be added by means of the
 \verb'calclAddSteeringFunc2D()' function:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 calclAddSteeringFunc2D(device_CA, &steering_kernel);
 \end{lstlisting}
 
 \noindent and the simulation performed for \verb'STEPS'
 computational steps by means of the \verb'calclRun2D()' function:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 calclRun2D(device_CA, 1, STEPS);
 \end{lstlisting}
 
@@ -1929,7 +1928,7 @@ below, in the same order they are applied.
 \subsection{The $SciddicaT_{ac}$ OpenCAL and OpenCAL-OMP implementations}
 Here we highlight the OpenCAL and OpenCAL-OMP differences between the $SciddicaT_{ac}$ and $SciddicaT_{naive}$ models. In particular, to properly exploit the active cells optimization, we have to change the definition of the CA object by using the \verb'CAL_OPT_ACTIVE_CELLS' parameter in the model
 definition:
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 sciddicaT = calCADef2D (ROWS,
 COLS,
 CAL_VON_NEUMANN_NEIGHBORHOOD_2D,
@@ -1941,7 +1940,7 @@ CAL_OPT_ACTIVE_CELLS
 \noindent and by adding the $\sigma_3$ elementary process to the
 model, in addition to the $\sigma_1$ and $\sigma_2$ ones:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 calAddElementaryProcess2D(sciddicaT, flowsComputation);
 calAddElementaryProcess2D(sciddicaT, widthUpdate);
 calAddElementaryProcess2D(sciddicaT, removeInactiveCells);
@@ -1950,7 +1949,7 @@ calAddElementaryProcess2D(sciddicaT, removeInactiveCells);
 Preliminarly, at the \texttt{init} stage, cells belonging to the landslide
 source are set as active by means of the
 \verb'calAddActiveCell2D()' function:
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 void simulationInit(struct CALModel2D* model)
 {        
 CALreal z, h;
@@ -1972,7 +1971,7 @@ calAddActiveCell2D(model, i, j);
 towards a neighbor by $\sigma_1$, the neighbor is added to $A$ by
 means of the \verb'calAddActiveCellX2D()' function:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 void flowsComputation(struct CALModel2D* model, int i, int j )
 {
 // omissis...
@@ -1990,7 +1989,7 @@ not differ from the one of $SciddicaT_{naive}$, while $\sigma_3$
 is new, and is responsible to remove a cell if its debris
 thickness is lower than or equal to the $p_\epsilon$ threshold:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 void removeInactiveCells(struct CALModel2D* model, int i, int j)
 {
 if (calGet2Dr(model, Q.h, i, j) <= P.epsilon)
@@ -2015,7 +2014,7 @@ OpenCAL/OpenCAL-OMP implementation, by using the
 the $\sigma_3$ elementary process was added to the device-side
 model, in addition to the $\sigma_1$ and $\sigma_2$ ones:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 calclAddElementaryProcess2D(device_CA, &flow_computation_kernel);
 calclAddElementaryProcess2D(device_CA, &width_update_kernel);
 calclAddElementaryProcess2D(device_CA, &rm_active_cells_kernel);
@@ -2028,7 +2027,7 @@ flow is computed from the central cell towards a neighbor by
 $\sigma_1$, the neighbor is added to $A$ by means of the
 \verb'calclAddActiveCellX2D()' function:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 __kernel void flowsComputation(__CALCL_MODEL_2D, __global CALParameterr* Pepsilon, __global CALParameterr* Pr )
 {
 // omissis ...
@@ -2054,7 +2053,7 @@ OpenCAL-CL implementation, while the $\sigma_3$ one is new, which
 is responsible to remove a cell if its debris thickness is lower
 than or equal to the $p_\epsilon$ threshold:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 __kernel void removeInactiveCells(__CALCL_MODEL_2D, __global CALParameterr * Pepsilon )
 {
 // omissis ...
@@ -2107,7 +2106,7 @@ OpenCAL/OpenCAL-OMP global transition function, by also allowing
 for the selective update of model substates, we have to change the
 definition of the CA simulation object by using the
 \verb'CAL_UPDATE_EXPLICIT' parameter in its definition:
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 sciddicaT_simulation = calRunDef2D(sciddicaT,
 1,
 STEPS,
@@ -2118,14 +2117,14 @@ CAL_UPDATE_EXPLICIT
 \noindent and also register a callback function to the simulation object to
 implement the overridden global transition function:
 
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 calRunAddGlobalTransitionFunc2D(sciddicaT_simulation,
 overridedGlobalTransitionFunction
 );
 \end{lstlisting}
 
 \noindent The overridden transition function is defined as:
-\begin{lstlisting}[basicstyle=\footnotesize, numbers=none]
+\begin{lstlisting}[basicstyle=\footnotesize, ,caption={}, label={lst:opencal_lifea}]
 void overridedGlobalTransitionFunction( struct CALModel2D* model)
 {
 CALint i;
@@ -2222,6 +2221,7 @@ communication between CPU and GPU, while the latter device has 2880
 cores, 12 GB global memory and 288 GB/s high-bandwidth.
 
 \subsection{Standard Tests}
+\label{sec:standard_tests}
 The execution times of the Tessina landslide simulation related to
 the OpenCAL and OpenCAL-OMP different versions of $SciddicaT$ are
 reported in Table \ref{tab:sciddicaT-OMP-execution-times}. Here,
@@ -2508,6 +2508,7 @@ computational intense simulation models.
 	\end{center}
 \end{figure}
 \subsection{Computational Domain Stress Tests}
+\label{sec:opencal_stress_testR}
 In order to evaluate performances when wider computational domains
 are taken into account, futher tests were carried out by
 considering a DEM of 3,593 rows per 3,730 columns, with square
