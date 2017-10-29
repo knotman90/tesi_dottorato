@@ -327,6 +327,7 @@ It also exposes a number of functions for adding or removing a device from the p
 
 
 \subsection{\texttt{Init} and \texttt{finalize} functors}
+\label{sec:init_finalize}
 Listing \ref{code:multinode} shows that the \texttt{MultiNode} object, among others fields, contains a \texttt{Cluster} object and two pointers to functors which type is shown in listing \ref{code:init_finalize_signature}.
 \lstset{language=[OpenCL]C,frame=tb,
     caption=\texttt{OpenCAL-CLUST}  init and finalize functor signature, 
@@ -429,7 +430,7 @@ Kernel side  API  and \textit{build-in} variables are added. Those additional va
 
 The following sections provides examples of usage of \texttt{OpenCAL-CLUST} . Section \ref{sec:opencal_julia} provides a complete code that generates large \texttt{BMP} images of Julia Sets.
 Section \ref{sec:convolutional_filters_example} shows how to apply a Sobel's convolutional filter to a large 2D image.
-Section \ref{sec:opencal_cluster_sciddicaT} shows an implementation of \textit{sciddicaT}, described in Section \ref{sec:SciddicaT-naive}. 
+Section \ref{sec:sciddica_opencal_cluster} shows an implementation of \textit{sciddicaT}, described in Section \ref{sec:SciddicaT-naive}. 
 \section{\texttt{OpenCAL-CLUST}  High Resolution Julia Set Generation}
 \label{sec:opencal_julia}
 As a first illustrative example of the usage of \texttt{OpenCAL-CLUST}  this section shows an application which generates high resolution Julia Set images running on an heterogeneous cluster of GPUs.
