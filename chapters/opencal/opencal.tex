@@ -253,7 +253,7 @@ The implementation descripted in this chapter targets shared multicore, distribu
   \begin{figure}
   	\begin{center}
     \includegraphics[width=1.0\textwidth]{./images/opencal/Figure05}
-    \caption{\texttt{OpenCAL} architecture. At the higher level of abstraction, the models,
+    \caption[\texttt{OpenCAL} architecture.]{\texttt{OpenCAL} architecture. At the higher level of abstraction, the models,
     	as well as the simulation process, and possible optimizations are
     	designed. \texttt{OpenCAL} can be found at the implementation abstraction
     	layer, allowing for a straightforward implementation of the designed
@@ -372,8 +372,7 @@ the need to provide their relative coordinates, as shown in Figures
 \begin{figure}[!htbp]
 	\begin{center}
 		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure01}
-		\caption{Examples of von Neumann (a) and Moore (b) neighborhoods for two-
-			dimensional CA with square cells. Examples of Moore neighborhoods are also shown for hexagonal CA, both for the cases of horizontal (c) and vertical (d) orientations. Central cell is represented in dark gray, while adjacent cells are in light gray. A reference system is here considered to evaluate cells coordinates in terms of row and column indices in a matrix-style representation, and a 0-based numerical identifier assigned to each cell in the neighborhood for straightforward access}
+		\caption[Examples of \textit{Von Neumann} and \textit{Moore} neighborhoods.]{Examples of \textit{Von Neumann} (a) and \textit{Moore} (b) neighborhoods for two-dimensional CA with square cells. Examples of Moore neighborhoods are also shown for hexagonal CA, both for the cases of horizontal (c) and vertical (d) orientations. Central cell is represented in dark gray, while adjacent cells are in light gray. A reference system is here considered to evaluate cells coordinates in terms of row and column indices in a matrix-style representation, and a 0-based numerical identifier assigned to each cell in the neighborhood for straightforward access}
 		\label{fig:2Dneighborhood}
 	\end{center}
 \end{figure}
@@ -393,13 +392,10 @@ defined order (cf. below).
 \begin{figure}[!htbp]
 	\begin{center}
 		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure04}
-		\caption{Examples of von Neumann (a) and Moore (b, b') neighborhoods for
-			three-dimensional CA with cubic cells. Central cell is represented in
-			dark gray, while adjacent cells are in light gray. A reference system
-			is here considered to evaluate cells coordinates in terms of row,
-			column and slice indices in a matrix-style representation, and a
-			0-based numerical identifier assigned to each cell in the neighborhood
-			for straightforward access.}
+		\caption[Examples of \textit{Von Neumann} and \textit{Moore} neighborhoods for three-dimensional CA with cubic cells.]{Examples of \textit{Von Neumann} (a) and \textit{Moore} (b, b') neighborhoods for three-dimensional CA with cubic cells. Central cell is represented in dark gray, while adjacent cells are in light gray. A reference system is here considered to evaluate cells coordinates in terms of row,
+		column and slice indices in a matrix-style representation, and a
+		0-based numerical identifier assigned to each cell in the neighborhood
+		for straightforward access.}
 		\label{fig:3Dneighborhood}
 	\end{center}
 \end{figure}
@@ -487,7 +483,7 @@ error.
 \begin{figure}
 	\begin{center}
 		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure06}
-		\caption{An example of application of the serial stream compaction algorithm
+		\caption[The adopted serial stream compaction algorithm.]{An example of application of the serial stream compaction algorithm
 			adopted to update the set $A$ of active cells in the serial
 			implementation of \texttt{OpenCAL}. In the example, active cells are
 			represented in gray within a two-dimensional 4x4 matrix of flags,
@@ -742,8 +738,7 @@ adopted in this case to mitigate the unbalance among chunks.
 \begin{figure}
 	\begin{center}
 		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure08.pdf}
-		\caption{An example of \texttt{OpenCAL-OMP} parallel application of an elementary
-			process to a substate $Q$ and its subsequent parallel updating. The
+		\caption[An example of \texttt{OpenCAL-OMP} parallel application of an elementary process to a substate $Q$ and its subsequent parallel updating.]{An example of \texttt{OpenCAL-OMP} parallel application of an elementary process to a substate $Q$ and its subsequent parallel updating. The
 			computational domain is initially partitioned by means of a pool of
 			three threads (fork phase). These latter concurrently apply the
 			elementary process by reading state values from the current layer and by updating new values to the next one. At the end of the elementary process application, threads implicitly synchronize by joining into the master one (join phase), and the parallel update phase starts. As before, a pool of threads concurrently copies the next layer into the current one and the new configuration of $Q$ is obtained. A join phase eventually occurs, which ensures data consistency before the application of another elementary process.}
@@ -962,7 +957,7 @@ efficiency of the algorithm.
 \begin{figure}
 	\begin{center}
 		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure11.pdf}
-		\caption{An example of application of the prefix-sum algorithm used to evaluate the array $O$ of offsets, needed to build the array $A$ of active cells. In the up-sweep phase, the array $O$ is initialized to the
+		\caption[An example of application of the prefix-sum algorithm used to build the array of \textit{active cells}.]{An example of application of the prefix-sum algorithm used to evaluate the array $O$ of offsets, needed to build the array $A$ of active cells. In the up-sweep phase, the array $O$ is initialized to the
 		values of the array $S$, where $s_p$ is the number of cells to be
 		added to $A$ by the $p^{th}$ wor-item. The array $O$ is therefore
 		efficiently processed by a set of work-items and, at the end of the
@@ -1852,7 +1847,7 @@ of Avolio et al. \cite{avolio2000simulation}.
 \begin{figure}
 	\begin{center}
 		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure12.pdf}
-		\caption{$SciddicaT$ simulation of the 1992 Tessina (Italy) landslide: (a) landslide source; (b) final landslide path. Topographic altitudes are represented in gray and vary between 1220 and 625 m a.s.l. Debris
+		\caption[$SciddicaT$ simulation of the 1992 Tessina (Italy) landslide.]{$SciddicaT$ simulation of the 1992 Tessina (Italy) landslide: (a) landslide source; (b) final landslide path. Topographic altitudes are represented in gray and vary between 1220 and 625 m a.s.l. Debris
 		thickness is represented with colors ranging from red (lower values)
 		to yellow (higher values).}
 		\label{fig:sciddicaT-simulation}
@@ -2273,7 +2268,8 @@ with respect to the same reference simulation.
 \begin{figure}
 	\begin{center}
 		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure14.pdf}
-		\caption{Relative speed-up obtained by the different OpenCAL-OMP versions of
+		\caption[\textbf{Relative} speed-up obtained by the different OpenCAL-OMP versions of
+		the $SciddicaT$ fluid-flow model.]{\textbf{Relative} speed-up obtained by the different OpenCAL-OMP versions of
 			the $SciddicaT$ fluid-flow model. The considered case study is the
 			Tessina Landslide (cf. Figure \ref{fig:sciddicaT-simulation}). The
 			adopted CPU was an Intel Xeon 2.0GHz E5-2650 CPU.}
@@ -2284,7 +2280,8 @@ with respect to the same reference simulation.
 \begin{figure}
 	\begin{center}
 		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure15.pdf}
-		\caption{Absolute speed-up obtained by the different OpenCAL-OMP versions of
+		\caption[\textbf{Absolute} speed-up obtained by the different OpenCAL-OMP versions of
+		the $SciddicaT$ fluid-flow model.]{\textbf{Absolute} speed-up obtained by the different OpenCAL-OMP versions of
 			the $SciddicaT$ fluid-flow model. The considered case study is the
 			Tessina Landslide (cf. Figure \ref{fig:sciddicaT-simulation}). The
 			adopted CPU was an Intel Xeon 2.0GHz E5-2650 CPU.}
@@ -2356,7 +2353,8 @@ one, as evidenced by the absolute speed-up values.
 \begin{figure}
 	\begin{center}
 		\includegraphics{./images/opencal/Figure16.pdf}
-		\caption{Relative speed-up obtained by the different OpenCAL-CL versions of the
+		\caption[\textbf{Relative} speed-up obtained by the different OpenCAL-CL versions of the
+		$SciddicaT$ fluid-flow model.]{\textbf{Relative} speed-up obtained by the different OpenCAL-CL versions of the
 			$SciddicaT$ fluid-flow model. The considered case study is the Tessina
 			Landslide (cf. Figure \ref{fig:sciddicaT-simulation}). The adopted
 			OpenCL compliant devices were a Nvidia Tesla K40 and an Nvidia GTX
@@ -2367,7 +2365,8 @@ one, as evidenced by the absolute speed-up values.
 \begin{figure}
 	\begin{center}
 		\includegraphics{./images/opencal/Figure17.pdf}
-		\caption{Absolute speed-up obtained by the different OpenCAL-CL versions of the
+		\caption[\textbf{Absolute} speed-up obtained by the different OpenCAL-CL versions of the
+		$SciddicaT$ fluid-flow model.]{\textbf{Absolute} speed-up obtained by the different OpenCAL-CL versions of the
 			$SciddicaT$ fluid-flow model. The considered case study is the Tessina
 			Landslide (cf. Figure \ref{fig:sciddicaT-simulation}). The adopted
 			OpenCL compliant devices were a Nvidia Tesla K40 and an Nvidia GTX
@@ -2413,7 +2412,8 @@ $SciddicaT_{naive}$.
 		111.761 & 113.116\\ 8 & 1,945.686 & 58.656 & 57.947\\ 16 &
 		1,385.546 & 31.279 & 30.077\\ \hline
 	\end{tabular}
-	\caption{Elapsed times (in seconds \si{s}) registered during the \emph{transition function stress test} for the simulation of the Tessina Landslide
+	\caption[Elapsed times (in \si{s}) registered during the \emph{transition function stress test} by different OpenCAL and
+	OpenCAL-OMP versions of the $SciddicaT$ fluid-flow model.]{Elapsed times (in \si{s}) registered during the \emph{transition function stress test} for the simulation of the Tessina Landslide
 		(cf. Figure \ref{fig:sciddicaT-simulation}) by different OpenCAL and
 		OpenCAL-OMP versions of the $SciddicaT$ fluid-flow model. The adopted
 		CPU is an Intel Xeon 2.0GHz E5-2650.}
@@ -2423,7 +2423,7 @@ $SciddicaT_{naive}$.
 \begin{figure}
 	\begin{center}
 		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure18.pdf}
-		\caption{Relative speed-up obtained during the \emph{transition function stress
+		\caption[\textbf{Relative} speed-up obtained during the \emph{transition function stress	test} by the different OpenCAL-OMP versions of the $SciddicaT$ fluid-flow model.]{\textbf{Relative} speed-up obtained during the \emph{transition function stress
 				test} by the different OpenCAL-OMP versions of the $SciddicaT$
 			fluid-flow model. The considered case study is the Tessina Landslide
 			(cf. Figure \ref{fig:sciddicaT-simulation}). The adopted CPU was an
@@ -2435,8 +2435,8 @@ $SciddicaT_{naive}$.
 \begin{figure}
 	\begin{center}
 		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure19.pdf}
-		\caption{Absolute speed-up obtained during the \emph{transition function stress
-				test} by the different OpenCAL-OMP versions of the $SciddicaT$
+		\caption[\textbf{Absolute} speed-up obtained during the \emph{transition function stress test} by the different OpenCAL-OMP versions of the $SciddicaT$
+		fluid-flow model.]{\textbf{Absolute} speed-up obtained during the \emph{transition function stress test} by the different OpenCAL-OMP versions of the $SciddicaT$
 			fluid-flow model. The considered case study is the Tessina Landslide
 			(cf. Figure \ref{fig:sciddicaT-simulation}). The adopted CPU was an
 			Intel Xeon 2.0GHz E5-2650 CPU.}
@@ -2477,7 +2477,9 @@ computational intense simulation models.
 		$SciddicaT_{ac}$ \\ \hline Tesla K40 & 11.108 & 10.605 &
 		3.960\\ GTX 980 & 5.063 & 5.453 & 2.981\\ \hline
 	\end{tabular}
-	\caption{Elapsed times (in seconds \si{s}) registered during the \emph{transition
+	\caption[Elapsed times (in seconds \si{s}) registered during the \emph{transition
+		function stress test} by different OpenCAL-CL
+	versions of the $SciddicaT$ fluid-flow model.]{Elapsed times (in seconds \si{s}) registered during the \emph{transition
 			function stress test} for the simulation of the Tessina Landslide
 		(cf. Figure \ref{fig:sciddicaT-simulation}) by different OpenCAL-CL
 		versions of the $SciddicaT$ fluid-flow model. The adopted OpenCL
@@ -2487,7 +2489,7 @@ computational intense simulation models.
 \begin{figure}
 	\begin{center}
 		\includegraphics{./images/opencal/Figure20.pdf}
-		\caption{Relative speed-up obtained during the \emph{transition function stress
+		\caption[\textbf{Relative} speed-up obtained during the \emph{transition function stress test} by different OpenCAL-CL versions of the $SciddicaT$ fluid-flow model.]{\textbf{Relative} speed-up obtained during the \emph{transition function stress
 				test} by the different OpenCAL-CL versions of the $SciddicaT$
 			fluid-flow model. The considered case study is the Tessina Landslide
 			(cf. Figure \ref{fig:sciddicaT-simulation}). The adopted OpenCL
@@ -2499,7 +2501,7 @@ computational intense simulation models.
 \begin{figure}
 	\begin{center}
 		\includegraphics{./images/opencal/Figure21.pdf}
-		\caption{Absolute speed-up obtained during the \emph{transition function stress
+		\caption\textbf{Absolute} speed-up obtained during the \emph{transition function stress test} by different OpenCAL-CL versions of the $SciddicaT$ fluid-flow model.{Absolute speed-up obtained during the \emph{transition function stress
 				test} by the different OpenCAL-CL versions of the $SciddicaT$
 			fluid-flow model. The considered case study is the Tessina Landslide
 			(cf. Figure \ref{fig:sciddicaT-simulation}). The adopted OpenCL
@@ -2522,7 +2524,7 @@ simulation outcome obtained by considering the wider DEM and the
 \begin{figure}
 	\begin{center}
 		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure22.pdf}
-		\caption{$SciddicaT$ simulation stress test of 100 landslide sources
+		\caption[$SciddicaT$ simulation stress test of 100 landslide sources]{$SciddicaT$ simulation stress test of 100 landslide sources
 			distributed over a DEM of 3593 rows per 3730 columns, with square
 			cells of 10 m side. Topographic altitudes are represented in gray
 			scale (black for lower altitude, white for the highest
@@ -2555,7 +2557,8 @@ $Sciddica_{ac+esl}$ the fastest version with a value of about 21.
 		610.365 & 349.662\\ 8 & 2,943.584 & 478.984 & 272.623\\ 16 &
 		2,794.782 & 412584 & 237.513\\ \hline
 	\end{tabular}
-	\caption{Elapsed times (in seconds) obtained for the \emph{computational domain stress test} based on the simulation shown in Figure \ref{fig:stresstestR}) by different OpenCAL and OpenCAL-OMP versions
+	\caption[Elapsed times obtained for the \emph{computational domain stress test} by different OpenCAL and OpenCAL-OMP versions
+	of the $SciddicaT$ fluid-flow model.]{Elapsed times (in seconds) obtained for the \emph{computational domain stress test} based on the simulation shown in Figure \ref{fig:stresstestR}) by different OpenCAL and OpenCAL-OMP versions
 	of the $SciddicaT$ fluid-flow model. The adopted CPU is an Intel Xeon
 	2.0GHz E5-2650.}
 	\label{tab:sciddicaT-OMP-execution-times-stressR}
@@ -2564,7 +2567,8 @@ $Sciddica_{ac+esl}$ the fastest version with a value of about 21.
 \begin{figure}
 	\begin{center}
 		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure23.pdf}
-		\caption{Relative speed-up obtained during the \emph{computational domain
+		\caption[\textbf{Relative} speed-up obtained during the \emph{computational domain stress test} by the different OpenCAL-OMP versions of the
+		$SciddicaT$ fluid-flow model.]{\textbf{Relative} speed-up obtained during the \emph{computational domain
 				stress test} by the different OpenCAL-OMP versions of the
 			$SciddicaT$ fluid-flow model. The considered case study is the
 			simulation shown in Figure \ref{fig:stresstestR}). The adopted CPU was
@@ -2576,7 +2580,9 @@ $Sciddica_{ac+esl}$ the fastest version with a value of about 21.
 \begin{figure}
 	\begin{center}
 		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure24.pdf}
-		\caption{Absolute speed-up obtained during the \emph{computational domain
+		\caption[\textbf{Absolute} speed-up obtained during the \emph{computational domain
+			stress test} by the different OpenCAL-OMP versions of the
+		$SciddicaT$ fluid-flow model.]{\textbf{Absolute} speed-up obtained during the \emph{computational domain
 				stress test} by the different OpenCAL-OMP versions of the
 			$SciddicaT$ fluid-flow model. The considered case study is the
 			simulation shown in Figure \ref{fig:stresstestR}). The adopted CPU was
@@ -2632,7 +2638,9 @@ the best choice in case of low-intense computational models.
 \begin{figure}
 	\begin{center}
 		\includegraphics{./images/opencal/Figure25.pdf}
-		\caption{Relative speed-up obtained during the \emph{computational domain
+		\caption[\textbf{Relative} speed-up obtained during the \emph{computational domain
+			stress test} by the different OpenCAL-CL versions of the $SciddicaT$
+		fluid-flow model.]{\textbf{Relative} speed-up obtained during the \emph{computational domain
 				stress test} by the different OpenCAL-CL versions of the $SciddicaT$
 			fluid-flow model. The considered case study is the simulation shown in
 			Figure \ref{fig:stresstestR}). The adopted OpenCL compliant devices
@@ -2644,7 +2652,11 @@ the best choice in case of low-intense computational models.
 \begin{figure}
 	\begin{center}
 		\includegraphics{./images/opencal/Figure26.pdf}
-		\caption{Absolute speed-up obtained during the \emph{computational domain
+		\caption[\textbf{Relative} speed-up obtained during the \emph{computational domain
+			stress test} by the different OpenCAL-CL versions of the $SciddicaT$
+		fluid-flow model.]{\textbf{Relative} speed-up obtained during the \emph{computational domain
+				stress test} by the different OpenCAL-CL versions of the $SciddicaT$
+			fluid-flow model. speed-up obtained during the \emph{computational domain
 				stress test} by the different OpenCAL-CL versions of the $SciddicaT$
 			fluid-flow model. The considered case study is the simulation shown in
 			Figure \ref{fig:stresstestR}). The adopted OpenCL compliant devices

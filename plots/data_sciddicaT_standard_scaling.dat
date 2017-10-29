@@ -1,0 +1,5 @@
+# Label	GPUs	Speed-up
+0	"GTX980"	15.45
+1	"K40"	7.04
+2   "GTX980+GTX980"	5.152
+3	"GTX980+K40"	4.62

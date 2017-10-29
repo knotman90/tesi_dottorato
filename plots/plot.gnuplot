@@ -276,9 +276,9 @@ plot "data_sobel_scaling.dat" using 1:3:xtic(2)  t ''with boxes fillstyle patter
 #-------------------------
 set output 'fractal_true_scaling.pdf'
 set yrange [5:630]
-set lmargin at screen 0.16;
+set lmargin at screen 0.15;
 set rmargin at screen 0.98;
-set bmargin at screen 0.175;
+set bmargin at screen 0.22;
 set tmargin at screen 0.98;
 plot "data_fractal12k_scaling_true.dat" using 1:3:xtic(2)  t ''with boxes fillstyle pattern 1 lt -1 , 'data_fractal12k_scaling_true.dat' using 1:3:3 with labels center boxed offset 0,1 notitle
 
@@ -287,6 +287,10 @@ plot "data_fractal12k_scaling_true.dat" using 1:3:xtic(2)  t ''with boxes fillst
 #-------------------------
 set output 'fractal_false_scaling.pdf'
 set yrange [5:275]
+set lmargin at screen 0.15;
+set rmargin at screen 0.98;
+set bmargin at screen 0.22;
+set tmargin at screen 0.98
 
 plot "data_fractal12k_scaling_false.dat" using 1:3:xtic(2)  t ''with boxes fillstyle pattern 1 lt -1 , 'data_fractal12k_scaling_false.dat' using 1:3:3 with labels center boxed offset 0,1 notitle
 
@@ -300,16 +304,45 @@ set bmargin at screen 0.265;
 set tmargin at screen 0.98;
 
 
-set arrow  from 0.1,7.7  to 0.71,10.5 
-set label  "1.75x" at 0.2, 9.5 center font "Arial-Bold,8" 
+set arrow 1 from 0.1,7.7  to 0.71,10.5 
+set label 1 "1.75x" at 0.2, 9.5 center font "Arial-Bold,8" 
 
-set arrow  from 1.1,12  to 1.65,15.8 
-set label  "1.54x" at 1.12, 14.2 center font "Arial-Bold,8" 
+set arrow 2 from 1.1,12  to 1.65,15.8 
+set label 2 "1.54x" at 1.12, 14.2 center font "Arial-Bold,8" 
 
-set arrow  from 2.1,17  to 2.65,20.5 
-set label  "0.79x" at 2.1, 19.1 center font "Arial-Bold,8" 
+set arrow 3 from 2.1,17  to 2.65,20.5 
+set label 3 "0.79x" at 2.1, 19.1 center font "Arial-Bold,8" 
 
-set arrow  from 3.1,22  to 3.65,26.5 
-set label  "0.77x" at 3, 24 center font "Arial-Bold,8" 
+set arrow 4 from 3.1,22  to 3.65,26.5 
+set label 4 "0.77x" at 3, 24 center font "Arial-Bold,8" 
 
 plot "data_sciddicaT_stressR_scaling.dat" using 1:3:xtic(2)  t ''with boxes fillstyle pattern 10 lt -1 , 'data_sciddicaT_stressR_scaling.dat' using 1:3:3 with labels center boxed offset 0,1 notitle
+unset arrow 1
+unset label 1
+unset arrow 2
+unset label 2
+unset arrow 3
+unset label 3
+unset arrow 4
+unset label 4
+
+#-------------------------
+set output 'sciddicaT_standard_scaling.pdf'
+set yrange [0:17]
+set lmargin at screen 0.16;
+set rmargin at screen 0.98;
+set bmargin at screen 0.22;
+set tmargin at screen 0.98;
+
+set arrow 1 from 0.3,16  to 0.9,8.4 
+set label 1 "-2.2x" at 0.9, 12 center font "Arial-Bold,8" 
+
+set arrow 2 from 1.25,7.8  to 1.9,6.4 
+set label 2 "-1.36x" at 1.7,7.5 center font "Arial-Bold,8" 
+
+set arrow 3 from 2.3,6.0  to 2.75,5.5 
+set label 3 "-1.12x" at 2.6,6.25 center font "Arial-Bold,8" 
+
+
+plot "data_sciddicaT_standard_scaling.dat" using 1:3:xtic(2)  t ''with boxes fillstyle pattern 10 lt -1 , 'data_sciddicaT_standard_scaling.dat' using 1:3:3 with labels center boxed offset 0,1 notitle
+

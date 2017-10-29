@@ -99,7 +99,7 @@ This is how stream processors work, for example, data elements are distributed a
 One single instruction can operate on up to $512$ byte of data (see Figure \ref{fig:SSEvectorization} and Listing \ref{code:avxvectorization}).
 SIMD exploits \textbf{data and spatial parallelism} in a synchronous manner.
 \lstset{language=[OpenCL]C,frame=tb,
-	caption={Multiplying eight floats of one array by eight floats of a second array and add the result to a third array. Serial and SIMD (AVX2) code examples. Note that the AVX2 intrinsic function \texttt{\_\_mm256\_fmadd\_ps} processes twentyfour floats, but it does not map to a single instruction (see Figure \ref{fig:SSEvectorization}). Instead, it executes three instructions: \texttt{vfmadd132ps}, \texttt{vfmadd213ps}, and \texttt{vfmadd231ps}. Despite this, it executes quickly and it is much faster than looping through the individual elements.}, 
+	caption=[Multiplying eight floats using Intel AVX vectorization.]{Multiplying eight floats of one array by eight floats of a second array and add the result to a third array. Serial and SIMD (AVX2) code examples. Note that the AVX2 intrinsic function \texttt{\_\_mm256\_fmadd\_ps} processes twentyfour floats, but it does not map to a single instruction (see Figure \ref{fig:SSEvectorization}). Instead, it executes three instructions: \texttt{vfmadd132ps}, \texttt{vfmadd213ps}, and \texttt{vfmadd231ps}. Despite this, it executes quickly and it is much faster than looping through the individual elements.}, 
 	label=code:avxvectorization, 
 	basicstyle=\footnotesize\ttfamily,
 	keywordstyle=\color{ultramarine}\ttfamily,
@@ -390,7 +390,7 @@ omp_destroy_lock(&writelock);
         \begin{figure}[!htbp]
     	\centering
     	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/gflops-per-watt-sp}
-    	\caption{GFLOPs per \si{Watt}, Higher is better. GPUs offer higher performance per Watt utilised especially for those fine-grained massively parallel problems such as dense matrix-matrix multiplication. Note that the Figure also shows that the CPU is getting smaller, indicating that CPU are introducing more GPU-like capabilities into their transistors. \textit{Intel} added wider vector processing units (up to 64 byte) to their latest processors. }
+    	\caption[GFLOPs per \si{Watt} metric for CPUs and GPUs]{GFLOPs per \si{Watt}, Higher is better. GPUs offer higher performance per Watt utilised especially for those fine-grained massively parallel problems such as dense matrix-matrix multiplication. Note that the Figure also shows that the CPU is getting smaller, indicating that CPU are introducing more GPU-like capabilities into their transistors. \textit{Intel} added wider vector processing units (up to 64 byte) to their latest processors. }
     	\label{gflops-per-watt-sp}
     \end{figure}
   
@@ -489,7 +489,7 @@ omp_destroy_lock(&writelock);
         \begin{figure}
     	\centering
     	\includegraphics[width=1.1\textwidth]{./images/parallel_programming/opencl_execmodel2d}
-    	\caption{\texttt{OpenCL} 2D work-items and work-groups detailed partitioning. Computation of global index form local item and group index is also shown. }\label{fig:opencl_execmodel2d}
+    	\caption[\texttt{OpenCL} 2D work-items and work-groups detailed partitioning]{\texttt{OpenCL} 2D work-items and work-groups detailed partitioning. The computation of global index from local item and group index is also shown.}\label{fig:opencl_execmodel2d}
     \end{figure}
     When the kernel execution terminates,
     work-items globally synchronize, and the control returns to the

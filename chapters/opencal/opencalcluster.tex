@@ -151,7 +151,7 @@ PLATFORM_NUMBER_MN DEVICE_NUMBER_KN_MN LOAD_M1_KN_MN
 \bottomrule
         
 \end{tabular}
-\caption{File Format for  the \texttt{OpenCAL-CLUST}. It describes the size of the domain and the machine on which the model is executed. Note that for each node of the cluster, the IP address and a list of devices is listed. Each device is identified, \textit{\`a la} \textsc{OpenCL}, by platform and device number (within the platform).}
+\caption[File Format for the domain decomposition of a \texttt{OpenCAL-CLUST} application.]{File Format for the domain decomposition of a \texttt{OpenCAL-CLUST} application. It describes the size of the domain and the machine on which the model is executed. Note that for each node of the cluster, the IP address and a list of devices is listed. Each device is identified, \textit{\`a la} \textsc{OpenCL}, by platform and device number (within the platform).}
 \label{code:file_syntax}
 \end{table}
 %table name back to normal
@@ -604,7 +604,7 @@ __kernel void fractal2D_transitionFunction(__CALCL_MODEL_2D) {
  \begin{figure}[H]
     \begin{center}
         \includegraphics[scale=0.35]{./images/opencal/fractal16k16k}
-        \caption{Julia set of size 1.07 GigaPixel, $\approx 3.22 GB$ in the BMP uncompressed format. It is generated using \texttt{OpenCAL-CLUST} on two \texttt{NVIDIA GTX 980} and rendered on QGIS \cite{QGIS_software} interpreting each point value as color intensity in the spectral color map. Note that the Figure has been subsequently optimized and rescaled for book format.}
+        \caption[Julia set of size 1.07 GigaPixel generated using \texttt{OpenCAL-CLUST}.]{Julia set of size 1.07 GigaPixel, $\approx 3.22 GB$ in the BMP uncompressed format. It is generated using \texttt{OpenCAL-CLUST} on two \texttt{NVIDIA GTX 980} and rendered on QGIS \cite{QGIS_software} interpreting each point value as color intensity in the spectral color map. Note that the Figure has been subsequently optimized and rescaled for book format.}
         \label{fig:fractal16k16k}
     \end{center}
 \end{figure}
@@ -616,7 +616,7 @@ The example presented in this section is an application that applies the Sobel c
  \begin{figure}
     \begin{center}
         \includegraphics[width=0.72\textwidth]{./images/opencal/kernel_functions}
-        \caption{Common point spread functions. The Pillbox (a), Gaussian (b) and Square (c) are common smoothing, low-pass filters. Edge enhancement (d) is an example of high-pass filter. }
+        \caption[Common point spread functions.]{Common point spread functions. The Pillbox (a), Gaussian (b) and Square (c) are common smoothing, low-pass filters. Edge enhancement (d) is an example of high-pass filter. }
         \label{fig:kernel_functions}
     \end{center}
 \end{figure}
@@ -666,7 +666,7 @@ Convolution is very often used in image processing. Examples in this field are t
         \includegraphics[width=\linewidth]{./images/opencal/conv-sobel}    
     \end{subfigure}
     \endminipage\hfill
-    \caption{Sobel edge detection filter. The new pixel value is computed in two subsequent steps, horizontal and vertical, in order the final image to be less affected by noise.}
+    \caption[\textit{Sobel} edge detection filter]{\textit{Sobel} edge detection filter. The new pixel value is computed in two subsequent steps, horizontal and vertical, in order the final image to be less affected by noise.}
     \label{fig:sobel}
 \end{figure}
 
@@ -783,7 +783,7 @@ Convolutional filtering is easily implemented in \texttt{OpenCAL-CLUST} in the f
         \caption{Zoomed cut on Europe and North Africa of the Output Image.}
     \end{subfigure}
     \endminipage
-        \caption{Input Image for the Sobel filter example shown in listing \ref{code:sobel_kernel}. Image size is 233 MegaPixel $\approx 700  \si{MB}$ in \texttt{BMP} uncompressed format.}
+        \caption[Input Image for the Sobel filter example shown in listing \ref{code:sobel_kernel}.]{Input Image for the Sobel filter example shown in listing \ref{code:sobel_kernel}. Image size is 233 MegaPixel $\approx 700  \si{MB}$ in \texttt{BMP} uncompressed format.}
         \label{fig:sobel_result}
 \end{figure}
 
@@ -798,7 +798,7 @@ The additional lines take care of the definition of a cluster object, as shown i
 Note that in this example no configuration file is used, as to show that is possible to set up a configuration launch programmatically.
 
 \lstset{language=[OpenCL]C,frame=tb,
-    caption=\texttt{OpenCAL-CLUST} sciddicaT launch configuration set up programmatically during the init (see Section \ref{sec:init_finalize}) phase., 
+    caption=[\texttt{OpenCAL-CLUST} sciddicaT Cluster definition at compile time.]{\texttt{OpenCAL-CLUST} sciddicaT Cluster defined programmatically during the \texttt{init} (see Section \ref{sec:init_finalize}) phase.}, 
     label={code:sciddicat_configuration}, 
     basicstyle=\footnotesize\ttfamily,
     keywordstyle=\color{blue}\ttfamily,
@@ -841,7 +841,7 @@ void setUpParallelWork(Cluster& mn, const uint XDIM, const uint YDIM){
 
 
 \lstset{language=[OpenCL]C,frame=tb,
-    caption=\texttt{OpenCAL-CLUST} sciddicaT launch configuration set up programmatically during the init (see Section \ref{sec:init_finalize}) phase., 
+    caption=\texttt{OpenCAL-CLUST} sciddicaT model definition and launch configuration set up programmatically during the init (see Section \ref{sec:init_finalize}) phase., 
     label={code:sciddicat_initi}, 
     basicstyle=\footnotesize\ttfamily,
     keywordstyle=\color{blue}\ttfamily,
@@ -949,7 +949,7 @@ Technical specification of both nodes can be found in Section \ref{app:tech_spec
 
 
 \subsection{Julia Set Generation}
-\label{sec:julia_performance}
+
 Fractal Generation is an example of a perfectly parallelizable problem since the computation of each point of the grid does not require any communication and does not depend on the value of any other grid points other than itself. Moreover, the granularity of the work is small, making it a good candidate for GPU acceleration.
 The Julia generating function adopted is the following $z_{n+1} = z^2_n + c$ where $c=-0.391+-0.587i$. Each discrete point of the grid $(x,y)\; 0\leq x < S_x, 0\leq y < S_y$ is mapped to the complex plane using the following mapping:
 
@@ -969,7 +969,7 @@ It is worth to note that besides its much higher number of grid points, the \tex
 Table \ref{tab:julia_single_GPU} shows timings and speedup obtained on a single \texttt{NVIDIA K40} and \texttt{GTX980} on the \textit{small} domain.
 \begin{table}
     \centering
-    \caption{Timings and speedups obtained on a single \texttt{NVIDIA K40} and \texttt{GTX980}}
+    \caption{Timings and speedups obtained on a single \texttt{NVIDIA K40} and \texttt{GTX980} for the small dataset.}
     \label{tab:julia_single_GPU}
 \begin{tabular}{@{}lll@{}}
     \toprule
@@ -997,7 +997,7 @@ As expected, speedup results are extremely positive, up to $\approx 500 \times$,
         \includegraphics[width=1.0\textwidth]{./plots/fractal_false_scaling}
     \end{subfigure}
     \endminipage\hfill
-    \caption[]{Fractal Generation speed-ups obtained on single-GPU execution (\texttt{K40}, \texttt{GTX980}) and multi-GPU execution on two devices.
+    \caption[Fractal Generation speedups obtained on single and multi GPU execution.]{Fractal Generation speedups obtained on single-GPU execution (\texttt{K40}, \texttt{GTX980}) and multi-GPU execution on two devices (small dataset).
      }
     \label{fig:fractal_scaling}
 \end{figure}
@@ -1035,7 +1035,7 @@ Figure \ref{fig:julia_two_GPU_false} shows that fluctuation in this case are not
 %TABLE K40 -980 true and false
 \begin{table}[!htb]
     \small
-    \caption{The workload columns indicate the amount of rows assigned to each device. }
+    \caption[Timing and speedup for the fractal generation benchmark on a \texttt{K40} and a \texttt{GTX980}.]{Timing and speedups for the fractal generation (small dataset) on a\texttt{K40} and a \texttt{GTX980}. (a) and (b) are refereed to the real case  and the uniform work scenarios, respectively. The Best speed-up case is highlighted in dark gray. The workload columns indicate the amount of rows assigned to each device.}
     \label{tab:julia_two_GPU}
     \begin{subtable}{.5\linewidth}
         \centering
@@ -1136,7 +1136,7 @@ Figure \ref{fig:julia_two_GPU_false} shows that fluctuation in this case are not
      \end{subfigure}
      \endminipage\hfill
     
-     \caption[Time in red (lower is better) and speed-up in blue (higher is better) for the \textit{small} case on two different GPU: $1$ \texttt{GTX980} and $1$ \texttt{K40}.]{Time and Speed-up for the \textit{small} case on two different GPU: $1$ \texttt{GTX980} and $1$ \texttt{K40}. The bottom and top horizontal axes indicate the amount of rows assigned to the \texttt{K40} and \texttt{GTX980}, respectively. In Figure \ref{fig:julia_two_GPU_false} are depicted time and speedup values from the modified version of the kernel \ref{code:julia_set} that force homogeneous work among the grid points.  }
+     \caption[Time and speed-up for the fractal generation fractal generation \textit{small} case on two different GPU: $1$ \texttt{GTX980} and $1$ \texttt{K40}.]{Time and Speed-up for the fractal generation \textit{small} case on two different GPU: $1$ \texttt{GTX980} and $1$ \texttt{K40}. The bottom and top horizontal axes indicate the amount of rows assigned to the \texttt{K40} and \texttt{GTX980}, respectively. In Figure \ref{fig:julia_two_GPU_false} are depicted time and speedup values from the modified version of the kernel \ref{code:julia_set} that force homogeneous work among the grid points.  }
      \label{fig:julia_two_GPU}
  \end{figure}
 
@@ -1146,7 +1146,7 @@ It is not surprising that in this case best performance are achieved when the da
 %TABLE 980 -980 true and false
 \begin{table}[!htb]
 \small
-    \caption{TABLE 980 -980 true and false - Best speed-up case is highlighted in dark gray. }
+    \caption[Timing and speedup for the fractal generation benchmark on tow identical \texttt{GTX980}.]{Timing and speedups for the fractal generation (small dataset) on two identical \texttt{GTX980}. (a) and (b) are refereed to the real case  and the uniform work scenarios, respectively. The Best speed-up case is highlighted in dark gray.}
     \label{tab:fractal12k_980_980}
     \begin{subtable}{.5\linewidth}
         \centering
@@ -1239,7 +1239,7 @@ It is not surprising that in this case best performance are achieved when the da
 \label{fig:fractal12k_980_980_true}
     \end{subfigure}
     \endminipage\hfill
-    \caption[Time and Speed-up for the \textit{small} case on two GTX980.]{Time and Speed-up for the \textit{small} case on two GTX980. The bottom and top horizontal axes indicate the amount of rows assigned to the first and second \texttt{GTX980}, respectively. In Figure \ref{fig:fractal12k_980_980_false} are depicted time and speedup values from the modified version of the kernel \ref{code:julia_set} that force homogeneous work among the grid points. Note that in this case the graph is almost perfectly symmetrical. Time in red (lower is better), speed-up in blue (higher is better).}
+    \caption[Time and Speed-up for the fractal generation \textit{small} case on two GTX980.]{Time and Speed-up for the fractal generation \textit{small} case on two GTX980. The bottom and top horizontal axes indicate the amount of rows assigned to the first and second \texttt{GTX980}, respectively. In Figure \ref{fig:fractal12k_980_980_false} are depicted time and speedup values from the modified version of the kernel \ref{code:julia_set} that force homogeneous work among the grid points. Note that in this case the graph is almost perfectly symmetrical. Time in red (lower is better), speed-up in blue (higher is better).}
     \label{fig:fractal12k_980_980}
 \end{figure}
 
@@ -1261,7 +1261,7 @@ Table \ref{tab:fractal12k_K40-980-980} and Figure \ref{fig:fractal12k_K40-980-98
         \label{fig:fractal12k_K40-980-980_false}
     \end{subfigure}
     \endminipage\hfill
-\caption{Timings and Speed-up for the \textit{large} case. (a) shows non-homogeneous work i.e. the real fractal, (b) the homogeneous one. Time in red (lower is better), speed-up in blue (higher is better).}
+\caption[Timings and Speed-up for the fractal generation \textit{large} case.]{Timings and Speed-up for the fractal generation \textit{large} case. (a) shows non-homogeneous work i.e. the real fractal, (b) the homogeneous one. Time in red (lower is better), speed-up in blue (higher is better).}
     \label{fig:fractal12k_K40-980-980}
 \end{figure}
 As noted, achieved speedups are good, up to to $\approx 110 \times$, when workload division is s.t. $\approx 20\%$ of the total work is shared among the two \texttt{GTX980} (see Figure \ref{fig:fractal12k_K40-980-980_true}). 
@@ -1269,11 +1269,11 @@ This is due to the non-homogeneous distribution of the work along the domain and
 
 \begin{table}[!htb]
 \footnotesize
-    \caption{TABLE 980 -980 true and false - Best speed-up case is highlighted in dark gray. }
+  \caption[Timing and speedup for the fractal generation benchmark on three devices.]{Timing and speedups for the fractal generation (small dataset) on three devices: a pair of \texttt{GTX980} and a \texttt{K40}. (a) and (b) are refereed to the real case  and the uniform work scenarios, respectively. The Best speed-up case is highlighted in dark gray.}
     \label{tab:fractal12k_980_980}
     \begin{subtable}{.5\linewidth}
         \centering
-        \caption{Real Fractal}
+        \caption{Real Fractal.}
 \label{tab:fractal12k_K40-980-980}
 \begin{tabular}{@{}LLLCC@{}}
     
@@ -1320,7 +1320,7 @@ This is due to the non-homogeneous distribution of the work along the domain and
     \end{subtable}%
     \begin{subtable}{.5\linewidth}
     \centering
-    \caption{Real Fractal}
+    \caption{Uniform number of iterations.}
     
     \begin{tabular}{@{}LLLCC@{}}
         \toprule
@@ -1372,13 +1372,13 @@ This is due to the non-homogeneous distribution of the work along the domain and
     
 \subsection{Convolutional Filtering}
 \label{sec:sobel_performance}
-At the contrary of fractal generation, convolutional filtering is not a perfectly parallelizable problem since grid points on the boundaries requires values from grid points that reside on different GPUs. Here, the ratio of \textit{instruction:byte} is usually low (it can vary depending on the convolutional kernel adopted), meaning that the problem is low compute-intensity and bandwidth bound.
+At the contrary of fractal generation, convolutional filtering is not a perfectly parallelizable problem since grid points on the boundaries requires values from grid points that reside on different GPUs. Here, the ratio of \textit{instruction:byte} is usually low (it can vary depending on the convolutional kernel adopted), meaning that the problem is low compute-intensity and latency/bandwidth bound.
 Two filtering operations are taking in consideration for assessing the performance of \texttt{OpenCAL-CLUST}  on this kind of algorithm:
 \begin{description}
     \item[\textbf{Sobel Edge Detection}]:\\ Described in Section \ref{sec:convolutional_filters} and which kernel is shown in Listing \ref{code:sobel_kernel},
     \item[\textbf{Gaussian Blur}]:\\ that consists of a  uniform matrix  with coefficients equal to $\frac{1}{9}$. At each step of the the application change the value of a grid point with the average of its $8$ immediate neighboring points. It has a \textit{instruction:byte} ratio $\approx 1$. See Figures \ref{fig:fractal_detail} and \ref{fig:gaussian}. Listing \ref{code:blur_kernel} shown the kernel code used for the
 \end{description}
-Both filters are applied on a computational grid of size $15000 \times 15000=225 \times10^6$ cells for a number of $100$ steps. The image upon which the filter are applied are generated using the \texttt{OpenCAL} fractal application described in Sections \ref{sec:julia_math} and \ref{sec:julia_performance}.
+Both filters are applied on a computational grid of size $15000 \times 15000=225 \times10^6$ cells for a number of $100$ steps. The image upon which the filter are applied are generated using the \texttt{OpenCAL} fractal application described in Sections \ref{sec:julia_math}.
 
 \begin{minipage}{\linewidth}
  \lstset{language=[OpenCL]C,frame=tb,
@@ -1416,15 +1416,13 @@ int convolutional_gaussian_blur(cl_complex p,cl_complex c){
         \caption{Gaussian Blur rendered version of Figure \ref{fig:fractal_detail_raw}}
                 \label{fig:fractal_detail_blur}
     \end{subfigure}
-\caption{Raw and blurred detail of the of the image upon which the \texttt{OpenCAL-CLUST}  convolutional filter application is ran upon. Rendering of fractals are obtained using QGIS software \cite{QGIS_software}.}
+\caption[Raw and blurred detail of the of the image upon which the \texttt{OpenCAL-CLUST}  convolutional filter application is ran upon.]{Raw and blurred detail of the of the image upon which the \texttt{OpenCAL-CLUST}  convolutional filter application is ran upon. Rendering of fractals are obtained using QGIS software \cite{QGIS_software}.}
 \label{fig:fractal_detail}
 \end{figure}
 
 Table \ref{tab:sobel_performance} and Figure \ref{fig:sobel_performance_charts} shows performances for the \textit{sobel} filter on two (\ref{fig:sobel_k40_980}) and three (\ref{fig:sobel_k40_980_980}) devices respectively.
-Note that in this case, the disparity in performance between the \text{K40} and the \texttt{GTX980} is not evident: in-fact, best performance behavior is obtained when the domain is shared in an equal manner among the devices. This is due to the fact that the two devices have similar memory bandwidth and latency performances and that their differences in the number of cores are not relevant since the application is memory bound.
+Note that in this case, the disparity in performance between the \text{K40} and the \texttt{GTX980} is not evident: in-fact, best performance behavior is obtained when the domain is shared in an equal manner among the devices.
 It is worth to note that the speedup scales linearly as the number of GPUs increases, as a $\approx 28 \times$ speed-up is obtained with $1$ GPU, $\approx 56 \times$ with $2$ GPUs and  $\approx 82 \times$ when $3$ devices are employed as shown in Figure \ref{fig:sobel_scaling}.
-
-
 
 
 \begin{figure}
@@ -1444,7 +1442,7 @@ It is worth to note that the speedup scales linearly as the number of GPUs incre
         \includegraphics[width=1.0\textwidth]{./plots/sobel_scaling}
     \end{subfigure}
     \endminipage\hfill
-    \caption[]{Blur and Sobel Speed-up benchmark speedups linearly with the number of GPUs. }
+    \caption[]{\textbf{Blur} and \textbf{Sobel} Speed-up benchmark scales linearly with the number of GPUs. }
     \label{fig:scaling}
 \end{figure}
 
@@ -1465,12 +1463,12 @@ It is worth to note that the speedup scales linearly as the number of GPUs incre
         \label{fig:sobel_k40_980_980}
     \end{subfigure}
     \endminipage\hfill
-    \caption[Sobel benchmark performance metrics.]{Sobel benchmark performance metrics on two (a) and three (b) GPUs. Time in red (lower is better), speed-up in blue (higher is better).}
+    \caption[Sobel benchmark performance metrics.]{\textit{Sobel} benchmark performance metrics on two (a) and three (b) GPUs. Time in red (lower is better), speed-up in blue (higher is better).}
     \label{fig:sobel_performance_charts}
 \end{figure}
 \begin{table}[!htb]
     \footnotesize
-    \caption{Sobel benchmark performance metrics on two (a) and three (b) GPUs. Best speed-up case is highlighted in dark gray.}
+    \caption{\textit{Sobel} benchmark performance metrics on two (a) and three (b) GPUs. Best speed-up case is highlighted in dark gray.}
     \label{tab:sobel_performance}
     \begin{subtable}{.5\linewidth}
         \centering
@@ -1579,31 +1577,48 @@ The \textit{blur} kernel is even more memory bound than \textit{sobel}, which ex
         \label{fig:blur_k40_980_980}
     \end{subfigure}
     \endminipage\hfill
-    \caption[Sobel benchmark performance metrics.]{Sobel benchmark performance metrics on two (a) and three (b) GPUs. Time in red (lower is better), speed-up in blue (higher is better).}
+    \caption[\textit{Gaussinan Blur} benchmark performance metrics.]{\textit{Gaussinan Blur} benchmark performance metrics on two (a) and three (b) GPUs. Time in red (lower is better), speed-up in blue (higher is better).}
     \label{fig:blur_performance}
 \end{figure}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\texttt{sciddicaT}}
 \texttt{sciddicaT} is an example of real life problem with both compute and memory bounds kernels. \texttt{sciddicaT} parallelization across several accelerators requires the communication of boundary cells residing on different GPUs.
-Despite three benchmarks are considered for performance evaluation of \texttt{OpenCAL} as shown in Section \ref{sec:computational-results} two benchmarks are considered here: 
+Despite three benchmarks are considered for performance evaluation of \texttt{OpenCAL} as shown in Section \ref{sec:computational-results} only two benchmarks are considered here: 
 \begin{description}
 	\item[\textbf{Standard}]\hfil \\ the \textbf{small} standard domain of size $610 \times 496$ cells (see section \ref{sec:standard_tests})
 	\item[\textbf{Computational Domain Stress Test}]\hfil \\ the \textbf{large}  domain of size $3593 \times 3730$ cells (see section \ref{sec:opencal_stress_testR})
 \end{description}
-Figure \ref{fig:sciddica_scaling} shows that good absolute speed-up performance, for the large dataset, are obtained when multiple devices are utilized, up to $\approx 25 \times$. It is worth to note that in this case the \texttt{GTX980} shows better performances than the $K40$ ( $9.7\times$ vs  $5.5 \times$respectively). This is mainly due to the fact that memory bounds kernels are in \texttt{sciddicaT} the ones that make up for most of the execution time, and it has been shown in Section \ref{sec:sobel_performance} that the $GTX980$ performs better executing such kind of kernels.
-Despite the good performance obtained in the\textbf{large} dataset, performance for the \textbf{standard} dataset are worse when adopting multiple devices than a single GPU configuration. The main reason is that the \textit{standard} test (see Section \ref{sec:standard_tests}) has a small number of cells ($\approx 300000$) making the efforts of further parallelization on several accelerators unnecessary since the communication overhead is dominant in this case. Figure \ref{fig:sciddicaT_stardard_k40_980} shows  that a negative speedup of $\apoprox -1.5 \times$ is achieved at best when adopting a \texttt{K40} and a \texttt{GTX980}.
-
-Figure \ref{fig:sciddica_980_980} and \ref{fig:sciddica_k40_980} show timing and speed-ups metrics for the large dataset, for the case where a pair of \texttt{GTX980} and a \texttt{K40} and a \texttt{GTX980} are adopted, respectively. The former shows that slightly super-linear speedup is achieved when an equal amount of work is assigned to each device while the latter configuration achieves best performance when only $\approx 0.3\%$ of the domain is assigned to the \texttt{K40} reaching a peak of $\approx 5 \times$ speedup.
-Figure \ref{fig:sciddica_k40_980_980} shows timing and speed-up in the case where $3$ GPUs are adopted. In this case best performance are achieved when only $\approx 15\%$ of the domain is assigned to the K40 obtaining a speedup of  $\approx 25 \times$.
-\begin{figure}[!htb]
-	\centering
-	\includegraphics[width=0.6\textwidth]{./plots/sciddicaT_scaling}
-   	\caption{\texttt{sciddicaT} Scaling}
-    \label{fig:blur_scaling}
-	\caption[]{\texttt{sciddicaT} Speed-up metrics scaling as  the number of GPUs is increased.}
+Figure \ref{fig:sciddica_scaling} shows that good absolute speed-up performance, for the large dataset, are obtained when multiple devices are utilized, up to $\approx 25 \times$. It is worth to note that in this case the \texttt{GTX980} shows better performances than the $K40$ ( $9.7\times$ vs  $5.5 \times$respectively) which explain also the reason why the \texttt{sciddicaT} runs faster on a pair of \texttt{GTX980} than the case where one of them is replaced by a \texttt{K40}.
+\begin{figure}[!htb]	
+	\minipage{0.49\textwidth}
+	\begin{subfigure}{1.0\textwidth}
+		\caption{\texttt{SciddicaT} Small Dataset}
+		\label{fig:sciddica_standard_scaling}
+		\includegraphics[width=1.0\textwidth]{./plots/sciddicaT_standard_scaling}
+	\end{subfigure}
+	\endminipage
+	\minipage{0.49\textwidth}
+	
+	\begin{subfigure}{1.0\textwidth}
+		\caption{\texttt{SciddicaT} Large Dataset}
+		\label{fig:sciddica_stress_scaling}
+		\includegraphics[width=1.0\textwidth]{./plots/sciddicaT_scaling}
+	\end{subfigure}
+	\endminipage\hfill
+	\caption[]{\texttt{sciddicaT} (small and large datasets) speed-up scaling as the number of GPUs is increased.}
 	\label{fig:sciddica_scaling}
 \end{figure}
-
+This is mainly due to the fact that memory bounds kernels are in \texttt{sciddicaT} the ones that make up for most of the execution time, and it has been shown in Section \ref{sec:sobel_performance} that the $GTX980$ performs better executing such latency bound kernels.
+Despite the good performance obtained in the \textbf{large} dataset, performance for the \textbf{standard} dataset are worse when adopting multiple devices than a single GPU configuration. The main reason is that the \textit{standard} test (see Section \ref{sec:standard_tests}) has a small number of cells ($\approx 300000$) making the efforts of further parallelization on several accelerators unnecessary since the communication overhead is dominant in this case. As it is known GPUs need a large number of threads in order to hide the intrinsic latency of the memory controller due to such latency/memory bound kernels.
+Figures \ref{fig:sciddica_standard_scaling} and \ref{fig:sciddica_standard_980_k40} shows  that a negative speedups (with the respect to a \textbf{single GPU execution}) are achieved. In particular, when adopting a \texttt{K40} and a \texttt{GTX980} $\apoprox -1.5 \times$ slowdown is achieved at best.
+\begin{figure}[!htb]
+	\centering
+	\includegraphics[width=1.0\textwidth]{./plots/sciddica_standard_k40_980}
+	\caption{\texttt{sciddicaT} standard dataset on $2$ GPUs: . Time in red (lower is better), speed-up in blue (higher is better).}
+	\label{fig:sciddica_standard_980_k40}
+\end{figure}
+Figure \ref{fig:sciddica_980_980} and \ref{fig:sciddica_k40_980} show timing and speed-ups metrics for the large dataset, for the case where a pair of \texttt{GTX980} and a \texttt{K40} and a \texttt{GTX980} are adopted, respectively. The former shows that slightly super-linear speedup is achieved when an equal amount of work is assigned to each device while the latter configuration achieves best performance when only $\approx 30\%$ of the domain is assigned to the \texttt{K40} reaching a peak of $\approx 5 \times$ speedup.
+Figure \ref{fig:sciddica_k40_980_980} shows timing and speed-up in the case where $3$ GPUs are adopted. In this case best performance are achieved when only $\approx 15\%$ of the domain is assigned to the \texttt{K40} obtaining a speedup of  $\approx 25 \times$.
 \begin{figure}
 	\minipage{0.81\textwidth}
 	\begin{subfigure}{1.0\textwidth}
@@ -1624,7 +1639,7 @@ Figure \ref{fig:sciddica_k40_980_980} shows timing and speed-up in the case wher
 	\minipage{0.81\textwidth}
 	\begin{subfigure}{1.0\textwidth}
 		\includegraphics[width=1.0\textwidth]{./plots/sciddica_k40_980_980}
-		\caption{Performance on $2$ GPUs: a pair of \texttt{NVIDIA GTX980}.}
+		\caption[\texttt{sciddicaT} performance on $3$ GPUs.]{\texttt{sciddicaT} performance on $3$ GPUs: a pair of \texttt{NVIDIA GTX980} and a \texttt{NVIDIA K40}.}
 		\label{fig:sciddica_k40_980_980}
 	\end{subfigure}
 	\endminipage\hfill
@@ -1633,9 +1648,13 @@ Figure \ref{fig:sciddica_k40_980_980} shows timing and speed-up in the case wher
 	\label{fig:sciddica_performance}
 \end{figure}
 
-\subsection{Conclusion}
-This mechanism is correct usually it is the one that is currently implemented in \texttt{OpenCAL} but it is not optimal mainly because of the serialization of communication and computation and the involvement of the host in each transfer between two GPUs.
+\subsection{Conclusion and Future Works}
+This chapter introduced the preliminary implementation of the distributed memory and multi-GPU  version of \texttt{OpenCAL}: \texttt{OpenCAL-CLUST}.
+It has been shown that it allows deploying numerical application on regular grid on machines composed by several computational nodes interconnected by network each armed with multiple accelerators. Thanks to the adoption of \texttt{OpenCL}, different kind of accelerators can be employed seamlessy.
+The performance benchmarks that have been used to test \texttt{OpenCAL-CLUST} ( Section \ref{sec:perfomance}) show that it effectively use the computational power of multiple device in order to speedup the computation.
 
-%Dici che è compute bound e non del fatto che il lavoro non è uniforme sulla matrice 
-%commenta tempi di esecuzione e soprattuto che non era possibile arrivato ad un certo punto eseguire nessun filtro perchè la memoria non bastava
+As regarding future developments, \texttt{OpenCAL-CLUST} will be  extended allowing domain decomposition on multiple dimensions. As shown in Section \ref{sec:domain_decomposition}, decomposing the domain on a single dimension is not always optimal. The programmer would be able to decompose the domain multidimensional cubic portions and assign one to each available device.
+Another important issue that will be addressed is that the current implementation serialize communications at each step execution. 
+This might not be optimal in cases where boundaries grid cells between two devices or nodes do not change. The communication of such cells can be avoided. This mechanism can be accomplished by performing boundaries exchange only if there is a relevant update (using the so called \textit{dirty-bits}). 
+
 
