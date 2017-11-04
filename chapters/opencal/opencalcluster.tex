@@ -31,7 +31,7 @@ For these reasons, multi-GPU programming is becoming more and more important.
 Unfortunately, neither \textsc{CUDA} or \textsc{OpenCL} supports natively a multi-GPU model.
 The model they support is based on a \textit{single core}-\textit{single GPU} relationship and works really well for tasks that are independent one from the other.
 On the other hand, the aforementioned model makes things more difficult when a task needs to have several GPUs cooperate in some way in order to solve a problem instance.
-As an example of an application of the supported model, the \textsc{BOINC} application \cite{anderson:2004} allows a user to donate computing power and time to solve relevant problems.
+As an example of an application of the supported model, the \textsc{BOINC} application \cite{Anderson:2004} allows a user to donate computing power and time to solve relevant problems.
 In a multi-GPU environment, it works spawning $N$ independent tasks and each of them is scheduled on one of the $N$ available GPUs.
 When a task is finished, the application simply requests another task to the central server, the \textit{task dispatcher}.
 No cooperation or communication is required between the GPUs as the tasks to be solved is self-contained, meaning that it does not need any external input or information to be fully completed.
@@ -61,11 +61,12 @@ The running configuration is provided as a plain text file whose syntax and stru
 
 \captionsetup[table]{name=Listing}
 \begin{table}
+	\vspace{-1.4cm}
 \renewcommand{\arraystretch}{1} %<- modify value to suit your needs
 \centering
 \small
 \begin{tabular}{m{0.21\linewidth}| m{0.7\linewidth}}
-    \toprule
+   % \toprule
 \setlength\extrarowheight{-3em}
     \textsc{domain size}  & 
     \begin{verbatim}
@@ -94,9 +95,9 @@ The running configuration is provided as a plain text file whose syntax and stru
         PLATFORM_NUMBER_1 DEVICE_NUMBER_K1 LOAD_1_K1_1
         PLATFORM_NUMBER_2 DEVICE_NUMBER_1  LOAD_2_1
                  ...
-    PLATFORM_NUMBER_2 DEVICE_NUMBER_K2 LOAD_2_K1_2
+        PLATFORM_NUMBER_2 DEVICE_NUMBER_K2 LOAD_2_K1_2
                  ...
-    PLATFORM_NUMBER_M1 DEVICE_NUMBER_KM LOAD_M1_K1_M1
+        PLATFORM_NUMBER_M1 DEVICE_NUMBER_KM LOAD_M1_K1_M1
     \end{verbatim}
     \tabularnewline
 \midrule
@@ -104,21 +105,21 @@ The running configuration is provided as a plain text file whose syntax and stru
 
      \textsc{ip node 2}   & 
 \begin{verbatim}
-IP_NODE_2 NUM_GPU_NODE_2
+        IP_NODE_2 NUM_GPU_NODE_2
 \end{verbatim}
 %row------------------------
 \tabularnewline
 \textsc{Device List Node 2}  & 
 \begin{verbatim}
-PLATFORM_NUMBER_1 DEVICE_NUMBER_1 LOAD_1_1
-PLATFORM_NUMBER_1 DEVICE_NUMBER_2 LOAD_1_2
+        PLATFORM_NUMBER_1 DEVICE_NUMBER_1 LOAD_1_1
+        PLATFORM_NUMBER_1 DEVICE_NUMBER_2 LOAD_1_2
                  ...
-PLATFORM_NUMBER_1 DEVICE_NUMBER_K2_1 LOAD_1_K2_1
-PLATFORM_NUMBER_2 DEVICE_NUMBER_1  LOAD_2_1
+        PLATFORM_NUMBER_1 DEVICE_NUMBER_K2_1 LOAD_1_K2_1
+        PLATFORM_NUMBER_2 DEVICE_NUMBER_1  LOAD_2_1
                  ...
-PLATFORM_NUMBER_2 DEVICE_NUMBER_K2 LOAD_2_K2_2
+        PLATFORM_NUMBER_2 DEVICE_NUMBER_K2 LOAD_2_K2_2
                  ...
-PLATFORM_NUMBER_M2 DEVICE_NUMBER_K2_M2 LOAD_M1_K2_M2
+        PLATFORM_NUMBER_M2 DEVICE_NUMBER_K2_M2 LOAD_M1_K2_M2
 \end{verbatim}
 \tabularnewline
 \midrule
@@ -131,21 +132,21 @@ PLATFORM_NUMBER_M2 DEVICE_NUMBER_K2_M2 LOAD_M1_K2_M2
 
 \textsc{ip node $N$}   & 
 \begin{verbatim}
-IP_NODE_N NUM_GPU_NODE_N
+        IP_NODE_N NUM_GPU_NODE_N
 \end{verbatim}
 %row------------------------
 \tabularnewline
 \textsc{Device List Node N}  & 
 \begin{verbatim}
-PLATFORM_NUMBER_1 DEVICE_NUMBER_1 LOAD_1_1
-PLATFORM_NUMBER_1 DEVICE_NUMBER_2 LOAD_1_2
+        PLATFORM_NUMBER_1 DEVICE_NUMBER_1 LOAD_1_1
+        PLATFORM_NUMBER_1 DEVICE_NUMBER_2 LOAD_1_2
                  ...
-PLATFORM_NUMBER_1 DEVICE_NUMBER_KN_1 LOAD_1_KN_1
-PLATFORM_NUMBER_2 DEVICE_NUMBER_1  LOAD_2_1
+        PLATFORM_NUMBER_1 DEVICE_NUMBER_KN_1 LOAD_1_KN_1
+        PLATFORM_NUMBER_2 DEVICE_NUMBER_1  LOAD_2_1
                  ...
-PLATFORM_NUMBER_2 DEVICE_NUMBER_KN_2 LOAD_2_KN_2
+        PLATFORM_NUMBER_2 DEVICE_NUMBER_KN_2 LOAD_2_KN_2
                  ...
-PLATFORM_NUMBER_MN DEVICE_NUMBER_KN_MN LOAD_M1_KN_MN
+        PLATFORM_NUMBER_MN DEVICE_NUMBER_KN_MN LOAD_M1_KN_MN
 \end{verbatim}
 \\ \tabularnewline
 \bottomrule
@@ -276,7 +277,7 @@ Note that this approach always requires CPU intervention as the OpenCL device-de
 For a communication step to take place, it is necessary to:
 \begin{enumerate}
     \item Pack and upload boundary data to the CPU ( device$\,\mapsto\,$host  memory transfer)
-    \item If the two GPUs involved in the communications are controlled by different nodes, an extra communication step over the network is performed between the two nodes. This phase is implemented via MPI \cite{mpiStandard:1994} to ensure and guarantee portability and scalability. 
+    \item If the two GPUs involved in the communications are controlled by different nodes, an extra communication step over the network is performed between the two nodes. This phase is implemented via MPI \cite{Forum:1994:MMI:898758} to ensure and guarantee portability and scalability. 
     \item Unpack and upload boundary data to the recipient GPU (host$\,\mapsto\,$device memory transfer).
 \end{enumerate}
 
@@ -329,6 +330,7 @@ It also exposes a number of functions for adding or removing a device from the p
 \subsection{\texttt{Init} and \texttt{finalize} functors}
 \label{sec:init_finalize}
 Listing \ref{code:multinode} shows that the \texttt{MultiNode} object, among others fields, contains a \texttt{Cluster} object and two pointers to functors which type is shown in listing \ref{code:init_finalize_signature}.
+
 \lstset{language=[OpenCL]C,frame=tb,
     caption=\texttt{OpenCAL-CLUST}  init and finalize functor signature, 
     label={code:init_finalize_signature}, 
@@ -383,9 +385,7 @@ void init(struct CALCLMultiGPU* multigpu, const Cluster* c){
 }
 \end{lstlisting}
 Listing \ref{code:init} shows also that cluster object is used to eventually configure a \texttt{calclMultiGPUDef2D} object (line 19). 
-Note that the decomposition along the first dimension of the domain is clear here. A CALModel2D object is created using the node's workload (the number of rows in this case).
-
-The finalize functor is executed, if defined, at the end of the computation at the node level. Listing \ref{code:finalize} shows an example in which the \texttt{finalize} is used to save a per node copy of the grid to a file.
+Note that the decomposition along the first dimension of the domain is clear here. A CALModel2D object is created using the node's workload (the number of rows in this case). The finalize functor is executed, if defined, at the end of the computation at the node level. Listing \ref{code:finalize} shows an example in which the \texttt{finalize} is used to save a per node copy of the grid to a file.
 \lstset{language=[OpenCL]C,frame=tb,
     caption=\texttt{OpenCAL-CLUST} init and finalize functor signature, 
     label=code:finalize, 
@@ -402,7 +402,6 @@ void finalize(struct CALCLMultiGPU* multigpu){
 //for each node, save the substate to a file
 std::string fractal_str = "./fractal_portion" + std::to_string(rank)+".txt";
     calSaveSubstate2Di(multigpu->device_models[0]->host_CA, fractal_substate, (char*)fractal_str.c_str());
-}
 \end{lstlisting}
 Note that an implicit MPI barrier is present right before the execution of the \texttt{init} and \texttt{finalize} call.
 
@@ -612,7 +611,7 @@ __kernel void fractal2D_transitionFunction(__CALCL_MODEL_2D) {
 
 \subsection{Convolutional Filters}
 \label{sec:convolutional_filters}
-The example presented in this section is an application that applies the Sobel convolutional filter on a large 2D image. The code presented can be trivially extended to support any kind of convolutional filter also on a domain with more dimensions. (XXX riferimento a filtri convoluZZionali e Sobel)
+The example presented in this section is an application that applies the Sobel convolutional filter \cite{Shapiro:2002,Hadwiger:2006} on a large 2D image. The code presented can be trivially extended to support any kind of convolutional filter also on a domain with more dimensions .
 
  \begin{figure}
     \begin{center}
@@ -693,11 +692,12 @@ It is clear from Equation \ref{eq:convolution} that kernel convolution requires 
     The final image does not contain pixel which would require values from beyond the edges. The output is smaller than the input because edges have been cropped out.
 \end{description}
 
+
 \subsection{Sobel Edge Detection \texttt{OpenCAL-CLUST} implementation}
 \label{sec:convolutional_filters_example}
 Convolutional filtering is easily implemented in \texttt{OpenCAL-CLUST} in the following steps and has been applied to the image shown in Figure \ref{fig:sobel_input}:
 \begin{enumerate}
-    \item Image channels are separately read by each \texttt{OpenCAL} process into \texttt{short} substates (using any image reading third part library, as \texttt{SOIL} \cite{SOIL}, for instance).
+    \item Image channels are separately read by each \texttt{OpenCAL} process into \texttt{short} substates (using any image reading third part library, as \texttt{SOIL} \footnote{SOIL webpage: \url{http://www.lonesock.net/soil.html}}, for instance).
     \item A cluster file is defined for the image and shown in listing \ref{code:sobel_cluster_file}. A single node and 3 GPUs were employed in this example. Two \texttt{NVIDIA GTX980} and one \texttt{NVIDIA K40} each with an equal workload.
     \item The kernels depicted in Figure \ref{fig:sobel} are applied to each pixel of the image. \texttt{OpenCAL} kernel code is shown in Listing \ref{code:sobel_kernel}.  Boundaries are automatically handled and transferred  between devices. When devices running on different nodes need to communicate then a MPI communication takes place.
     \item The resulting image is written on disk and  shown in Figure \ref{fig:sobel_result} (optimized for book format).
@@ -949,8 +949,7 @@ All test are executed on two computing nodes (named \textit{JPDM1} and \textit{J
 Technical specification of both nodes can be found in Section \ref{app:tech_spec_nodes}.
 
 
-\subsection{Julia Set Generation}
-
+\subsection{Julia Set Generation} \label{subsec:julia_performance}
 Fractal Generation is an example of a perfectly parallelizable problem since the computation of each point of the grid does not require any communication and does not depend on the value of any other grid points other than itself. Moreover, the granularity of the work is small, making it a good candidate for GPU acceleration.
 The Julia generating function adopted is the following $z_{n+1} = z^2_n + c$ where $c=-0.391+-0.587i$. Each discrete point of the grid $(x,y)\; 0\leq x < S_x, 0\leq y < S_y$ is mapped to the complex plane using the following mapping:
 
@@ -1268,14 +1267,22 @@ Table \ref{tab:fractal12k_K40-980-980} and Figure \ref{fig:fractal12k_K40-980-98
 As noted, achieved speedups are good, up to to $\approx 110 \times$, when workload division is s.t. $\approx 20\%$ of the total work is shared among the two \texttt{GTX980} (see Figure \ref{fig:fractal12k_K40-980-980_true}). 
 This is due to the non-homogeneous distribution of the work along the domain and to the high number of divergent threads. In fact, when homogeneity of work if forced, i.e. all threads perform the same number of iterations, the best performance are obtained assigning $\approx 40\%$  of the domain to the two \texttt{GTX980} (see Figure \ref{fig:fractal12k_K40-980-980_false}).
 
+Finally, Figure \ref{fig:fractal17k_2nodes_K40+980-K20+980_true} shows an example of execution of this benchmark (\textbf{large} dataset, non-homogeneous work) on an experimental cluster, which technical specification can be found in Appendix \ref{app:tech_spec}, composed of two nodes interconnected via GigaBit Ethernet for a total of $4$ accelerators ($2$ \texttt{GTX980}, $1$ \texttt{K40} and $1$ \texttt{K20}). It can be seen that this leads to a  $\approx +50 \times$ speed-up improvement w.r.t. the \textbf{3 GPU single node} execution depicted in Figure \ref{fig:fractal12k_K40-980-980_true}, reaching  a peak improvement  of $158 \times$ w.r.t. the \textbf{serial execution}. The workload  specified on the label of the $x$-dimension of Figure \ref{fig:fractal17k_2nodes_K40+980-K20+980_true} is shared among two devices i.e. the $K40$ and $K20$ while the remaining portion of the domain among the two $GTX980$s. This means that peak performance are achieved when a portion corresponding to $44\%$ of the domain is assigned to each $K$-type GPU and only the $6\%$ to each $GTX$.
+\begin{figure}
+	\includegraphics[width=1.0\textwidth]{./plots/fractal17k_2nodes_K40+980-K20+980_true}
+	\caption[Timing and speedup for the fractal generation benchmark on 4 devices on 2 nodes.]{Timing and speedups for the multinode test of the fractal generation (large dataset, real case, non homogeneous work) on a total of 4 devices: a \texttt{GTX980} and a \texttt{K40} on \textit{node 1} and a \texttt{GTX980} and a \texttt{K20} on \textit{node 2}. The workload on the $x$ dimension is shared among two devices: $K40$ and $K20$ while the remaining portion of the domain among the two $GTX980$. Time in red (lower is better), speed-up in blue (higher is better).}
+	\label{fig:fractal17k_2nodes_K40+980-K20+980_true}
+\end{figure}
+
 \begin{table}[!htb]
 \footnotesize
   \caption[Timing and speedup for the fractal generation benchmark on three devices.]{Timing and speedups for the fractal generation (small dataset) on three devices: a pair of \texttt{GTX980} and a \texttt{K40}. (a) and (b) are refereed to the real case  and the uniform work scenarios, respectively. The Best speed-up case is highlighted in dark gray.}
-    \label{tab:fractal12k_980_980}
+  \label{tab:fractal12k_K40-980-980}
+ 
     \begin{subtable}{.5\linewidth}
         \centering
         \caption{Real Fractal.}
-\label{tab:fractal12k_K40-980-980}
+
 \begin{tabular}{@{}LLLCC@{}}
     
     \toprule
@@ -1328,42 +1335,40 @@ This is due to the non-homogeneous distribution of the work along the domain and
         \multicolumn{3}{c}{\textsc{Workload}}\\ \cline{1-3}
         & \multicolumn{2}{c}{\textsc{gtx}}\\ \cline{2-3} 
         \textsc{K40} &\textsc{\#1}& \textsc{\#2} & \textsc{Time}$(\si{\milli\second})$ & \textsc{Speedup$(\times)$}  \\\midrule
-        \rowcolor{gray!15}
 \rowcolor{gray!15}
-16500 & 250  & 250  & 65617  & 94.8  \\
+16500 & 250  & 250  & 95371  & 255.8 \\
 \rowcolor{gray!5}
-15500 & 750  & 750  & 66438  & 93.6  \\
+15500 & 750  & 750  & 102673 & 237.6 \\
 \rowcolor{gray!15}
-14500 & 1250 & 1250 & 62685  & 99.2  \\
+14500 & 1250 & 1250 & 93783  & 260.2 \\
 \rowcolor{gray!5}
-13500 & 1750 & 1750 & 95371  & 255.8 \\
+13500 & 1750 & 1750 & 82648  & 295.2 \\
 \rowcolor{gray!15}
-12500 & 2250 & 2250 & 102673 & 237.6 \\
+12500 & 2250 & 2250 & 75620  & 322.7 \\
 \rowcolor{gray!5}
-11500 & 2750 & 2750 & 93783  & 260.2 \\
-\rowcolor{gray!15}
-10500 & 3250 & 3250 & 82648  & 295.2 \\
-\rowcolor{gray!5}
-9500  & 3750 & 3750 & 75620  & 322.7 \\
-\rowcolor{gray!15}
-8500  & 4250 & 4250 & 66651  & 366.1 \\
+11500 & 2750 & 2750 & 66651  & 366.1 \\
 \rowcolor{gray!65}
-7500  & 4750 & 4750 & 61123  & 399.2 \\
-\rowcolor{gray!15}
-6500  & 5250 & 5250 & 65084  & 374.9 \\
+10500 & 3250 & 3250 & 61123  & 399.2 \\
 \rowcolor{gray!5}
-5500  & 5750 & 5750 & 70829  & 344.5 \\
+9500  & 3750 & 3750 & 65084  & 374.9 \\
 \rowcolor{gray!15}
-4500  & 6250 & 6250 & 81022  & 301.1 \\
+8500  & 4250 & 4250 & 70829  & 344.5 \\
 \rowcolor{gray!5}
-3500  & 6750 & 6750 & 92560  & 263.6 \\
+7500  & 4750 & 4750 & 81022  & 301.1 \\
 \rowcolor{gray!15}
-2500  & 7250 & 7250 & 92070  & 265.0 \\
+6500  & 5250 & 5250 & 92560  & 263.6 \\
 \rowcolor{gray!5}
-1500  & 7750 & 7750 & 95433  & 255.7 \\
+5500  & 5750 & 5750 & 92070  & 265.0 \\
 \rowcolor{gray!15}
-500   & 8250 & 8250 & 108764 & 224.3
-  \\
+4500  & 6250 & 6250 & 95433  & 255.7 \\
+\rowcolor{gray!5}
+3500  & 6750 & 6750 & 108764 & 224.3 \\
+\rowcolor{gray!15}
+2500  & 7250 & 7250 & 122306 & 199.5 \\
+\rowcolor{gray!5}
+1500  & 7750 & 7750 & 122318 & 199.5 \\
+\rowcolor{gray!15}
+500   & 8250 & 8250 & 123519 & 197.5  \\
         \bottomrule
     \end{tabular}
 \end{subtable}%
@@ -1581,15 +1586,39 @@ The \textit{blur} kernel is even more memory bound than \textit{sobel}, which ex
     \caption[\textit{Gaussinan Blur} benchmark performance metrics.]{\textit{Gaussinan Blur} benchmark performance metrics on two (a) and three (b) GPUs. Time in red (lower is better), speed-up in blue (higher is better).}
     \label{fig:blur_performance}
 \end{figure}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+Eventually, Figure \ref{fig:sobel_2nodes_performance} shows an execution of the \textit{Sobel} benchmark on the test cluster specified in Appendix \ref{app:tech_spec}. As can be seen, good speedups are achieved even in the presence of network communication between nodes. Figure \ref{fig:sobel_2nodes_k40_980} reports timing and speedup for an execution of two nodes where \textit{node 1} and \textit{node 2} are equipped with a \texttt{GTX980} and a \texttt{K40}, respectively. Obtained performance are comparable to the two GPU single node case depicted in Figure \ref{fig:sobel_k40_980}.
+Figure \ref{fig:sobel_2nodes_k40+980-K20+980} reports timing and speedup for an execution on two different nodes each equipped with two accelerators  (a total of $4$, adopting the same configuration adopted for the Julia Set Generation benchmark). In this case, $\apoprox 22 \times$ and $\approx 103$ improvements are obtained w.r.t. \textbf{the single node $3$ GPU} (reported in Figure \ref{fig:sobel_scaling}) and the \textbf{serial} executions, respectively when $\approx 25\%$ of the domain is assigned to each of the devices involved.
+\begin{figure}[!htb]
+	\minipage{1.0\textwidth}
+	\begin{subfigure}{1.0\textwidth}
+		\caption{Performance on $2$ nodes and $2$ GPUs: \texttt{NVIDIA K40}(\textit{node 1}) and $1$ \texttt{GTX980}(\textit{node 2}).}
+		\label{fig:sobel_2nodes_k40_980}
+		\includegraphics[width=1.0\textwidth]{./plots/sobel_2nodes_k40_980}
+		
+	\end{subfigure}        
+	\endminipage \hfill
+	\minipage{1.0\textwidth}
+	\vspace{5mm}
+	\begin{subfigure}{1.0\textwidth}
+		\includegraphics[width=1.0\textwidth]{./plots/sobel_2nodes_k40+980-K20+980}
+		\caption{Performance on $2$ nodes each with $2$ GPUs.}
+		\label{fig:sobel_2nodes_k40+980-K20+980}
+	\end{subfigure}
+	\endminipage\hfill
+	\caption[\textit{Sobel} filter benchmark performance metrics on two nodes.]{\textit{Sobel} filter benchmark performance metrics on two Ethernet interconnected nodes. (a) reefers to the case where node 1 is equipped with $1$ $K40$ and node 2 with a $GTX980$. (b) to the case where \textit{node 1} uses a $K40$ and a $GTX980$ while \textit{node 2} a $K20$ and a $GTX980$. Time in red (lower is better), speed-up in blue (higher is better).}
+	\label{fig:sobel_2nodes_performance}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\texttt{sciddicaT}}
-\texttt{sciddicaT} is an example of real life problem with both compute and memory bounds kernels. \texttt{sciddicaT} parallelization across several accelerators requires the communication of boundary cells residing on different GPUs.
-Despite three benchmarks are considered for performance evaluation of \texttt{OpenCAL} as shown in Section \ref{sec:computational-results} only two benchmarks are considered here: 
+\texttt{sciddicaT} is an example of a real world model with both compute and memory bounded kernels (see Section \ref{sec:sciddicaT_model}). \texttt{sciddicaT} parallelization across several accelerators requires the communication of boundary cells residing on different GPUs.
+Despite three benchmarks are considered for performance evaluation of \texttt{OpenCAL} as shown in Section \ref{sec:computational-results}, only two benchmarks are here considered: 
 \begin{description}
 	\item[\textbf{Standard}]\hfil \\ the \textbf{small} standard domain of size $610 \times 496$ cells (see section \ref{sec:standard_tests})
 	\item[\textbf{Computational Domain Stress Test}]\hfil \\ the \textbf{large}  domain of size $3593 \times 3730$ cells (see section \ref{sec:opencal_stress_testR})
 \end{description}
-Figure \ref{fig:sciddica_scaling} shows that good absolute speed-up performance, for the large dataset, are obtained when multiple devices are utilized, up to $\approx 25 \times$. It is worth to note that in this case the \texttt{GTX980} shows better performances than the $K40$ ( $9.7\times$ vs  $5.5 \times$respectively) which explain also the reason why the \texttt{sciddicaT} runs faster on a pair of \texttt{GTX980} than the case where one of them is replaced by a \texttt{K40}.
+Figure \ref{fig:sciddica_scaling} shows that good absolute speed-up performance, for the large dataset, are obtained when multiple devices are utilized, up to $\approx 25 \times$. It is worth to note that in this case the \texttt{GTX980} shows better performances than the $K40$ ( $9.7\times$ vs $5.5 \times$ respectively) which explains also the reason why \texttt{sciddicaT} runs faster on a pair of \texttt{GTX980} than the case where one of them is replaced by a \texttt{K40}.
 \begin{figure}[!htb]	
 	\minipage{0.49\textwidth}
 	\begin{subfigure}{1.0\textwidth}
@@ -1609,18 +1638,69 @@ Figure \ref{fig:sciddica_scaling} shows that good absolute speed-up performance,
 	\caption[]{\texttt{sciddicaT} (small and large datasets) speed-up scaling as the number of GPUs is increased.}
 	\label{fig:sciddica_scaling}
 \end{figure}
-This is mainly due to the fact that memory bounds kernels are in \texttt{sciddicaT} the ones that make up for most of the execution time, and it has been shown in Section \ref{sec:sobel_performance} that the $GTX980$ performs better executing such latency bound kernels.
-Despite the good performance obtained in the \textbf{large} dataset, performance for the \textbf{standard} dataset are worse when adopting multiple devices than a single GPU configuration. The main reason is that the \textit{standard} test (see Section \ref{sec:standard_tests}) has a small number of cells ($\approx 300000$) making the efforts of further parallelization on several accelerators unnecessary since the communication overhead is dominant in this case. As it is known GPUs need a large number of threads in order to hide the intrinsic latency of the memory controller due to such latency/memory bound kernels.
+This is mainly due to the fact that memory bounded kernels are in \texttt{sciddicaT} the ones that make up for most of the execution time, and it has been shown in Section \ref{sec:sobel_performance} that the $GTX980$ performs better executing such latency bound kernels.
+Despite the good performance obtained in the \textbf{large} dataset, performance for the \textbf{standard} dataset are worse when adopting multiple devices than a single GPU configuration. The main reason is that the \textit{standard} test (see Section \ref{sec:standard_tests}) has a relatively small number of cells ($\approx 300000$) making the efforts of further parallelization on several accelerators unnecessary since the communication overhead is dominant in this case. As it is known GPUs need a large number of threads in order to hide the intrinsic latency of the memory controller due to such latency/memory bound kernels.
 Figures \ref{fig:sciddica_standard_scaling} and \ref{fig:sciddica_standard_980_k40} shows  that a negative speedups (with the respect to a \textbf{single GPU execution}) are achieved. In particular, when adopting a \texttt{K40} and a \texttt{GTX980} $\apoprox -1.5 \times$ slowdown is achieved at best.
 \begin{figure}[!htb]
 	\centering
 	\includegraphics[width=1.0\textwidth]{./plots/sciddica_standard_k40_980}
-	\caption{\texttt{sciddicaT} standard dataset on $2$ GPUs: . Time in red (lower is better), speed-up in blue (higher is better).}
+	\caption{\texttt{sciddicaT} standard dataset on $2$ GPUs. Time in red (lower is better), speed-up in blue (higher is better).}
 	\label{fig:sciddica_standard_980_k40}
 \end{figure}
 Figure \ref{fig:sciddica_980_980} and \ref{fig:sciddica_k40_980} show timing and speed-ups metrics for the large dataset, for the case where a pair of \texttt{GTX980} and a \texttt{K40} and a \texttt{GTX980} are adopted, respectively. The former shows that slightly super-linear speedup is achieved when an equal amount of work is assigned to each device while the latter configuration achieves best performance when only $\approx 30\%$ of the domain is assigned to the \texttt{K40} reaching a peak of $\approx 5 \times$ speedup.
 Figure \ref{fig:sciddica_k40_980_980} shows timing and speed-up in the case where $3$ GPUs are adopted. In this case best performance are achieved when only $\approx 15\%$ of the domain is assigned to the \texttt{K40} obtaining a speedup of  $\approx 25 \times$.
+
+The last experiments concern the execution of this benchmark on the test cluster on both the small and large datasets considering the \textit{naive} and the \textit{active cells} versions.
+The small dataset is scattered equally (a total of $300 \times 496$ cells assigned to each device) among two \texttt{GTX980}s each located on a different node.
+As expected the \textbf{small} dataset  incurs in a high communication overhead giving rise to worsening performance w.r.t. the \textit{single node single GPU} configuration with a $\approx 5 \times$ slowdown.
+Measured communication and computation time are reported in Table \ref{tab:sciddica_comp_comm_time} shows that communication time dominates the overall execution time.
+\begin{table}
+	\centering
+	\caption{Communication and computation time for the execution of the \textbf{naive} version \textbf{small dataset} on two nodes and each equipped with a \texttt{GTX980}.}
+	\label{tab:sciddica_comp_comm_time}
+	\begin{tabular}{@{}cc@{}}
+		\toprule
+		 Communication Time & Computation Time\\ \midrule
+		 $20527.2$ \si{ms}      & $5163.8$ \si{ms}   \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\textit{Active cells} version of the \textbf{small} dataset benchmark on \textit{two nodes} exposes even worse performance due to the fact that active cells need further communication computation since a cell can be activated by its owning GPU or by a neighboring one.
+Once the boundary active cells data are exchanged, activation information need to be processed by each device, by means of an additional \textit{active cell merging kernel}. Communication and computation timings are reported in Table \ref{tab:sciddica_comp_comm_time_active cell} and show that even in this case, communication time dominates and also that the computation time is higher, leading to a $10 \times$ slowdown w.r.t. the \textbf{single GTX980} execution.
+\begin{table}
+	\centering
+	\caption{Communication and computation time for the execution of the \textbf{active cell} version \textbf{small dataset} on two nodes and each equipped with a \texttt{GTX980}.}
+	\label{tab:sciddica_comp_comm_time_active cell}
+	\begin{tabular}{@{}cc@{}}
+		\toprule
+		 Communication Time & Computation Time\\ \midrule
+		 $19720.99$ \si{ms}      & $10204.1$ \si{ms}   \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+Regarding the \textbf{large} dataset \textbf{naive} version, good performance are achieved for the two adopted run-configurations.
+\begin{itemize}
+\item When the domain is scattered among equally among the two \texttt{GTX980} (each one residing of the two nodes) a speedup of $\approx 20$ is reached (similarly to the \textit{single-node} $2$ \texttt{GTX980} experiment reported in Figure\ref{fig:sciddica_980_980}).
+\item When the domain is scattered among $4$ devices i.e. $2$ \texttt{GTX980} and $1$ \texttt{K40} and $1$ \texttt{K20} in the same cluster configuration of the benchmark reported in Section \ref{sec:sobel_performance} good overall performances but no improvement is obtained with the addition of two GPUs.
+This is mainly due to two factors: 
+\begin{enumerate}[I]
+\item The additional devices perform worse ($\approx 2 \times$) than the \texttt{GTX980} on this benchmark as can be seen in Table \ref{tab:sciddicaT-CL-execution-times-stressR}.
+\item When divided among $4$ devices each sub domain size is relatively small impeding good utilization of the device. 
+\end{enumerate}
+Figure \ref{fig:sciddica_2nodes_k40+980_K20+980} shows timing and speed-up achieved for this specific case. 
+\begin{figure}[!htb]
+	\centering
+	\includegraphics[width=1.0\textwidth]{./plots/sciddica_2nodes_k40+980_K20+980}
+	\caption{\texttt{sciddicaT} \textbf{large} dataset \textbf{naive} version on $4$ devices installed onto $2$ separate nodes. Time in red (lower is better), speed-up in blue (higher is better).}
+	\label{fig:sciddica_2nodes_k40+980_K20+980}
+\end{figure}
+
+\end{itemize}
+
 \begin{figure}
+	\vspace{-0.5cm}
 	\minipage{0.81\textwidth}
 	\begin{subfigure}{1.0\textwidth}
 	
@@ -1651,11 +1731,12 @@ Figure \ref{fig:sciddica_k40_980_980} shows timing and speed-up in the case wher
 
 \subsection{Conclusion and Future Works}
 This chapter introduced the preliminary implementation of the distributed memory and multi-GPU  version of \texttt{OpenCAL}: \texttt{OpenCAL-CLUST}.
-It has been shown that it allows deploying numerical application on regular grid on machines composed by several computational nodes interconnected by network each armed with multiple accelerators. Thanks to the adoption of \texttt{OpenCL}, different kind of accelerators can be employed seamlessy.
+It has been shown that it allows deploying numerical applications on regular grid on machines composed by several computational nodes interconnected by network each armed with multiple accelerators. Thanks to the adoption of \texttt{OpenCL}, different kinds of accelerators can be employed seamlessly.
 The performance benchmarks that have been used to test \texttt{OpenCAL-CLUST} ( Section \ref{sec:perfomance}) show that it effectively use the computational power of multiple device in order to speedup the computation.
 
-As regarding future developments, \texttt{OpenCAL-CLUST} will be  extended allowing domain decomposition on multiple dimensions. As shown in Section \ref{sec:domain_decomposition}, decomposing the domain on a single dimension is not always optimal. The programmer would be able to decompose the domain multidimensional cubic portions and assign one to each available device.
-Another important issue that will be addressed is that the current implementation serialize communications at each step execution. 
-This might not be optimal in cases where boundaries grid cells between two devices or nodes do not change. The communication of such cells can be avoided. This mechanism can be accomplished by performing boundaries exchange only if there is a relevant update (using the so called \textit{dirty-bits}). 
-
+As regarding future developments, \texttt{OpenCAL-CLUST} will be  extended allowing domain decomposition on multiple dimensions. As shown in Section \ref{sec:domain_decomposition}, decomposing the domain on a single dimension is not always optimal, as in order to obtain better load balancing among the devices different decomposition may be necessary.
+The programmer would be able to decompose the domain multidimensional cubic portions and assign one to each available device.
+Another important issue that will be addressed is that the current implementation serializes communications at each step execution taking advantages of possible computation-communication overlapping.
+Another limitation that the current implementation exposed is that boundaries are always exchanged among intra-node devices. This might not be optimal in cases where boundaries grid cells between two devices or nodes do not change and thus, the communication of such cells avoided. This mechanism can be accomplished by performing boundaries exchange only if there is a relevant update i.e. by means of the so called \textit{dirty-bits} mechanism. 
+A scaling benchmark will be performed on a proper \textit{HPC} cluster with at least $16$ nodes interconnected by fast network (\texttt{Infiniband} et. similia for instance) in order to obtain information about the scalability of \texttt{OpenCAL-CLUST} as the number of nodes is increased.
 

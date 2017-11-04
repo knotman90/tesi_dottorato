@@ -394,17 +394,17 @@ omp_destroy_lock(&writelock);
     	\label{gflops-per-watt-sp}
     \end{figure}
   
-    \subsection{From Graphics Graphics to General Purpose HW}\label{graphicPipeline}
+    \subsection{From Graphics Graphics to General Purpose HW}\label{sec:graphicPipeline}
     A graphics task such as rendering a $3D$ scene on the screen
     involves a sequence of processing stages inside the GPU, i.e. shaders, that run in parallel and in a prefixed order, known as the graphics hardware
     pipeline \cite{Shirley:2005:FCG:1088893} which is the most common form of 3D computer rendering, distinct from, for instance, \textit{raytracing} or \textit{raycasting} for which the concept of pipeline is not even defined.
      \begin{figure}[H]
     	\centering
-    	\caption{Typical computer graphics pipeline.}\label{graphicPipeline}
+    	\caption{Typical computer graphics pipeline.}\label{fig:graphicPipeline}
     	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/pipeline}
     \end{figure}
     
-     Figure \ref{graphicPipeline} shows the important key steps that make up the graphic pipeline and for which the GPU hardware has been specialized for years. The pipeline works taking as input graphics primitives, each stage forward its results on to the next stage.
+     Figure \ref{fig:graphicPipeline} shows the important key steps that make up the graphic pipeline and for which the GPU hardware has been specialized for years. The pipeline works taking as input graphics primitives, each stage forward its results on to the next stage.
     \begin{itemize}
     	\item     The first stage of the pipeline is the \textit{vertex shader}. The
     	input to this phase is a list of vertices in object space coordinate which are then converted to world coordinates (applying the \textit{model and view matrices}).
@@ -470,7 +470,8 @@ omp_destroy_lock(&writelock);
     \begin{figure}
 	\centering
 	\includegraphics[width=0.85\textwidth]{./images/parallel_programming/opencl_execmodel}
-	\caption{\texttt{OpenCL} 1D,2D,3D work-items and work-groups partitioning. }\label{fig:opencl_execmodel}
+	\caption{\texttt{OpenCL} 1D,2D,3D work-items and work-groups partitioning. }
+	\label{fig:opencl_execmodel}
 \end{figure}
 
 	Work-groups and work-items are arranged in a indexed grid-like structure. 
@@ -554,11 +555,11 @@ omp_destroy_lock(&writelock);
     can be first decorated with the parameters on which it is going to
     be executed and then effectively enqueued for execution onto device.
     
-    The following is a brief description of the typical flow of an \texttt{OpenCL} application (See Figure \ref{fig:opencl_execmodel}).
+    The following is a brief description of the typical flow of an \texttt{OpenCL} application (See Figure \ref{fig:opencl_flow_model}).
     \begin{figure}
     	\centering
     	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/opencl_program_flow}
-    	\caption{\texttt{OpenCL} program flow and interaction between memory, device and host.}\label{fig:opencl_execmodel}
+    	\caption{\texttt{OpenCL} program flow and interaction between memory, device and host.}\label{fig:opencl_flow_model}
     \end{figure}
 
     \begin{description}

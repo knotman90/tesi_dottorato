@@ -28,14 +28,15 @@
      \refstepcounter{dummy}
     \addcontentsline{toc}{chapter}{\listfigurename}
      \pdfbookmark[1]{\listfigurename}{lof}
-\begin{scriptsize}
+\begin{small}
      \listoffigures
-\end{scriptsize}
+\end{small}
 
 
-\normalsize
-    % \vspace{8ex}
 
+     \vspace{8ex}
+
+\newpage
     %*******************************************************
     % List of Tables
     %*******************************************************
@@ -43,22 +44,24 @@
      \refstepcounter{dummy}
     \addcontentsline{toc}{chapter}{\listtablename}
      \pdfbookmark[1]{\listtablename}{lot}
-\begin{scriptsize}
+\begin{small}
     \listoftables
    
-   \lstlistoflistings
- \end{scriptsize}
+ \end{small}
      \vspace{8ex}
      \newpage
 
     %*******************************************************
     % List of Listings
     %*******************************************************
-    % \phantomsection
-    %\refstepcounter{dummy}
-   % \addcontentsline{toc}{chapter}{\lstlistlistingname}
-   % \pdfbookmark[1]{\lstlistlistingname}{lol}
-    %\lstlistoflistings%
+     \phantomsection
+   \refstepcounter{dummy}
+    \addcontentsline{toc}{chapter}{\lstlistlistingname}
+    \pdfbookmark[1]{\lstlistlistingname}{lol}
+    \begin{small}
+       	
+    	\lstlistoflistings
+    \end{small}
 
     \vspace{8ex}
 

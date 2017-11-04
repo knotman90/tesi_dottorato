@@ -15,7 +15,8 @@ The main thrust of this work is the creation of a programming abstraction and a 
 Results show that the framework is effective in reducing programmer effort in producing efficient parallel numerical solvers.
 
 The rest of the document is organized as follows:
-Chapters \ref{ch:parallel_computing} and  \ref{ch:FDM} introduce the main targeted numerical models, and parallel machines, respectively.
-Chapters \ref{ch:opencal} and \ref{ch:opencal_cluster} describe \texttt{OpenCAL}, its implementation, usage and performance on a number of benchmarks.
-Chapters \ref{ch:bacteria}, \ref{ch:flocking}, \ref{ch:stream_compaction} introduces some HPC numerical modeling and simulation applications that have been investigated.
-In particular, Chapter \ref{ch:bacteria} introduces a specialized framework based on \texttt{OpenCAL} for tracking particle-like objects from a time-lapse video which has been applied to analyze the motility  the of \textit{B. subtilis} bacterium.
+Chapters \ref{ch:FDM} and \ref{ch:parallel_computing} introduce the main targeted numerical models and parallel architectures, respectively.
+Chapters \ref{ch:opencal}  describes \texttt{OpenCAL}, its implementation and different versions, usage and performance on a number of benchmarks, while Chapter \ref{ch:opencal_cluster} introduces the multi-GPU and distributed memory version of \texttt{OpenCAL} and evaluates its performance on three  kinds of applications, each with different computational and memory requirements.
+Eventually, Chapters \ref{ch:bacteria} and  \ref{ch:flocking} introduce other HPC numerical modeling and simulation applications that have been investigated. 
+In particular, Chapter \ref{ch:bacteria} introduces a specialized framework based on \texttt{OpenCAL} for tracking particle-like objects from a time-lapse video which has been applied to analyze the motility  the of \textit{B. subtilis} bacterium, while Chapter \ref{ch:flocking} investigates multi-agent collective system acceleration on GPU.
+Appendix \ref{ch:stream_compaction} refers to an ad-hoc stream-compaction algorithm specifically targeting NVIDIA newest hardware that was investigated during the work on \texttt{OpenCAL}.

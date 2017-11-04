@@ -113,6 +113,24 @@ set x2label 'Workload - GTX980 #1 and #2'
 plot  "data_fractal12k_K40-980-980_false.dat" using 1:2 title 'Time' w lp ls 1 axes x1y1,\
 "data_fractal12k_K40-980-980_false.dat" using 1:3 title 'Speed-up' w lp ls 4 axes x1y2 ,\
 
+
+
+#--------------large fractal multinode 4 gpu 2 per nodes--
+set xrange [0 : 17000.0]
+set x2range [17000 : 0.0]
+
+set output 'fractal17k_2nodes_K40+980-K20+980_true.pdf'
+set xlabel 'Workload - K40(node1) \& K20(node2)'
+set key top center
+set x2label 'Workload - GTX980(node1) \& GTX980(node2)'
+#set title "Time - Speedup 3 GPU"
+plot  "data_fractal17k_2nodes_K40+980-K20+980_true.dat" using 1:2 title 'Time' w lp ls 1 axes x1y1,\
+"data_fractal17k_2nodes_K40+980-K20+980_true.dat" using 1:3 title 'Speed-up' w lp ls 4 axes x1y2 ,\
+
+
+
+
+
 #SOBEL--------------------------------------------------
 
 set xrange [0 : 15000.0]
@@ -126,6 +144,28 @@ set x2label 'Workload - GTX980'
 #set title "Time - Speedup 3 GPU"
 plot  "data_sobel_k40_980.dat" using 1:2 title 'Time' w lp ls 1 axes x1y1,\
 "data_sobel_k40_980.dat" using 1:3 title 'Speed-up' w lp ls 4 axes x1y2 ,\
+
+
+#------------2 nodes---2 GPU----------------------
+set output 'sobel_2nodes_k40_980.pdf'
+set xlabel 'Workload - K40(node1)'
+set key center 
+set x2label 'Workload - GTX980(node2)'
+#set title "Time - Speedup 2 GPU on two nodes"
+plot  "data_sobel_2nodes_k40-980.dat" using 1:2 title 'Time' w lp ls 1 axes x1y1,\
+"data_sobel_2nodes_k40-980.dat" using 1:3 title 'Speed-up' w lp ls 4 axes x1y2 ,\
+
+
+#------------2 nodes---4 GPU----------------------
+set output 'sobel_2nodes_k40+980-K20+980.pdf'
+set xlabel 'Workload - K40(node1) \& K20(node2)'
+set key center 
+set x2label 'Workload - GTX980(node1) \& GTX980(node2)'
+#set title "Time - Speedup 2 nodes 2 GPUs/node"
+plot  "data_sobel_2nodes_k40+980-K20+980.dat" using 1:2 title 'Time' w lp ls 1 axes x1y1,\
+"data_sobel_2nodes_k40+980-K20+980.dat" using 1:3 title 'Speed-up' w lp ls 4 axes x1y2 ,\
+
+
 
 
 #---------------------------------------------
@@ -211,6 +251,20 @@ set x2label 'Workload - GTX980 #1 and #2'
 #set title "Time - Speedup 3 GPUs"
 plot  "data_sciddicaT_stressR_K40-980-980.dat" using 1:2 title 'Time' w lp ls 1 axes x1y1,\
 "data_sciddicaT_stressR_K40-980-980.dat" using 1:3 title 'Speed-up' w lp ls 4 axes x1y2 ,\
+
+
+
+#------------2 nodes---4 GPU----------------------
+set output 'sciddica_2nodes_k40+980_K20+980.pdf'
+set xlabel 'Workload - K40(node1) \&K20(node2)'
+set key center 
+set x2label 'Workload - GTX980(node1) \& GTX980(node2)'
+#set title "Time - Speedup 4 GPU on two nodes"
+plot  "data_sciddica_2nodes_K40+980_K20+980.dat" using 1:2 title 'Time' w lp ls 1 axes x1y1,\
+"data_sciddica_2nodes_K40+980_K20+980.dat" using 1:3 title 'Speed-up' w lp ls 4 axes x1y2 ,\
+
+
+
 
 
 

@@ -1,7 +1,8 @@
 \chapter{Multi-Agent System with Multiple Group Modelling for Bird Flocking
 	on GPU}
 \label{ch:flocking}
-\dictum[Gottfried Leibniz]{There are two kinds of truths: those of reasoning and those of fact. The truths of reasoning are necessary and their opposite is impossible; the truths of fact are contingent and their opposites are possible.}%
+\dictum[Anaximander]{There cannot be a single, simple body which is infinite, either, as some hold, one distinct from the elements, which they then derive from it, nor without this qualification. For there are some who make this (i.e. a body distinct from the elements) the infinite, and not air or water, in order that the other things may not be destroyed by their infinity. They are in opposition one to another — air is cold, water moist, and fire hot—and therefore, if any one of them were infinite, the rest would have ceased to be by this time. Accordingly they say that what is infinite is something other than the elements, and from it the elements arise.
+}%
 \vskip 1em
 
 This chapter is adapted from \cite{rahmat:2016}.
@@ -18,7 +19,7 @@ suggested that general principles may underlie collective motion.
 An effective approach to study these collective behaviours is represented by
 mathematical modelling and numerical simulation, as proven by numerous papers
 published in this field that are related with both biology and computer
-science (e.g., \cite{Schmickl}). In models that study simple motion principles of organisms like flocking, shoaling or phenomena based on random motion, organisms are treated like gas molecules and their motion is
+science (e.g., \cite{Schmickl:2009}). In models that study simple motion principles of organisms like flocking, shoaling or phenomena based on random motion, organisms are treated like gas molecules and their motion is
 Brownian combined with attraction/repulsion forces. Also ‘mean-field’ approaches, mainly carried out by adopting ordinary differential equation (ODE) models, might be useful to model some biological
 swarm systems, whenever the assumption of a ‘well mixed’ distribution may be applicable.
 However, organisms seldom move really randomly, nor are they just simple particles. They
@@ -33,7 +34,7 @@ for biological swarm systems as soon as a certain level of abstraction has to be
 In these cases, individual-based models or even multi-agent
 models \cite{Ferber:1999,Woolridge:2001} might be a better choice.
 
-In this paper we present the
+In this article we present the
 \textsc{ACIADDRI}\footnote{ Meaning \textit{birds} in Calabrian language.} (\emph{\textbf{A}ggregate \textbf{C}ollection of \textbf{I}nteractive \textbf{A}gents using NVI\textbf{D}IA CU\textbf{D}A \textbf{R}eliable \textbf{I}nformatics}) multi-agent flocking model, besides an efficient GPGPU implementations on SIMT architectures. In particular, section \ref{sect:aciaddri}
 formalizes the model and \ref{sect:gpuimplementation} the parallel
 implementation using the CUDA framework.
@@ -468,7 +469,7 @@ versions, both sharing the high-level implementation structure that consists in
 	\item Copying the result back from \textbf{\emph{GPU} to \emph{CPU}}
 \end{itemize}
 The parallelization strategy is designed with the purpose to avoid as much
-as possible the very undesirable data copy from \emph{host to device}  , or vice versa\cite{CUDA3} \cite{Spataro} \cite{Dambrosio}.
+as possible the very undesirable data copy from \emph{host to device}  , or vice versa\cite{CUDACBESTPRACTICE} \cite{dspataro_sciara:2017} \cite{DAmbrosio201230}.
 The computation of $\vec{p}_b^{i+1}$ and $\vec{v}_b^{i+1}$ is entirely performed on GPU and implemented as composition of CUDA kernels. Moreover Parameters are stored in constant memory for fast access.
 An OpenGL 3D visualization tool comes with the simulation system and permits real time and interactive 
 rendering of the flocking model.
@@ -562,18 +563,18 @@ Tables \ref{tab:naive} and \ref{tab:ifdiv} shows the execution times of the na\"
 		\\
 		\hline
 		
-		1024  	& \(263.9\) 	& $29.1$, ($9,07$) 	& $10.5$, ($25,13$) \\
-		5120  	& \(4913.0\) 	& $574.4$, ($8,55$) 	& $51.7$, ($95,02$)  \\
-		10240 	&  $19074.5$ 	& $2241.6$, ($8.51$) 	& $109.0$, ($174,99$)  \\
-		15360 	& \(43332.3\) 	& $5004.7$, ($8.65$) 	& $235.2$, ($184,23$)  \\
-		20480  	& 86065.7 		& $8868.9$, ($9,70$) 	& $312.5$, ($275.408$) \\
+		1024  	& \(263.9\) 	& $29.1$, ($9.07$) 	& $10.5$, ($25.13$) \\
+		5120  	& \(4913.0\) 	& $574.4$, ($8.55$) 	& $51.7$, ($95,02$)  \\
+		10240 	&  $19074.5$ 	& $2241.6$, ($8.51$) 	& $109.0$, ($174.99$)  \\
+		15360 	& \(43332.3\) 	& $5004.7$, ($8.65$) 	& $235.2$, ($184.23$)  \\
+		20480  	& 86065.7 		& $8868.9$, ($9.70$) 	& $312.5$, ($275.408$) \\
 		40960  	& 452423.1 		& - 						& $1023.8$, ($441.90$)  \\
-		81920  	& 1966134.9 	& - 						& $3663.5$, ($536,70$)  \\
-		163840  & 8003173.0 	& - 						& $14877.4$, ($537,94$)	 \\
-		327680  & 35815012.0 	& - 						& $58003.0$, ($617,47$)  \\
+		81920  	& 1966134.9 	& - 						& $3663.5$, ($536.70$)  \\
+		163840  & 8003173.0 	& - 						& $14877.4$, ($537.94$)	 \\
+		327680  & 35815012.0 	& - 						& $58003.0$, ($617.47$)  \\
 		\hline
 	\end{tabular}
-	\caption{Timing (in seconds) for the Parallel CUDA Na\"ive implementation}
+	\caption{Timing (in seconds) and speed-ups for the Parallel CUDA Na\"ive implementation}
 	\label{tab:naive}
 \end{table}
 
@@ -584,7 +585,6 @@ Tables \ref{tab:naive} and \ref{tab:ifdiv} shows the execution times of the na\"
 		\# birds & Sequential & GT	635M & GTX 980
 		\\
 		\hline
-		s
 		1024  & \(263.9\) & $19.9$ & $7.9$  \\
 		5120  & \(4913.0\) & $366.3$ & $34.6$  \\
 		10240 &  $19074.5$ & 1398.7 & 96.5  \\
@@ -596,7 +596,7 @@ Tables \ref{tab:naive} and \ref{tab:ifdiv} shows the execution times of the na\"
 		327680  & 35815012.0 & - & $54113.4$  \\
 		\hline
 	\end{tabular}
-	\caption{Timing (in seconds) for the Parallel CUDA Na\"ive implementation}
+	\caption{Timing (in seconds)  for the Parallel \textit{shared memory} CUDA implementation}
 	\label{tab:ifdiv}
 \end{table}
 

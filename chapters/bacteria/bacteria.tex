@@ -4,7 +4,7 @@
 
 \chapter[A Tracking Algorithm for Particle-like Objects]{A Tracking Algorithm for Particle-like Objects}
 \label{ch:bacteria}
-\dictum[Gottfried Leibniz]{There are two kinds of truths: those of reasoning and those of fact. The truths of reasoning are necessary and their opposite is impossible; the truths of fact are contingent and their opposites are possible.}%
+\dictum[Aristotle]{All things as subsist from nature appear to contain in themselves a principle of motion and permanency; some according to place, others according to increase and diminuation; and others according to change in quality.}%
 \vskip 1em
 
 \begin{flushright}\textit{This chapter is adapted from} \cite{dspataro:2017}.\end{flushright}
@@ -244,7 +244,7 @@ The XCA adopted for manipulating images is defined as a $7$-tuple $ IFCA = \lang
 
     \end{itemize}
     
-In order to take advantage of the intrinsic parallel nature of CA, \texttt{IFCA} is implemented augmenting an existing CA library, \texttt{\textbf{OpenCAL}} \cite{opencalurl} \cite{opencalmother} which is empowered  with a set of procedures that allows seamless input/output and image convolution.
+In order to take advantage of the intrinsic parallel nature of CA, \texttt{IFCA} is implemented augmenting an existing CA library, \texttt{\textbf{OpenCAL}} \cite{opencalurl}  which is empowered  with a set of procedures that allows seamless input/output and image convolution.
 More specifically each image is represented as an cellular automaton whose substates represent the color of the pixel and filters implemented as elementary processes composition (see listing \ref{list:imgman}). 
 
 \lstset{language=[OpenCL]C,frame=tb,
@@ -321,12 +321,13 @@ All images are $512 \times 512$ pixels and have been exported in $16$-bit graysc
 \subsection{Bacteria Segmentation}
 \label{Bacteriasegmentation}
 
+
 The \textit{B. subtilis} cells typically have a large range of motion patterns and the cell soma generally appears as a dark area surrounded with a white halo.
 Colors can be inverted and the cell may appear white when it  moves out of focus sufficiently (see Figure \ref{contrast}).
 In order to automatically detect \textit{subtilis} cells, it is possible to use a histogram-based thresholding method as suggested in \cite{Cho:1989}.
 A key step of tracking bacteria is to individuate first, and then to label and describe each of the bacteria present in the images.
 For this purpose,  a segmentation preprocessing phase is performed on all the images. 
-Segmentation  is carried out by means of a threshold method \cite{Shapiro:2002} which produces a bipartition of pixels based on the color intensity. The value of pixel $(x,y)$ in image $g$ is given by the following, where $P$ is a predicate and $f$ is the original image:
+Segmentation  is carried out by means of a threshold method \cite{Stockman:2001:CV:558008} which produces a bipartition of pixels based on the color intensity. The value of pixel $(x,y)$ in image $g$ is given by the following, where $P$ is a predicate and $f$ is the original image:
 \[{g(x,y) = \begin{cases} 1, & \mbox{if } P(f(x,y),T) \\ 0, & \mbox{otherwise }\end{cases}}\]
 As a consequence, a drawback of using the threshold method is that, among all inter-pixels relationships, color intensity difference is the only involved by the bi-partition process.
 This can easily lead to binary regions where pixels are not contiguous or to miss or include relevant or unwanted pixels respectively, with these effects getting worse as the noise increases.
@@ -368,7 +369,7 @@ Figure \ref{4traj} shows 4 snapshots of the outcome of the tracking algorithm fo
 Starting from the relationship $D_b=  \frac{v^2 t_t}{2}$  \cite{Berg:1993} that links the diffusion coefficient to both swim velocity ($v$) and tumbling time ($tt$), 
 we have partitioned each trajectory into running and tumbling events. 
 These events allow the swimming speed to be calculated as difference between subsequent bacteria positions and average tumbling time as the overall time spent tumbling over by the number of tumbling events. 
-Inspired by the work of \textit{Wong-Ng et al.} \cite{Wong2016} and \textit{B. Masson et al.} \cite{Masson:2011} an algorithm, implemented in \textit{MATLAB}, was adopted for detecting such running/tumbling events (see Figure \ref{runtumbledetection})  which in turn were used to extract all the relevant bacterial motility parameters from the tracked trajectories\footnote{Tumbles are associated both to a decrease in advancing velocity and an abrupt change in the angular velocity (i.e. in the direction of the motion). By fixing a threshold on both advancing and angular velocities it is possible to identify running/tumbling and use them to compute the mean values $t_t$ and $v$ over all the trajectories of the experiment.}.
+Inspired by the work of \textit{Wong-Ng et al.} \cite{Wong-Ng:2016} and \textit{B. Masson et al.} \cite{Masson31012012} an algorithm, implemented in \textit{MATLAB}, was adopted for detecting such running/tumbling events (see Figure \ref{runtumbledetection})  which in turn were used to extract all the relevant bacterial motility parameters from the tracked trajectories\footnote{Tumbles are associated both to a decrease in advancing velocity and an abrupt change in the angular velocity (i.e. in the direction of the motion). By fixing a threshold on both advancing and angular velocities it is possible to identify running/tumbling and use them to compute the mean values $t_t$ and $v$ over all the trajectories of the experiment.}.
 
 The main parameters that were considered as as descriptors of the motion of the bacteria were: 
 \begin{itemize}
@@ -382,7 +383,7 @@ By analyzing the entire trajectory set produced by \texttt{TraCCA} on the datase
 \item $\overline{rt}$ = \SI{0.8}{\second}
 \item $\overline{t_t}$= \SI{0.18}{\second}.
 \end{itemize}
-These experimental values\footnote{These motility parameters were also calculated using the \textit{Mean Square Displacement} (\texttt{MSD}) in time (which for the sake of brevity is only outlined here) by means of the MATLAB \texttt{@msdanalyzer} implementation \cite{msdanalyzer} and considering the following relationship $MSD(t)=\frac{1}{2}\frac{v^2 t_R^2}{2t/t_R +e^{\frac{-2t}{t_R}-1}}$ \cite{Howse2007} where $v$ is the swimming speed, $t_R$ is the timescale associated to rotational diffusion that is $t_R=2t_t$, it is possible to obtain $t_R $ and $v$ via fitting. $t_t$ and $v$ are then used to compute $D_b$.} are in accordance with those available in the literature as for instance in the work of \textit{Cisneros et al.} \cite{Cisneros:2011}.
+These experimental values\footnote{These motility parameters were also calculated using the \textit{Mean Square Displacement} (\texttt{MSD}) in time (which for the sake of brevity is only outlined here) by means of the MATLAB \texttt{@msdanalyzer} implementation \cite{Tarantino231} and considering the following relationship $MSD(t)=\frac{1}{2}\frac{v^2 t_R^2}{2t/t_R +e^{\frac{-2t}{t_R}-1}}$ \cite{Howse:2007} where $v$ is the swimming speed, $t_R$ is the timescale associated to rotational diffusion that is $t_R=2t_t$, it is possible to obtain $t_R $ and $v$ via fitting. $t_t$ and $v$ are then used to compute $D_b$.} are in accordance with those available in the literature as for instance in the work of \textit{Cisneros et al.} \cite{Cisneros:2011}.
 \begin{figure}
 	\begin{center}
 		\includegraphics[width=0.85\textwidth]{./images/bacteria/result.png}

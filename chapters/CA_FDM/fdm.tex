@@ -85,8 +85,9 @@ Other kinds of boundary conditions are possible, such as for instance the Robin'
     %	\draw<2>[red,ultra thick,rounded corners] (5.7,4.1) rectangle (7.5,4.9);
    
     	\end{tikzpicture}
-    	 \label{fig:heat2d_bc}
-    	\caption[Heat Equation - Dirichlet Boundary Conditions]{Heat Equation (see Equation \ref{eq:heat_equation}) Dirichlet Boundary Conditions. The perimeter of the square domain (highlighted in red) has fixed temperature, i.e. the solution $T$ is known at the boundary. In this particular case, $T(x,0)=T(0,y)=0$, $T(1,x)=3$ and $T(1,y)=2$ where $0\leq x,y\leq 1$. }\label{fig:heat2d_bc}
+    	 
+    	\caption[Heat Equation - Dirichlet Boundary Conditions]{Heat Equation (see Equation \ref{eq:heat_equation}) Dirichlet Boundary Conditions. The perimeter of the square domain (highlighted in red) has fixed temperature, i.e. the solution $T$ is known at the boundary. In this particular case, $T(x,0)=T(0,y)=0$, $T(1,x)=3$ and $T(1,y)=2$ where $0\leq x,y\leq 1$. }
+    	\label{fig:heat2d_bc}
 	\end{figure}
 \end{center} 
 
@@ -265,7 +266,7 @@ Figure  \ref{fig:fdmheatequationstencil} depicts the set of points that play a r
 \begin{figure}[b]
   	\centering
   	\includegraphics[scale=0.5]{./images/CA_FDM/heatstencil}
-  	\caption{Explicit FDM stencil for the considered discretization of the 1D heat conduction problem.}\label{torus}
+  	\caption{Explicit FDM stencil for the considered discretization of the 1D heat conduction problem.}
    	\label{fig:fdmheatequationstencil}
 \end{figure}   
 \begin{figure}
@@ -280,10 +281,10 @@ It can be shown that in order to the solution to be stable $\Delta t$ must not b
 \[ 
  r= k \frac{\Delta t}{\Delta x^2}< \frac{1}{2}
 \]
-This scheme is also called \textit{explicit} because values at the subsequent  time step are explicitly computable from the values at the current time as it is shown in the equation \ref{eq:discretizedheatequation1}.
+This scheme is also called \textit{explicit} because values at the subsequent  time step are explicitly computable from the values at the current time as it is shown in the equation \ref{eq:discretizedheatequation2}.
  \begin{equation}
   T^{n+1}_{j} = T^n_{j} + \frac{k \Delta t}{\Delta x^2} (T^n_{j+1}+T^n_{j-1}-2T^n_{j})
- \label{eq:discretizedheatequation1}
+ \label{eq:discretizedheatequation2}
  \end{equation}
 
 %%backward heat equation

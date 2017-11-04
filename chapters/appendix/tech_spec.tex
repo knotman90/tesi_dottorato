@@ -1,10 +1,11 @@
-\chapter{Accelerators - Technical Specification}
+\chapter{Hardware - Technical Specification}
 \label{app:tech_spec}
+\subsection{Accelerators Specification}
 \begin{table}[H]
 	\centering
 	\caption{Technical Specification for the NVIDIA K40,K20 and GTX980 GPUs.}
 	\label{tab:tech_spec_nvidia}
-\begin{tabular}{m{0.2\linewidth} m{0.2\linewidth} m{0.2\linewidth} m{0.2\linewidth}}
+\begin{tabular}{m{0.3\linewidth} m{0.2\linewidth} m{0.2\linewidth} m{0.2\linewidth}}
 	\toprule
 	{\textbf{Spec.}} & {\textbf{K40}} & {\textbf{K20}} & {\textbf{GTX980}}\\
 	\midrule
@@ -28,3 +29,33 @@
 	\bottomrule
 \end{tabular}
 \end{table}
+
+\subsection{Test Cluster HW Specification}
+The following table reports the main technical specifications for the test cluster adopted for benchmarking the preliminary version of  \texttt{OpenCAL-CLUST} (see Section \ref{sec:perfomance}).
+Nodes are interconnected to a \textit{Cisco Catalyst 3750 Series} switch via standard GigaBit Ethernet.
+The real performance of the network has been tested using \texttt{iperf} Linux command line tool giving raise to a bidirectional  bandwidth of $\approx 820 Gbit/s$  .
+\begin{table}[H]
+	\centering
+	\caption{Technical Specification for the two nodes composing the test cluster adopted for benchmarking \texttt{OpenCAL-CLUST}.}
+	\label{tab:tech_nodes}
+	\begin{tabular}{m{0.3\linewidth} m{0.3\linewidth} m{0.3\linewidth}}
+		\toprule
+		{\textbf{Spec.}} & {\textbf{Node 1}} & {\textbf{Node 2}} \\
+		\midrule
+		\textit{Core Count}                & $20$\textit{cores} - $40$\textit{threads}   & $8$\textit{cores} - $16$\textit{threads}   \\
+		\textit{Processor}                & \textit{Intel(R) Xeon(R) E5-2650}   & \textit{Intel(R) Xeon(R) E5440}   \\
+		
+		
+		\midrule
+		
+		\textit{Memory Size}                & $32$ \si{GB}  & $16$ \si{GB}    \\
+		
+		\textit{Memory Clock Speed}                & $2.133$ \si{GHz}   & $0.667$ \si{GHz}    \\
+		
+		
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+
+
