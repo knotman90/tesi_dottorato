@@ -1,0 +1,63 @@
+\documentclass[a4paper,11pt]{paper}
+\usepackage{blindtext, graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{subfig}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage[table]{xcolor}
+\usepackage[firstinits=true,
+bibencoding=inputenc,
+hyperref=auto,
+%style=standard,
+refsection=section]{biblatex}
+\usepackage{amssymb,amsmath}
+\usepackage{tikz}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+		\node[shape=circle,draw,inner sep=0.3pt] (char) {#1};}}
+\usetikzlibrary{positioning,chains,fit,shapes,calc}
+\usepackage{wrapfig}
+\usepackage{paralist}
+
+\newcommand{\RNum}[1]{\uppercase\expandafter{\romannumeral #1\relax}}
+\usepackage{graphics}
+
+  \let\oldemptyset\emptyset
+\let\emptyset\varnothing
+\newtheorem{mydef}{Definition}
+\renewcommand{\floatpagefraction}{.72}
+\begin{document}
+	\title{Relazione Finale - Dottorato di Ricerca in Matematica e
+		Informatica - \RNum{30} ciclo}
+	\author{
+		Davide Spataro \\
+		Dipartimento di Matematica e Informatica\\
+		Università della Calabria\\
+		Via Ponte P. Bucci Rende 87036, \underline{Italia}
+	}
+	
+	
+	
+	\maketitle
+	 
+
+	
+	\begin{abstract}
+
+	\end{abstract}
+	\newpage
+	\tableofcontents
+
+\include{./relazione1}
+
+\include{./relazione2}
+
+\newpage
+\subsection{\RNum{3} anno}
+\include{./relazione3}
+
+	
+\end{document}
