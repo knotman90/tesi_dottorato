@@ -9,6 +9,8 @@
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage[table]{xcolor}
+
+
 \usepackage[firstinits=true,
 bibencoding=inputenc,
 hyperref=auto,
@@ -24,6 +26,8 @@ refsection=section]{biblatex}
 
 \newcommand{\RNum}[1]{\uppercase\expandafter{\romannumeral #1\relax}}
 \usepackage{graphics}
+
+\input{listing.tex}
 
   \let\oldemptyset\emptyset
 \let\emptyset\varnothing
@@ -46,6 +50,10 @@ refsection=section]{biblatex}
 
 	
 	\begin{abstract}
+		Durante gli ultimi decenni, il modo in cui applicazioni di calcolo scientifico sono progettate e implementate ed eseguite è radicalmente cambiato. Questo è vero specialmente nei campi della data-analytics, e visualizzazione. Una delle ragioni principali è che le dimensioni dei problemi che vengono trattati dagli scienziati sono molto maggiori e perchè la quantità di dati disponibili ha allargato lo spettro delle possibili applicazioni del calcolo ad ambiti che non erano prevedibili fino a qualche tempo fa.
+		Nell'ambito del calcolo scientifico, della modellazione e simulazione in modo particolare, calcolatori paralleli sono usati per ottenere soluzioni approssimate ad equazioni differenziali che descrivono i sistemi fisici che si vogliono studiare in modo rigoroso, come ad esempio le equazionei di \textit{Maxwell} che sono alla base dell'elettromagnetismo classico, o quelle di \textit{Navier-Stokes} per la fluidodinamica.L'approccionclassico, basato sul calcolo differenziale, spesso non riesce a trovare soluzioni analitiche per questi problemi, rendendo necessario soluzioni numeriche approssimate.
+		Queste possono esser ottenute utilizzando diversi metodi che sono stati proposti durante gli anni, come il metodo degli elementi finiti, dei volumi finiti o quello delle differenza finite. Quando domini di grandi dimensioni sono considerati, la quantità di calcolo è tale che l'adozione di grandi macchine parallele è assolutamente necessaria. La programmazione di tale macchine è notoriamente complessa, emolte ore lavoro  sono richieste per la scrittura di solver efficienti che siano eseguibili su grandi cluster. Per questo motivo il lavoro finale di tesi è incentrato alla creazione di un'astrazione di programmazione e di una runtime library per l'implementazione di modelli numerici su griglia regolare e che siano eseguibili su clusters di hardware eterogeneo: dalla workstation/laptop, al clusters di CPU/GPUs. Il risultato di questo lavoro è in \texttt{OpenCAL}, che definisce ed implementa un domain specific language per la definizione di una classe di modelli numerici e il loro deployment su macchine parallele. I dettagli architetturali della macchina sono nascosti al programmatore che  con poco sforzo può ottenere diverse versioni del modello numerico: seriale, multi-core, single-GPU, multi-GPU, o cluster di GPU. I risultati ottenuti mostrano che il framework sviluppato è in grado di produrre applicazioni parallele efficienti ed al tempo stesso di ridurre gli sforzi di programmazione necessari per la loro scrittura.
+
 
 	\end{abstract}
 	\newpage
@@ -55,8 +63,6 @@ refsection=section]{biblatex}
 
 \include{./relazione2}
 
-\newpage
-\subsection{\RNum{3} anno}
 \include{./relazione3}
 
 	
