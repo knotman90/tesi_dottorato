@@ -39,7 +39,17 @@ International Conference on Parallel, and Network-Based Computing
 
 
 \section{Attività di Ricerca}
-Durante il mio \RNum{3} anno di dottorato mi sono occupato principalmente di concludere, ottimizzare e testare il lavoro iniziato negli anno precedenti sulla librarie \texttt{OpenCAL}. La librerie si dimostra in grado di produrre implementazioni parallele di una classe di modelli numerici a griglia regolare, utilizzando un formalismo che nasconde sia i dettagli architetturali tecnici dell'hardware sul quale essi sono eseguiti che la complessità intrinseca del parallelismo. La libreria è stata testata su tre modelli differenti per caratteristiche e requirements computazionali. Tre benchmark sono stati adottati:
+
+Durante l'ultimo ventennio, il modo in cui le moderne applicazioni di calcolo scientifico sono progettate, scritte ed eseguito è cambiato in maniera radicale, specialmente in campi come la data-analitycs, il calcolo scientifico e la visualizzazione.
+Tra le ragioni principali a causa troviamo la dimensione del problemi che vengono studiato oggigiorno è vanno sempre ad aumentare e che la quantità di dati disponibili ad essere analizzati hanno aumentato lo spettro di applicazione del calcolo scientifico oltre quello che non era immaginabile prima.
+Grandi macchine parallele sono necessarie per processare le enormi griglie di calcolo che le applicazioni moderne di calcolo si trovano a manipolare e che sono il risultato della modelliazione di complessi problemi reali attraverlo l0utilizzo di modelli computazionali come il \textit{metodo degli elementi/volumi/differenze}  finiti o gli automi cellulari.
+Questa tipologia di macchine è notoriamente complessa da programmare e richiede uno sforzo di programmazione non indifferente affinchè ne vengano sfruttate a pieno le prestazioni di questi grandi cluster, specialmente dopo l'avvento di hardware eterogeneo e la GPGPU.
+Durante il mio \RNum{3} anno di dottorato mi sono quindi occupato principalmente di concludere, ottimizzare e testare il lavoro  portato avanti nei due anni precedenti sulla libreria OpenCAL, che è una progetto open-source che fornisce un layer di astrazione ed un domain specific language per la definizione di una famiglia di modelli numerici e poi, il loro deployment ed esecuzione su macchine parallele con hardware eterogeneo.
+La libreria nasconde i dettagli di basso livello (come la gestione della memoria o il threading) legati all'hardware per il quale si vuole produrre l'applicazione.
+Il risultato è che con poco sforzo il programmatore può produrre diverse versioni della stessa applicazione utilizzado lo stesso codice: dalla seriale a quella che ha come target cluster di GPU.
+La librerie è stata testata su applicazioni che mostrano  caratteristiche di compute che memory bound e i risultati dimostrano che la librerie  in grado di accelerare i modelli numerici considerati in maniera efficace.
+
+I tre benchmark sono stati adottati:
 \begin{enumerate}
 	\item Julia Set: \textbf{compute bound}
 	\item Convolutional Filter:\textbf{memory/bandiwidth bound}
