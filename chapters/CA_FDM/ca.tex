@@ -8,20 +8,16 @@
 
 %\section{Introduction}\label{cellularAutomataIntroduction}
 \lettrine[lines=4]{P}{hysical} system are usually composed by many components that interact in a complex net of causes and consequences that is often hard or impossible to describe in its entirety analytically.
-Even if each single components is simple, extremely complex behaviors emerge naturally due to the cooperative effect of many components. Much has been discovered about the nature of the components in natural systems, but little is known about the way those components interacts as the overall complexity is observed.
-Such systems are often described by partial differential equation, which are hard to solve analytically especially when they are non-linear and consequently require alternative, or approximate solutions (see Chapter \ref{ch:FDM}).
+Even if each single components is simple, extremely complex behaviors emerge naturally due to the resulting effect of their cooperative interaction. Much has been discovered about the nature of the components in natural systems, but little is known about the way those components interact as the overall complexity is observed.
+Such systems are often described by partial differential equations, which are hard to solve analytically especially when they are non-linear and consequently require alternative, or approximate solutions (see Chapter \ref{ch:FDM}).
 \begin{figure}
 \includegraphics[scale=0.8]{./images/CA_FDM/torus-2}
-\caption{3D cellular automata with toroidal cellular space.}
+\caption{3D cellular automaton with toroidal cellular space.}
 \label{torus}
 \end{figure}
-This chapter introduces \textit{Cellular Automata} that,  have been proved to be suitable for the modellation and simulation of a wide class of complex physical systems, in particular those ones constructed from \textbf{many identical} components, each (ideally) simple, but together capable of complex behaviour\cite{Toffoli1984,toffoli1987}.
-As can be seen from the number of papers in literature  cellular automata have been applied in a wide range of classes of problems from gas\cite{Frisch1986} and fluid turbulence\cite{Succi1991} simulation to macroscopic phenomena\cite{Gregorio1999} like epidemic spread\cite{Sirakoulis2000}, snowflakes and lava flow\cite{dspataro_sciara:2017,Crisci2004,Spataro2010}.
-CA were first investigated by \textit{S. Ulam} working on growth of crystals using
-lattice network and at the same time by \textit{J. Von Neumann} in order to study
-self-reproduction\cite{Neumann1966}; it was not very popular until the 1970 when
-the famous \textit{Conway's} game of life\cite{conway1970} appeared, and since then  they have been widely studied from  a theoretical view point until they were proved capable of computational universality\footnote{ Logical gates can be simulated using the simple rules of the \textit{Game of Life} combining special patterns as \textit{gliders} and \textit{guns}}\cite{Thatcher1970}. They have been mainly adopted, after 1980's, as a computational parallel model due to their intrinsically parallel nature\cite{Margolus1986}.
-
+This Chapter introduces \textit{Cellular Automata}, \textit{CA}, that  have been proved to be suitable for the modellation and simulation of a wide class of complex physical systems, in particular those ones constructed from \textbf{many identical} components, each (ideally and relatively) simple, but when together, capable of complex behaviour\cite{Toffoli1984,toffoli1987}.
+As can be seen from the number of the published papers on the topic, cellular automata have been applied in a wide range of classes of problems from gas\cite{Frisch1986} and fluid turbulence\cite{Succi1991} simulation to macroscopic phenomena\cite{Gregorio1999} like epidemic spread\cite{Sirakoulis2000}, snowflakes and lava flow\cite{dspataro_sciara:2017,Crisci2004,Spataro2010}.
+Cellular Automata were first investigated by \textit{S. Ulam} when he was trying to understand the growth of crystals using a lattice network and at the same time by \textit{John von Neumann} who adopted CA in order to study self-reproduction\cite{Neumann1966}; CA were pretty much unknown until the 1970 when the famous \textit{Conway's} game of life\cite{conway1970} appeared, and since then  they have been widely studied from  a theoretical view point until they were proved capable of computational universality\footnote{Logical gates can be simulated using the simple rules of the \textit{Game of Life} combining special patterns as \textit{gliders} and \textit{guns} that appears naturally and frequently in the Conway's CA.}\cite{Thatcher1970}. They have been mainly adopted, after 1980's, as a computational parallel model due to their intrinsically parallel nature\cite{Margolus1986}.
 
 \section{Informal Definition}
 
@@ -29,7 +25,7 @@ A \emph{cellular automata} (CA) is a mathematical model that
 consists of a discrete lattice of sites  and a value, the state, that is
 updated in a sequence of subsequents discrete timestamps (steps) according to some  rules that depend on a neighbor sites of the cell. Hence CA describe systems whose the overall behavior and evolution may be exclusively described on the basis of local interactions\cite{wolfram1984}, property also called \textit{centrism}.
 The most stringent and typical characteristic of the CA model is the restriction
-that the local function does not depend on the time $t$ or the cell site $i$: a cellular automaton has homogeneous space and time behavior. It is for this reason that ca are sometimes referred to as \textit{shift-dynamical} or \textit{translation invariant} systems. From another point of view we can say that in each lattice site resides a  deterministic finite (state) automaton (DFA)\cite{Hopcroft:2006:IAT:1177300} that take as input only the states of the cells in its neighborhood (see \ref{amod3Automata} and section\ref{DFA}).
+that the local function does not depend on the time $t$ or the cell site $i$: a cellular automaton has homogeneous space and time behavior. It is for this reason that CA are sometimes referred to as \textit{shift-dynamical} or \textit{translation invariant} systems. From another point of view we can say that in each lattice site resides a  deterministic finite (state) automaton (DFA)\cite{Hopcroft:2006:IAT:1177300} that takes as input only the states of the cells in its neighborhood (see Figure \ref{amod3Automata} and Section \ref{DFA}).
 
 \subsection{Cellular space dimension and geometry}
 The cellular space is a \emph{discrete} $d$-dimensional lattice of sites (see
@@ -37,7 +33,7 @@ figure \ref{spazioCellulare}).
 For $1D$ automaton the only way to discretize the space is in a one-dimensional
 grid. For automaton with dimensionality higher than 1 the shape of each cell can
 be different than squared. In $2D$ tessellation for example, each cell can be
-hexagonal or triangular, and each tessellation presents its own advantages and disadvantages. For instance the squared can be easily visualized on a screen as each cell is easily mapped onto a pixel.}, but may present problems of anisotropy for some kind of fluid simulations as in the case of the \textit{HPP} model for fluid simulation\cite{Frisch1986}. An Hexagonal tessellation can solve the anisotropy problem\cite{wolfram1986} but presents obvious graphical challenges. Often, to avoid complications due to a boundaries, periodic boundary conditions are used, so that a two-dimensional grid is the surface of a torus as shown in Figure \ref{torus}.
+hexagonal or triangular, and each tessellation presents its own advantages and disadvantages. For instance the squared can be easily visualized on a screen as each cell is easily mapped onto a pixel, but may present problems of anisotropy for some kind of fluid simulations as in the case of the \textit{HPP} model for fluid simulation\cite{Frisch1986}. An Hexagonal tessellation can solve the anisotropy problem\cite{wolfram1986} but presents obvious graphical challenges. Often, to avoid complications, periodic boundary conditions are used, so that for instance, a two-dimensional grid is the surface of a torus as shown in Figure \ref{torus}.
 
 \subsection{Neighborhood}
 The evolution of a cell's state is function of the states of the neighborhood's
@@ -50,13 +46,12 @@ properties:
   \item \textbf{Homogeneity}: it has to be the same for each cell of the
   automaton.
 \end{enumerate}
-Typically, the neighborhood of a cell ``surrounds'' the cell itself. For $1D$ cellular automata, neighborhood are identified with a number $r$ called
-\textit{radius}\cite{wolfram1983}. A $r=2$ identifies
+Typically, the neighborhood of a cell \textit{``surrounds''} the cell itself.
+For $1D$ cellular automata the neighborhood is identified by a number $r$ called \textit{radius}\cite{wolfram1983}. A $r=2$ identifies
 $n=2r+1$ cells in a 1D lattice: the central cell plus the
-right and left cells. Typical 2D cellular space neighborhood are the those of
-\textit{Moore} and \textit{J. Von Neumann} neighborhood. The number of cells in the Moore neighborhood of range $r$ is the odd squares $(2r+1)^2,$ the
+right and left cells. Typical $2D$ cellular space neighborhood are the those of \textit{Moore} and \textit{von Neumann}. The number of cells in the Moore neighborhood of range $r$ is the odd squares $(2r+1)^2,$ the
 first few of which are 1, 9, 25, 49, 81, and so on as $r$ is increased.
-Von Neumann's one consist of the central cell plus the cell at north, south,
+von Neumann's one consists of the central cell plus the cell at north, south,
 east, and west of the central cell itself. Moore's ($r=1$)
 one add  the farther cells at north-east, south-east, south-west and north-west
 (see figure \ref{mooreNeigh}).
@@ -98,14 +93,11 @@ transition function, describe all possible state changes, and of the current sta
 \hline 
  \end{tabular}
 }
- \caption{Tabular representation of a DFM transition function}
+ \caption{An example of tabular representation of DFM transition function.}
  \label{tab:tabularTransitionFunction}
 \end{table} 
-It is a much more restrictive model in its computational capabilities than a Turing
-machines, for example it is possible to prove that it is not possible for a DFA to determine whether the input consists of a prime number of symbols,
-but they are still powerful enough to solve simpler problems, and hence to recognize
-simpler languages, as for example the following: $L=\{w \in \{0,1\}^*\}$, the language composed by strings with an even number of $0$ and $1$; they are only capable
-to recognize languages in the class $3$ of the \textit{Chomsky} classification\cite{Chomsky:1956}. Infact it can be proven the for each language $L$ accepted by a DFA exists a grammar $L_G$ s.t. $ L=L_G$ i.e. $L_G$ generates $L$,
+It is a much more restrictive model in its computational capabilities than the one of the Turing machines and, for example, it is possible to prove that it is impossible for a DFA to determine whether its input consists of a prime number of symbols, but, they are still powerful enough to solve simpler problems, and hence to recognize
+simpler languages, as for example the following: $L=\{w \in \{0,1\}^*\}$, the language composed by strings with an even number of $0$ and $1$; they are only capable to recognize languages in the class $3$ of the \textit{Chomsky} classification\cite{Chomsky:1956}. In fact it can be proven that for each language $L$ accepted by a DFA exists a grammar $L_G$ s.t. $ L=L_G$ i.e. $L_G$ generates $L$,
 but they fail for example, in accepting \emph{context-free} languages.
 
 Formally, a DFA is defined as a 5-tuple:
@@ -148,18 +140,19 @@ the current state $t_0$ and the current input $a$ is $\delta=(t_0,a)=t_1 $ hence
 The DFA accepts the string only if the current state is in the set of final states $F$ when it has consumed the input in its entirety.
 $s$ is not accepted by the DFA described in the Figure\ref{amod3Automata} because
 at the end of the computation the reached state is $t_1$ that is not a final state, as shown in the following execution trace:
- \[
+ \begin{equation*}
  t_0\overset{\delta(t_0,a)}
- {\longmapsto}t_{1}\overset{\delta(t_1,a)}
- {\longmapsto}t_{2}\overset{\delta(t_2,a)}
- {\longmapsto} t_{0}\overset{\delta(t_0,b)}
- {\longmapsto}t_{0}\overset{\delta(t_0,b)}
- {\longmapsto}t_{0}\overset{\delta(t_0,a)}
- {\longmapsto} t_{1}
-\]
-On the input $S^1=\{abababb\}$, instead, the DFA accepts as shown in the following execution trace:
- \[
- t_0\overset{\delta(t_0,a)}
+{\longmapsto}t_{1}\overset{\delta(t_1,a)}
+{\longmapsto}t_{2}\overset{\delta(t_2,a)}
+{\longmapsto} t_{0}\overset{\delta(t_0,b)}
+{\longmapsto}t_{0}\overset{\delta(t_0,b)}
+{\longmapsto}t_{0}\overset{\delta(t_0,a)}
+{\longmapsto} t_{1}
+ \end{equation*}
+
+On the input $S^1=\{abababb\}$, instead, the DFA accepts as shows the following execution trace (see Equation \ref{eq:dfa_execution_trace}):
+ \begin{equation}
+  t_0\overset{\delta(t_0,a)}
  {\longmapsto}t_{1}\overset{\delta(t_1,b)}
  {\longmapsto}t_{1}\overset{\delta(t_1,a)}
  {\longmapsto} t_{2}\overset{\delta(t_2,b)}
@@ -167,11 +160,14 @@ On the input $S^1=\{abababb\}$, instead, the DFA accepts as shown in the followi
  {\longmapsto}t_{0}\overset{\delta(t_0,b)}
  {\longmapsto}t_{0}\overset{\delta(t_0,b)}
  {\longmapsto}\mathbf{t_{0}}
-\]
+ \caption{}
+\label{eq:dfa_execution_trace}
+ \end{equation}
+
 \begin{figure}
 \begin{center}
   \includegraphics[scale=0.17]{./images/CA_FDM/amod3Automata}
-  \caption[Graph representation of a DFA.]{Graph representation of a DFA an that accepts the following language: $\{b^*ab^*ab^*a\}$.}
+  \caption[Graph representation of a DFA.]{Graph representation of a DFA that accepts the following language: $\{b^*ab^*ab^*a\}$.}
   \label{amod3Automata}
 \end{center}
 \end{figure}
@@ -191,7 +187,7 @@ where:
   \[
   N(X,i)=\{i+\xi_0,i+\xi_2,\ldots,i+\xi_d\}
   \] where $\xi_0$ is the \textit{null vector}. $\xi_0$ ensures that the
-  cell $i$ is always in its own neighborhood.  Cell $i$ is refeered as to \emph{central cell}.
+  cell $i$ is always in its own neighborhood.  Cell $i$ is referred as to \emph{central cell}.
 
 \item Q is the finite set of states of the elementary automaton EA.
   
@@ -201,17 +197,16 @@ where:
   If there are $m$ cells in the neighborhood of the central
   cell including itself, then there are
   ${\left\vert{Q}\right\vert}^m$ possible neighborhood's
-  state configuration. It  means that there are
+  state configurations. It  means that there are
   ${\left\vert{Q}\right\vert}^{{\left\vert{Q}\right\vert}^m}$
   possible transition functions. Plus we can see that the tabular definition of
   the next-state function is unsuitable for practical purpose. It should have
   $\left\vert{\sigma}\right\vert={\left\vert{Q}\right\vert}^m$
   entries, an exceedingly large number.
   \item $\tau=C \longrightarrow C \longmapsto
-  \sigma(c(N(X,i))) $ where 
-  where $C=\{c \colon Z^d
+  \sigma(c(N(X,i))) $ where $C=\{c \colon Z^d
   \rightarrow Q\}$
-  is called the set of the possible configuration and 
+  is called the set of the possible configurations and 
   $
   C(N(X,i)))$ is the set of states of the neighborhood of \textit{i}.
 \end{itemize}
@@ -282,8 +277,7 @@ $\overset{instance}{\longrightarrow}$
 \hline
 \end{tabular}
 \end{table}
-Wolfram's code\cite{wolfram1983,wolfram2002} can be is easy to determine given that 
-it is possible to sort neighborhoods patters in non-decreasing order (if interpreted as $3$-bits) i.e. $(111=7),(110=6),(101=5)$ etc. using the following procedure:
+Wolfram's code\cite{wolfram1983,wolfram2002} is easy to determine given that it is possible to sort neighborhoods patters in non-decreasing order (if interpreted as $3$-bits) i.e. $(111=7),(110=6),(101=5)$ etc. using the following procedure:
 \begin{enumerate}
   \item Rules are sorted according to the neighborohood
   \item For each configuration, the state which the given cell will take in the subsequent iteration, is specified
@@ -391,8 +385,8 @@ Phase transition and emergent computation - pag.13}).
 
 
 Langton in his famous paper, \textit{Computation at the edge of chaos: phase
-transition and emergent computation}\cite{Langton1990},was able to
-identify, simply parametrizing the rule space, the various CA classes, the
+transition and emergent computation}\cite{Langton1990}, was able to
+identify, simply parameterizing the rule space, the various CA classes, the
 relation between them and to ``couple'' them with the classical complexity classes.
 He introduced the parameter $\lambda$\cite{LangtonThesis1990} that, informally, is simply
 the fraction of the entries in the transition rule table that are mapped to the
@@ -416,7 +410,7 @@ behaviors-Wolfram's classes.}\label{lambdaWolframClass}
 Langton's major finding was that a simple measure such as it correlates with the
 system behavior: as it goes from $0$ to $ 1-\frac{1}{K}$, the most
 homogeneous and the most heterogeneous rules table scenario, respectively, the average
-behavior of the system goes from freezing to periodic patterns to chaos and functions with an average value of $\lambda$ are being on \emph{on the edge}\cite{Langton1990}(see Figure \ref{lambdaWolframClass}).
+behavior of the system goes from freezing to periodic patterns to chaos and functions with an average value of $\lambda$ are being \emph{on the edge}\cite{Langton1990}(see Figure \ref{lambdaWolframClass}).
 \citeauthor{Langton1990} studied a entire family of totalistic CA with $k=4
 $ and $N=5$ and having $\lambda$ varying in $[0,0.75]$. He was able to determine that values
 of $\lambda\approx0.45$ raise up to class 4 cellular automata.
@@ -435,7 +429,7 @@ form of signals over arbitrarily long distance
 	the modification of one or more signals.
 \end{description}
 Storage is coupled with less entropy of the system, but transmission and
-modification are not. Few entropy is associated with CA of class 1 and 2 while
+modification are not. A little entropy is associated with CA of class 1 and 2 while
 higher entropy with class 3. Class 4 is something in between, the cells cooperate
 and are correlated to each other, but not too much otherwise they would be overly
 dependent with one mimicking the other. Moreover they are very dependent to the initial
@@ -449,7 +443,7 @@ But they have proved to be a good tool to study under which condition a
 physical system expose the basic operations 
 to  support computation in all its aspects and requirements. Game of life is a famous 2D
 cellular automaton of the '70s well studied for its universal
-computation capacity, which has been perhaps proved.
+computation capacity, which has been proved indeed.
 
 \subsection{Definition} 
 The Game of Life (GOL) is totalistic CA.
@@ -474,13 +468,13 @@ the cellular space, so that each new configuration depends on the
 one at the current step. The rules continue to be applied
 repeatedly to create further generations.
 
-Formally the Game of Life automaton is be defined as follows:
+Formally the Game of Life automaton is defined as follows:
 $$Life = < R, X, Q, \sigma >$$ where:
 \begin{itemize}
 	\item $R$ is the set of cells, forming a two-dimensional toroidal cellular space. A generic
 	cell in $R$ is individuated by means of a pair of integer
 	coordinates $(i, j)$ s.t. $0 \leq i < i_{max}$ and $0 \leq j <
-	j_{max}$ where $i_{max},j_{max}$ are the sizes of $R$ in the horizonthal and vertical directions, respectively.
+	j_{max}$ where $i_{max},j_{max}$ are the sizes of $R$ in the horizontal and vertical directions, respectively.
 	The first coordinate, $i$, represents the row, while
 	the second, $j$, the column. The cell at coordinates $(0,0)$ is
 	located at the top-left corner of the computational grid
@@ -491,7 +485,7 @@ $$Life = < R, X, Q, \sigma >$$ where:
 	coordinates of neighbors of $(i,j)$ are given by:
 	$$N(X, (i, j)) = $$
 	$$= \{(i, j)+(0,0), (i, j)+(-1, 0), \dots, (i, j)+(-1,1)\} =$$
-	$$= \{(i, j), (i-1, j), \dots, (i-1,j+1)\}$$ .
+	$$= \{(i, j), (i-1, j), \dots, (i-1,j+1)\}$$
 	A subscript	can be used to index cells belonging to the
 	neighborhood. Let $|X|$ be the number of elements in X, and $n
 	\in \mathbb{N}$, $0 \leq n < |X|$; the notation
@@ -519,22 +513,22 @@ Among many patterns and blocks appearing in the GOL, one of the most common is t
 \end{figure}
 
 \subsubsection{Game of life as Turing machine}
-Every CA con be considered as a device capable of supporting computation where the
-initial configuration  encodes an input string (the source code of a program ). At
+Every CA can be considered as a device capable of supporting computation where the
+initial configuration  encodes an input string (the source code of a program). At
 some point in time, the current configuration can be interpreted as the result of the
 computation and decoded into an output string. As mentioned in Section
 \ref{DFA}, not all the computational devices have the same (computational) power.
-So which is the one of the game of life? GOL is proved to be capable of universal computation.
+So which is the one of the \textit{Game of Life}? GOL is proved to be capable of universal computation.
 Therefore the Game of life is computationally equivalent to a Turing machine\cite{berlekamp1982}.
 \begin{figure}
 \centering
-\caption[The \textit{Glider} block in the Conway's game of life.]{Glider in Conway's game of life.}
+\caption[The \textit{Glider} block in the Conway's \textit{Game of Life}.]{Glider in Conway's \textit{Game of Life}.}
 \label{fig:glider}
 \setlength{\fboxrule}{1pt}%
 \fbox{\includegraphics[width=1.0\textwidth]{./images/CA_FDM/glider}}
 \end{figure}
 This result raises a interesting issue; since the \emph{Halting
-Theorem} is undecidable i.e. no algorithm can ever decides whether a Turing Maching will accept a certain input or not,
+Theorem} is undecidable i.e. no algorithm can ever decide whether a Turing Machine will accept a certain input or not,
 the evolution of the GOL is \textbf{unpredictable} (as all the universal computational systems) practically meaning that is
 not possible to use any algorithmic shortcuts to anticipate the resulting
 configuration given an initial input. 
@@ -544,9 +538,17 @@ The most efficient way to know the outcome of an execution of GOL, is to let the
 simulation of its own behavior\cite{Ilachinski2001}
 \end{quotation}
 
+\section{Extended Cellular automata model (XCA)}
+The Extended Cellular Model (XCA) was introduced by \textit{G.M. Crisci et al.} in order to overcome the limitation of the classical CA method (monolithic cell state and transition function as a look-up table)  regarding the simulation of macroscopic natural systems and processes as for instance debris and lava flow, \cite{dambrosio2012,d2007parallel}, forest fire \cite{Trunfio:2011:NAS:2043635.2043641}, soil erosion/degradation by rainfall \cite{Ambrosio200133} and water flux in unsaturated soils \cite{Mendicino:2006}.
+The main difference of XCA compared to CA are:
+\begin{itemize}
+		\item the state of the cell $Q$ is subdivided in $r$ smaller components, the substates, each representing a particular feature of the phenomenon to be modeled (e.g. for lava flow models, cell temperature and lava quantity) and relevant to the evolution of the system. The  overall global state of the cell is then defined as the Cartesian product of all substates $Q= Q_1 \times Q_2 \times \ldots \times Q_r$.
+		\item the transition function $\tau=\{\tau_1, \ldots, \tau_s\} $ is also decomposed into \textit{elementary processes}, in turn further splitted into \textit{local interaction} which accounts for the interactions with neighboring cells  and \textit{internal transformation} which model the changes in cell state that are not consequence of any external interaction with neighboring cells. 
+		\item A set of parameters, $P=\{p_1,p_2,\ldots,p_p\}$ is furthemore considere, which allow to \textit{tune} the the CA  for reproducing different dynamical behaviors of the phenomenon of interest (e.g. lava solidification threshold and density, or the \textit{Stephen-Boltzmann} constant).
+		\item a subset $E = E_1 \cup E_2 \cup \ldots \cup E_l \subseteq R$ of the cellular space $R$ that is subject to \textit{external influences} (e.g. lava craters) is specified by a supplementary function $\gamma = \{\gamma_1, \gamma_2,\ldots,\gamma_t\}$ External influences model those kind of features that are not easily described in term of internal transformation or local interactions.
+\end{itemize} 
 
-
-\section{Extension of the Cellular automata model - Probabilistic CA}
+\section{Probabilistic CA}
 If some of the assumptions of the ordinary CA characterization are relaxed interesting results are obtained.
 As an example, the following are extensions that have proved to be useful in many cases: \textit{asynchronous update}, \textit{non-homogenous cellular space and neighborhood} or  transition function that depends on the coordinates of a cell. An interesting class of CA is obtained when the transition function is based on some stocastic process. 
 Probabilistic CA\cite{MAIRESSE201442} have a single key difference w.t.r. to ordinary CA i.e. the transition function $\sigma$ is a stochastic-function that decides the next-state according to some probability distributions.
@@ -563,7 +565,7 @@ future state of  a system is conditionally independent from the past.
 The property of this kind of  processes allows  future probabilities of an event to be
 determined from the probabilities of events at the \textit{current time} only.
 In PCA analysis, homogeneous Markov chains are adopted because each cell has a
-discrete set of possible value for the status variable.
+discrete set of possible values for the status variable.
 In terms of such  type of chain a CA is a process that starts in one of these states and moves
 successively from one state to another. If the chain is currently in state
 $s_i$, than it evolve to state $s_j$ at
