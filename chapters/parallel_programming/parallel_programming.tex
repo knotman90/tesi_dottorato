@@ -1,7 +1,7 @@
 \chapter{Parallel Computing}
 \label{ch:parallel_computing}
-\dictum[Immanuel Kant]{%
-	Sapere aude! Habe Mut, dich deines eigenen Verstandes zu bedienen! }%
+\dictum[Julius Caesar]{%
+	Divide ut regnes.}%
 \vskip 1em
 %\section{Introduction}
 \lettrine[lines=3,lhang=0.33,lraise=0,loversize=0.15]{T}{his} chapter briefly introduces  some of  the main concepts and technologies of parallel computing used thoughout this work.
@@ -16,13 +16,13 @@ Coupled with increasing clock speeds, CPU performance has until recently scaled 
 But it is important to acknowledge that this trend cannot be sustained indefinitely or forever.
 Increased clock speed and transistors number require more power and consequently, generate more heat.
 Although the trend for transistor densities has continued to increase steadily, clock speeds began to slow circa 2003 at about $3$GHz.
-If we apply Moore’s law type thinking to clock-speed performance, it should be able to buy at least $10$GHz CPUs. 
+If Moore’s law type of thinking is applied to clock-speed performance, it should be able to buy at least $10$GHz CPUs. 
 However, the fastest CPU available at the time of writing is $\approx 4.0 GHz$.
 \begin{figure}[!htbp]
 		\hspace*{-1.8cm}
 \centering
 \includegraphics[width=1.2\textwidth]{./images/parallel_programming/moore_law2}
-\caption[Moore's Law regarding CPUs transistors number.]{Moore's Law regarding CPU transistors number. \textsc{Intel} co-founder, Gordon Moore in 1695 observed that number of transistors in integrated circuits doubled each year. Although the pace has slowed in recent times, the number of transistors per square centimeter has since doubled approximately every 18 months. This is used as the current definition of the law. It is expected to hold true until 2020-2025. Note the logarithmic vertical scale. The almost linear trend correspond to an exponential growth.
+\caption[Moore's Law regarding CPUs transistors number.]{Moore's Law regarding CPU transistors number. \textsc{Intel} co-founder, Gordon Moore in 1965 observed that number of transistors in integrated circuits doubled each year. Although the pace has slowed in recent times, the number of transistors per square centimeter has since doubled approximately every 18 months. This is used as the current definition of the law. It is \textit{expected} to hold true until 2020-2025. Note the logarithmic vertical scale. The almost linear trend correspond to an exponential growth.
 }
 \label{fig:moore}
 \end{figure}
@@ -36,7 +36,7 @@ Even smart-phones are proper multi-core machines; for instance, the popular mobi
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=1.0\textwidth]{./images/parallel_programming/temperatureCPU}
-\caption[Temperature density of CPUs over the years.]{Integraed Circuits power density over the years. Note  that since 2000s power density is higher in CPUs than in nuclear reactors. This clearly shows that this trend is not sustainable.}
+\caption[Temperature density of CPUs over the years.]{Integrated circuits power density over the years. Note  that since 2000s power-density is higher in CPUs than in nuclear reactors. This clearly shows that this trend of growth is not sustainable.}
 \label{fig:tempCPU}
 \end{figure}
 Lot of efforts have been put during these years in order to mitigate and overcome the limits that the sequential computer architecture has which its three main components impose:
@@ -64,7 +64,7 @@ Flynn's classification is based on the notion of  \textit{stream of information}
 Two types of information flow into the processor: \textbf{instructions} and \textbf{data}.
 Conceptually they can be separated into two independent streams.
 A coarse classification can be made taking in account only the number of streams of both instructions and
-data that an architecture can manage concurrently (see figure \ref{fig:parallelClassification1}).
+data that an architecture can manage concurrently (see Figure \ref{fig:parallelClassification1}).
 Flynn's taxonomy classifies machines according to whether they have one or more streams of each type.
 \begin{table}
 		\caption[Flynn's Parallel architecture taxonomy]{Flynn's Parallel architecture taxonomy.}
@@ -92,9 +92,9 @@ Data parallelism. The same instruction is executed on a batch of different data.
 The control unit is responsible for fetching and interpreting one instruction at a time.
 When it encounters an arithmetic or an other data ALU instruction, it broadcasts the instruction
 to all processing elements (PE), which then all perform the same operation in unison.
-For example, the instruction might be \texttt{add R3,R0.}.
+For example, the instruction might be \framebox{\texttt{add R3,R0}}.
 Each PE would add the contents of its own internal register R3 to its own R0.
-This is how stream processors work, for example, data elements are distributed across all available data memories. and the same instruction executed on each PE.
+This is how stream processors work, for example, data elements are distributed across all available data memories and, the same instruction executed on each PE.
 \texttt{SSE} and \texttt{AVX} extensions to the $x86$ processors family is an example of such parallelism.
 One single instruction can operate on up to $512$ byte of data (see Figure \ref{fig:SSEvectorization} and Listing \ref{code:avxvectorization}).
 SIMD exploits \textbf{data and spatial parallelism} in a synchronous manner.
@@ -149,14 +149,13 @@ MIMD architecture can be further divided by considering the  layout organization
 \begin{description}
 	\item [Shared Memory (modern CPUs)] where each processors shares the same memory address space and are interconnected by shared buses. 
 	Shared memory architecture are usually shipped as \textit{Symmetric Multi Processors} (SMP) since each of them is usually identical in computational and access to resources capabilities, and the OS kernel can run on any of them in contrast to \textit{Asymmetric Multiprocessor}s where there is a master-slave relationship  among the group of processors.
-	According to whether subsets of processors have a dedicated/private memory module we can categorize SM architectures in:	
+	According to whether subsets of processors have a dedicated/private memory module SM architectures can be categorized into:	
 	\begin{itemize}
 		\item UMA (Uniform Memory Access) : Identical processors with equal
 		access time to memory (see figure \ref{fig:UMA_NUMA}).
 		Also known as \textit{Cache Coherent UMA} (CC-UMA), because the
 		hardware ensures that all the processor can see a modification in memory performed by one of them.
-		\item NUMA (Non Uniform Memory Access): Usually different groups
-		 Symmetric multiprocessors (SMP), group of usually not more than 32 processors communicating via buses, are inter-connected, and processors belonging to different SMP can access the memory spaces of each others. Time for memory access is not uniform because the cost for a communication among SMP is higher than a intra-SMP one.
+		\item NUMA (Non Uniform Memory Access): Usually different several\textit{ Symmetric multiprocessors (SMP)}, group of usually not more than 32 processors communicating via buses, are inter-connected together, and processors belonging to different SMP can access the memory spaces of each others. The time required for a memory access is not uniform  because the cost for a communication among SMP is higher than a intra-SMP one.
 		 As for UMA, if a cache coherence mechanism  is present, then this architecture is called \textit{CC-NUMA}.
 		 \begin{figure}[b]
 			\caption[Shared memory architectures.]{UMA and NUMA shared memory architecture.}
@@ -177,24 +176,23 @@ MIMD architecture can be further divided by considering the  layout organization
 	\end{itemize}
 	SM architecture provides an easy perspective to memory,	data sharing across processors and parallelism since no explicit communication is involved. Memory accesses and communications are fast due to the proximity of memory to CPUs, but it is not scalable because adding more CPUs to the pool can geometrically increases the traffic on the bus and makes cache management harder. Additionally, ensuring the correctness of accesses to global memory, in order to avoid race-conditions, is up to the programmer.
 	As an example of real world SM modern processor, Figure \ref{fig:intelPhi} shows the Intel \textit{Knights Landing} architecture for the Intel Phi processor family which is armed with 72 cores, $8$ billions transistors at \SI{14}{\nano\metre}, AVX-512 and is able to executes 240 threads simultaneously.
-	Coupled with this architecture many software model can be used to program
-	SM machines. Among all, the most used are:
+	Many software models (usually tightly coupled with this architecture) can be used to program SM machines. Among all, the most used are:
 	\begin{itemize}
 		\item Threads; Lightweight processes but with same PID (e.g. pthreads)
 		\item Compiler preprocessor directives; A standard language with preprocessor directives to the compiler that is capable of converting the serial program in a parallel one without any (or very few) interventions or hints by the programmer (e.g. \texttt{OpenMP}, introduced in Section \ref{sec:openmp}).		
 	\end{itemize}	
 	\item [Distributed Memory] 	Different systems, and hence, different multiprocessors connected via some kind of network (see Figure \ref{fig:distribuiteMemory}), usually high speed networks such as gigabit \textsc{Ethernet} \cite{Spurgeon:2000:EDG:336070}, \textsc{InfiniBand} \cite{Shanley:2002:INF:579371} and \textsc{Myrinet} \cite{Boden:1995:MGL:623261.623898}, where the memory space in one processor does not map to another's one.
 	Each of them operate independently on its memory address, so changes are not reflected on memory spaces of the others. Explicit communication is required between processors with synchronization under the programmer responsibility.
-	This architecture  is very scalable and there is not  overhead in maintaining	cache coherency. 	
+	This architecture  is very scalable and there is no  overhead in maintaining	cache coherency. 	
 	The most used paradigm for programming distributed memory machines is the
 	message passing for which the \textit{Message Passing Interface} (\texttt{MPI}\footnote{\url{http://www.mpi-forum.org/}}) \cite{Forum:1994:MMI:898758,Gropp:1999:UMA:555151} is the \textit{de facto} industrial and academic standard.
 	
-	\item[Hybrid Systems] As the name suggest a system belonging to this category, is a mix of architectures. Only a limited number of  processors, say $N$, have access to a common amount of shared memory. They are  inter-connected to the others groups via network. Each group  usually is an agglomerate of many computing cores (SMP).
+	\item[Hybrid Systems] As the name suggests a system belonging to this category, is a mix of architectures. Only a limited number of  processors, say $N$, have access to a common amount of shared memory. They are  inter-connected to the others groups via network. Each group  usually is an agglomerate of many computing cores (SMP).
 		Hybrid systems of the kind described in this section are usually programmed using a combination of the message passing model (\texttt{MPI}) with the threads model (\texttt{OpenMP}) in which:
 		\begin{itemize}
 			\item threads perform computationally intensive task, using local
 			\textbf{on-node} memory space, taking advantage of spatial locality of data (via vectorization/AVX for instance) and 
-			\item communications between processes on different nodes occurs over network using \texttt{MPI} (see figure \ref{fig:hybridMemory}).
+			\item communications between processes on different nodes occur over network using \texttt{MPI} (see figure \ref{fig:hybridMemory}).
 	\end{itemize} 
 \end{description}
  
@@ -213,6 +211,8 @@ MIMD architecture can be further divided by considering the  layout organization
  		\label{fig:distribuiteMemory}
  		\includegraphics[width=0.92\textwidth]{./images/parallel_programming/distribuitedMemory}
  	\end{subfigure}%
+ \caption[Hybrid and distributed memory architectures.]{Hybrid (\ref{fig:hybridMemory}) and distributed memory (\ref{fig:distribuiteMemory}) architectures.}
+ \label{fig:hybrid_distributed}
  \end{figure}
 
 \begin{figure}
@@ -224,7 +224,7 @@ MIMD architecture can be further divided by considering the  layout organization
 
 
 
-\section{The \texttt{OpenMP} Parallel Computing Paradigm for Shared Memory Computers}
+\section{The OpenMP Parallel Computing Paradigm for Shared Memory Computers}
 \label{sec:openmp}
     \texttt{OpenMP} is a portable API providing compiler directives and library
     functions for shared memory parallel programming in \texttt{C/C++} and
@@ -261,7 +261,7 @@ MIMD architecture can be further divided by considering the  layout organization
     threads on demand, by using the \textit{dynamic} scheduling clause. In this
     manner, when a thread terminates processing its current chunk, it requests for a new one, usually resulting in better performance in the case where load is not well balanced across chunks.
     Scheduling can be specified using the \texttt{schedule} keyword in the \texttt{\#pragma omp for} directive.
-    Static scheduling can be non-optimal in the case when different iteration take different amount of time to be executed. As an example consider the program in Listing \ref{code:scheduling_omp} in which each loop iteration causes the executing thread to sleep for a number of seconds equals to the number of the iteration. 
+    Static scheduling can be non-optimal in the case when, for instance, different iterations take a different amount of time to be executed. As an example consider the program in Listing \ref{code:scheduling_omp} in which each loop iteration causes the executing thread to sleep for a number of seconds equals to the number of the iteration. 
     \lstset{language=[OpenCL]C,
     	caption={Scheduling in OpenMP example. Note that specifying \textbf{static scheduling } is not needed since it is the default setting.}, 
     	label={code:scheduling_omp}, 
@@ -345,12 +345,12 @@ omp_destroy_lock(&writelock);
     		\rowcolor{gray!35}	
     		\heading{\textbf{Scheduling Kind}} &  \heading{\textbf{Description}} \\ \hline
     		\rowcolor{gray!15}
-    		\texttt{\textbf{static}} & The loop is divided into equal-sized chunks of iterations. By default, chunk size is $\frac{iterations}{number\_of\_threads}$. If the chunk size is set to $1$, iteration are executed by the threads in a interleaved fashion.\\ \hline
+    		\texttt{\textbf{static}} & The loop is divided into equal-sized chunks of iterations. By default, chunk size is $\frac{iterations}{number\_of\_threads}$. If the chunk size is set to $1$, iterations are executed by the threads in a interleaved fashion.\\ \hline
     		\rowcolor{gray!5}
-    		\texttt{\textbf{dynamic}} & chunk-sized block of iterations are internally queued. When a thread is ready to execute some work, it retrieves the next block  from the top of the queue. Note that by default chunk size is $1$. Managing the queue and assigning work to  to threads comes with an arrached overhead.\\ \hline
+    		\texttt{\textbf{dynamic}} & chunk-sized block of iterations are internally queued. When a thread is ready to execute some work, it retrieves the next block  from the top of the queue. Note that by default chunk size is $1$. Managing the queue and assigning work to threads comes with an arrached overhead.\\ \hline
     		
     		\rowcolor{gray!15}
-    		\texttt{\textbf{guided}} & similar execution policy  to \texttt{dynamic} but che chunk size decreases over time to better handle load imbalance between iterations. In this cake the optional parameter of the schedule construct specifies the minimum chunk size. By default it is equal to $\frac{iterations}{number\_of\_threads}$\\ \hline
+    		\texttt{\textbf{guided}} & similar execution policy  to \texttt{dynamic} but the chunk size decreases over time to better handle load imbalance between iterations. In this case the optional parameter of the schedule construct specifies the minimum chunk size. By default it is equal to $\frac{iterations}{number\_of\_threads}$\\ \hline
     		
     		\rowcolor{gray!5}
     		\texttt{\textbf{auto}} & The compiler is free to decide any possible mapping of iteration to threads.\\ \hline
@@ -363,15 +363,15 @@ omp_destroy_lock(&writelock);
     	\label{tab:scheduling_policies}
     \end{table}
     
-    \subsection{General Purpouse GPU Computing - GPGPU}
+    \subsection{General Purpose GPU Computing - GPGPU}
     The concept of many processors working together in concert is not new in computer graphics. Since the demand generated by entertainment started to grow, multi-core hardware emerged in order to take advantage of the high amount of parallel work available in the process of generating and rendering and manipulation of $3D$ images.
-    The main goal of the computer graphics is to render and then display $3D$ images onto the screen, which translates to refreshing pixels at rate of sixty or more $\si{Hz}$ \cite{Akenine-Moller:2002:RR:553838}.
+    The main goal of the computer graphics is to render and then display $3D$ images onto the screen, which translates to refreshing pixels at rate of 60 or more $\si{Hz}$ \cite{Akenine-Moller:2002:RR:553838}.
     Each pixel has to be processed goes through a number of stages, and this process is commonly referred as to the \emph{graphic processing pipeline}.
     The peculiarity of this task is that the computation of each pixel is independent of the other's.
     This specific task is thus suitable for distribution over parallel processing elements as it can be categorized as  a \textbf{embarassingly, perfect} or \textbf{pleasingly} \textit{parallel} problem\cite{Foster:1995:DBP:527029} (see Section \ref{sec:opencal_julia} and Listing \ref{code:julia_set} at pages \pageref{sec:opencal_julia} and \pageref{code:julia_set} respectively, for an example of a perfectly parallel problem).
-    To support extremely fast processing of large graphics data sets (which mainly consists of vertices and fragments), modern GPUs employ a stream processing model with parallelism.
+    To support extremely fast processing of large graphics data sets (which mainly consist of vertices and fragments), modern GPUs employ a stream processing model with parallelism.
     The game industry boosted the development of  GPUs, that offer today greater performance than CPUs and are improving faster too as shown in Figures  \ref{CPU-VS-GPU_GFLOP} and \ref{CPU-VS-GPU_MEMORY}.
-    The reason behind the discrepancy in floating-point capabilities between CPU and  GPU is that GPUs are designed such that more transistors are devoted to data crunching and processing rather than caching, flow control, branch prediction, etc..
+    The reason behind the discrepancy in floating-point capabilities between CPU and  GPU is that GPUs are designed such that more transistors are devoted to data crunching and processing rather than caching, flow control, branch prediction, etc.
     Also note that memory bandwith is still one of the main advantages of GPU and Xeon Phi over CPUs architectures. The gap is getting wider thanks also to the introduction of High Bandwidth Memories (HBM), stacked memory by NVIDIA and MCDRAM for Xeon Phi \cite{Sodani:7477467,Jun:7939084}. 
     \begin{figure}[!htbp]
     	\centering
@@ -385,8 +385,8 @@ omp_destroy_lock(&writelock);
     	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/cpu-vs-gpu}
     	\caption[Performance comparison (FLOPs) between CPU and modern accelerators (\textsc{NVIDIA}, \textsc{Intel} and \textsc{AMD})]{Performance comparison (FLOPs) between CPU and modern accelerators (\textsc{NVIDIA}, \textsc{Intel} and \textsc{AMD}) over time. When Double precision is considered, relative performance between the considered hardware does not change. Higher is better.}\label{CPU-VS-GPU_GFLOP}
     \end{figure}
-    Nowadays, GPU are widely used for general purpouse computing. The Top $500$ supercomputers  ranking \footnote{\url{http://www.top500.org/statistics/list/}}  \cite{Strohmaier:2006:TS:1188455.1188474} is dominated by massively parallel computer, built on top of superfast networks and millions of sequential CPUs working in concert.
-    But as the industry is developing even more powerful, programmable and capable GPUs in term of \si{\giga FLOPS},  we see that they begin to offer advantages over traditional cluster of computers in terms of economicity and scalability as depicted in Figure \ref{gflops-per-watt-sp}.
+    Nowadays, GPU are widely used for general purpose computing. The Top $500$ supercomputers  ranking \footnote{\url{http://www.top500.org/statistics/list/}}  \cite{Strohmaier:2006:TS:1188455.1188474} is dominated by massively parallel computer, built on top of superfast networks and millions of sequential CPUs working in concert.
+    But as the industry is developing even more powerful, programmable and capable GPUs in term of \si{\giga FLOPS}, they begin to offer advantages over traditional cluster of computers in terms of economicity and scalability as depicted in Figure \ref{gflops-per-watt-sp}.
         \begin{figure}[!htbp]
     	\centering
     	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/gflops-per-watt-sp}
@@ -407,11 +407,11 @@ omp_destroy_lock(&writelock);
      Figure \ref{fig:graphicPipeline} shows the important key steps that make up the graphic pipeline and for which the GPU hardware has been specialized for years. The pipeline works taking as input graphics primitives, each stage forward its results on to the next stage.
     \begin{itemize}
     	\item     The first stage of the pipeline is the \textit{vertex shader}. The
-    	input to this phase is a list of vertices in object space coordinate which are then converted to world coordinates (applying the \textit{model and view matrices}).
-    	\item  Shape assembly is performed where vertices are grouped together by forming graphics primitives, i.e. lines, point, polygons, triangles, tringles strips etc. If enabled, lighting calculation are also performed for each vertex.
-    	\item   The following step, the \textit{geometry shader} is optional in the \texttt{openGL} pipeline and can be used to produce or delete primitives. One of the most common use of this shader is in reducing the communication between the GPU and the CPU. For instance one can only pass to the graphic pipeline a list of vertices for drawing cubes, and produce the primitives for them only when the the geometry shader is executed, reducing the amount of information exchanged between the CPU and the GPU.
-    	\item   Each of the (from the now final list of) primitives is scan-converted or rasterized generating a set of fragments in screen space for the visible only part of the shapes. Each fragment stores the state information needed to update a pixel and are obtained by interpolating per vertex attributes coming from the geometry shader. For instance, each vertex of a triangle end up having its color changed based on the the color of its neighbors. 
-    	\item  In the \textit{fragment  shader} is used to calculate the final color of each individual fragment. Texture coordinates of each fragment are used to fetch colors of the appropriate texels (texture pixels) from
+    	input to this phase is a list of vertices in object space coordinates which are then converted to world coordinates (applying the \textit{model and view matrices}).
+    	\item  Shape assembly is performed where vertices are grouped together by forming graphics primitives, i.e. lines, point, polygons, triangles, tringles strips etc. If enabled, lighting calculation is also performed for each vertex.
+    	\item   The following step, the \textit{geometry shader} is optional in the \texttt{openGL} pipeline and can be used to produce or delete primitives. One of the most common use of this shader is in reducing the communication between the GPU and the CPU. For instance one can only pass to the graphic pipeline a list of vertices for drawing cubes, and produce the primitives for them only when the geometry shader is executed, reducing the amount of information exchanged between the CPU and the GPU.
+    	\item   Each of the (from the now final list of) primitives is scan-converted or rasterized generating a set of fragments in screen space for the visible only part of the shapes. Each fragment stores the state information needed to update a pixel and are obtained by interpolating per vertex attributes coming from the geometry shader. For instance, each vertex of a triangle end up having its color changed based on the  color of its neighbors. 
+    	\item  The \textit{fragment  shader} is used to calculate the final color of each individual fragment. Texture coordinates of each fragment are used to fetch colors of the appropriate texels (texture pixels) from
     	one or more textures. Further interpolation may also be
     	performed to determine the ultimate color for the fragment.
     	\item Finally, various tests (e.g., \textit{depth} and \textit{alpha}, etc.) are conducted to determine whether or how the fragment should be used to update a pixel in the frame buffer.    
@@ -448,8 +448,8 @@ omp_destroy_lock(&writelock);
     the tasks to be executed in parallel. Each parallel task is
     implemented as an \texttt{OpenCL} \emph{kernel}, which is a special C
     function, which is compiled at runtime for each specifically for and deployed to a compliant device, or to different ones, for execution. The execution model is similar to the one of CUDA (CUDA and OpenCL share a similar programming model and underlying hardware architecture, even if a quite different terminology is adopted), where each kernel is executed by \textbf{threads}, the smallest execution entity, also called \textbf{work-items}, which are grouped into \textbf{work-groups}. A work-item is executed by one or more processing elements as part of a work-group executing on a compute unit. A work-item has to be considered a thread in terms of its control flow and memory model, but the hardward and the compiler can run multiple work-items on a single thread. As an example one can imagine that work-items computation can be carried out on lanes of a SSE vector. 
-    A work-group is a collection of related work-items that execute on a single compute unit. A work group must map to a single compute unit (a core on a CPU, or using CUDA terminology a streaming multiprocessor). 
-    Work-groups can sunchronize internally between work-items using local or global memory or barriers but they cannot synchronize with each other, making impossible building locking and synchronization primitives (among work-groups).
+    A work-group is a collection of related work-items that are executed on a single compute unit. A work group must map to a single compute unit (a core on a CPU, or using CUDA terminology a streaming multiprocessor). 
+    Work-groups can synchronize internally between work-items using local or global memory or barriers but they cannot synchronize with each other, making impossible building locking and synchronization primitives (among work-groups).
     The  locality of execution of work-items  leads to more efficient synchronization, and makes possible to have access to user managed local fast memories and caches (similar to CPU L1 caches) in order to makes communication fast.    
     A work-item is distinguished from other executions within the collection by its \textbf{global ID} and \textbf{local ID} (relative to the parent worl-group).
     
@@ -463,7 +463,7 @@ omp_destroy_lock(&writelock);
     \begin{figure}
 	\centering
 	\includegraphics[width=1.0\textwidth]{./images/parallel_programming/openCL}
-	\caption[\texttt{OpenCL} platform abstraction.]{\texttt{OpenCL} platform abstraction. A device is any supported device including GPU, CPU, FPGAs, etc.. Command queues are executed concurrently for each device and can be synchronized by means of API calls.}
+	\caption[\texttt{OpenCL} platform abstraction.]{\texttt{OpenCL} platform abstraction. A device is any supported device including GPU, CPU, FPGAs, etc. Command queues are executed concurrently for each device and can be synchronized by means of API calls.}
 	\label{fig:openCL_platform}
 \end{figure}
 
@@ -565,7 +565,7 @@ omp_destroy_lock(&writelock);
     \begin{description}
     	\item [Contexts creation:]\hfil \\ The first step in every \texttt{OpenCL} application is to create a context and associate to it a number of devices, an available \texttt{OpenCL} platform (there might be present more than one implementation). Each subsequent operation (memory management, kernel compiling and running), is performed within \emph{this} context. In the example \ref{code:openCLContext} a context associated with the CPU device and the first platform returned by OpenCL is created.
     	\lstset{language=[OpenCL]C,
-    		caption={\texttt{OpenCL} Context Creation.}, 
+    		caption={\texttt{OpenCL} context creation.}, 
     		label={code:openCLContext}, 
     		basicstyle=\ttfamily,
     		keywordstyle=\color{ultramarine}\ttfamily,
@@ -589,7 +589,7 @@ omp_destroy_lock(&writelock);
     	check_error(err, "Conext::Context()"); 
     	\end{lstlisting}
 
-    	\item [Memory buffers creation:]\hfil \\ \texttt{OpenCL} buffer objects on which kernels operates are created at this point using an available and valid context object as shown in Listing \ref{code:opencl_buffer_creation}. 
+    	\item [Memory buffers creation:]\hfil \\ \texttt{OpenCL} buffer objects on which kernels operate are created at this point using an available and valid context object as shown in Listing \ref{code:opencl_buffer_creation}. 
     	\lstset{language=[OpenCL]C,
     		caption={\texttt{OpenCL} context creation}, 
     		label={code:opencl_buffer_creation}, 
@@ -635,18 +635,15 @@ omp_destroy_lock(&writelock);
     	
     	\item [Kernel launch:]\hfil \\
     	In order a kernel to be executed a \emph{kernel object} must be created.
-    	For a given \emph{Program} there would exists more than one entry point
-    	(identified by the keyword \emph{\_\_kernel}. We choose one of them for
-    	execution specifying its name in the kernel object constructor.    	
-    	 We effectively execute the kernel putting it into a 
-    	\emph{cl::CommandQueue}. Given a cl::CommandQueue queue, kernels can be queued
+    	For a given \emph{Program} there would exists more than one entry point, identified by the keyword \emph{\_\_kernel}. One of them is choosen for execution specifying its name in the kernel object constructor.    	
+    	The kernel is eventually effectively executed by putting it into a 
+    	\emph{cl::CommandQueue}. Given a \textit{cl::CommandQueue} queue, kernels can be queued
     	using \textit{queue.enqueu\-NDRangeKernel} that queues a kernel on
     	the associated device.
-    	Launching a kernel need some parameters (similar to launch configuration in
+    	Launching a kernel requires some parameters (similar to launch configuration in
     	\texttt{CUDA}) to specify the work distribution among
     	work-groups and their dimensionality and size of each dimension (see listing
-    	\ref{code:openCLQueuCommand}). We can test the status of the execution by
-    	querying the associated \emph{event}.
+    	\ref{code:openCLQueuCommand}). The status of the execution can be tested by querying the associated \emph{event}.
     	    \lstset{language=[OpenCL]C,
     		caption={\texttt{OpenCL} command queue definition and kernel enqueuing.}, 
     		label={code:openCLQueuCommand}, 

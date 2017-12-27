@@ -11,6 +11,8 @@
 ]{scrreprt}
 
 
+
+
 \newcommand{\rulesep}{\unskip\ \vrule\ }
 \usepackage{etex}
 \reserveinserts{10}
@@ -20,6 +22,7 @@
 \usepackage[final]{pdfpages}
 
 \input{preamble/listings}
+
 \usepackage{tikz}
 \usetikzlibrary{positioning,chains,fit,shapes,calc, matrix,arrows, decorations.markings}
 % for double arrows a la chef
@@ -62,7 +65,7 @@ postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
 	\left[\vb{#1}\right]
 }
 %lettrine color
-\renewcommand{\LettrineFontHook}{\color[gray]{0.45}}
+%\renewcommand{\LettrineFontHook}{\color[gray]{0.45}}
 
 % Bibliography
 \addbibresource{main.bib}
@@ -98,9 +101,9 @@ postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
 \include{frontbackmatter/dirtytitlepage}
 \include{frontbackmatter/titlepage}
 \include{frontbackmatter/titleback}
-%\cleardoublepage\include{frontbackmatter/dedication}
-%\cleardoublepage\include{frontbackmatter/abstract}
-%\cleardoublepage\include{frontbackmatter/acknowledgments}
+\cleardoublepage\include{frontbackmatter/dedication}
+\cleardoublepage\include{frontbackmatter/abstract}
+\cleardoublepage\include{frontbackmatter/acknowledgments}
 \pagestyle{headings}
 \cleardoublepage\include{frontbackmatter/contents}
 
@@ -124,7 +127,8 @@ postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
 
 \part{Seamless Acceleration of Numerical Simulation: The \texttt{OpenCAL} framework}
 \cleardoublepage
-\include{chapters/opencal/opencal}
+%\include{chapters/opencal/opencal}
+\include{chapters/opencal/opencalv2}
 
 \cleardoublepage
 
@@ -134,6 +138,12 @@ postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
 
 \part{Other Related HPC Applications}
 \cleardoublepage
+This part of the thesis contains work that have been developed within the context of OpenCAL but has diverged over time into something self contained, and for this reason is only partially related to the content of the first part of the thesis.
+Both following Chapters, \ref{ch:bacteria} and \ref{ch:flocking}    have been originally investigated as test applications while Appendix \ref{ch:stream_compaction} as an optimization for the OpenCAL framework.
+Chapter \ref{ch:bacteria} describes an application of an early stage version of OpenCAL to the tracking of particle-like object and parallel image processing of time-lapse images.
+Chapter \ref{ch:flocking} is an application related to agents and crowd dynamics and it was an attempt to adapt the library to mesh-less spaces.
+Appendix  \ref{ch:stream_compaction} contains an algorithm which is highly optimized for new generation GPUs that have dedicated hardware for the so called \textit{ballotting} functions.
+
 \include{chapters/bacteria/bacteria}
 \cleardoublepage
 
@@ -141,9 +151,19 @@ postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
 \include{chapters/birdflocking/birdflocking}
 \cleardoublepage
 
+\cleardoublepage%
+\include{chapters/conclusion_outlook/main}
+
+\cleardoublepage%
+
 \appendix
 \cleardoublepage%
 \include{chapters/stream_compaction/stream_compaction}
+\cleardoublepage%
+
+\cleardoublepage%
+\include{chapters/appendix/tech_spec}
+
 \cleardoublepage%
 
 \cleardoublepage%
@@ -157,6 +177,6 @@ postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
 \bookmarksetup{startatroot}
 \pagenumbering{gobble}
 %\cleardoublepage\include{frontbackmatter/cv}
-%\cleardoublepage\include{frontbackmatter/publications}
+\cleardoublepage\include{frontbackmatter/publications}
 
 \end{document}

@@ -8,7 +8,7 @@ abstraction layer defining a domain specific language for Extended
 Cellular Automata and the Finite Differences method (see chapters \ref{ch:CA} and \ref{ch:FDM} at page \pageref{ch:CA} and \pageref{ch:FDM} repectively). 
 Different implementations have been developed, which allow for transparent
 parallelism and are able to exploit multicore CPUs and manycore
-devices like GPUs, thanks to the adoption of \texttt{OpenMP} and OpenCL,
+devices like GPUs, thanks to the adoption of \texttt{OpenMP} and \texttt{OpenCL},
 respectively, as well as distributed memory architectures and/or multiple GPUs concurrently.
 System software architecture is presented and the
 underlying adopted data structures and algorithms are described in
@@ -19,321 +19,243 @@ Moreover, a comprehensive study has been performed to device the best platform
 for execution as a function of numerical complexity and
 computational domain extent. Obtained results have highlighted the
 \texttt{OpenCAL} suitability for numerical models development and their execution on  the most suitable high-performance parallel computational device.
-  
+
 \section{Introduction}
 \label{sec:opencal_introduction}
- Scientific Computing \cite{golub2014scientific} is a broad and
-  constantly growing multidisciplinary research field that uses formal
-  paradigms to study complex problems and solve them through
-  simulation by using advanced computing techniques and capabilities.
-  
-   Different formal paradigms have been proposed to provide the
-  abstraction context in which problems are formalized. Partial
-  Differential Equations (PDEs) were probably the first to be largely
-  employed for describing a wide variety of phenomena. Unfortunately,
-  PDEs can be analytically solved only for a small set of simplified
-  problems \cite{Mazumder20161} and Numerical Methods have to be
-  employed to obtain approximate solutions for real life applications. Among
-  them, the Finite Differences Method (FDM) was one of the first
-  considered, still currently employed, to address a wide variety of
-  phenomena such as acoustics \cite{Chaigne19941112, Branski2014},
-  heat \cite{Rana2012212, Sahin200619}, computational fluid dynamics
-  (CFD) \cite{Chang1990317, Deng201390}, and quantum mechanics
-  \cite{Hu2015640, Farrokhabadi201467} and many others.
-  
-  
-  
-Besides other solutions proposed for numerically approximating PDEs
-  like, for instance, Finite Elements \cite{Hutton:2003} and Finite Volume Methods \cite{Moukalled:2015}, further formal paradigms were more recently proposed for modeling complex systems. Among them, Cellular Automata (CA) \cite{vonNeumann:1966:TSA:1102024} are Turing-equivalent \cite{Codd:1968:CA:1098682, Cook04a} parallel computational models. CA are widely studied from a theoretical point
-  of view \cite{Wolfram-1984, Langton-1990b, Wolfram-2002,
-    Ninagawa201542}, and their application domains vary from
-  Artificial Life \cite{Langton-1986, Beer2004309} to Computational
-  Fluid Dynamics \cite{Frish&al-1986, McNamara&Zanetti-1988,
-    Higuera&Jimenez-1989, Aidun2010439}, besides many others. See chapter \ref{ch:CA} for an extensive introduction on Cellular Automata.
-    
-Regardless from the adopted formal paradigm, the simulation of
-complex systems often requires the execution of a very large number of computer instruction and this explains why nowadays scientific computing is very oftern linked to  Parallel Computing. 
+Scientific Computing \cite{golub2014scientific} is a broad and constantly growing multidisciplinary research field that uses formal paradigms to study complex problems and solve them through simulation by using advanced computing techniques and capabilities.
 
-\texttt{OpenMP} is the  most widely adopted solution for parallel programming on shared
-  memory computers \cite{Chapman:2007:UOP:1370966}. It fully supports
-  parallel execution on multi-core CPUs and, starting from the 4.0
-  release, also includes support of accelerators like graphic
-  processing units (GPUs) or Xeon Phi co-processors. Unfortunately,
-  compiler support for the $4.0$ release is quite recent and, in
-  practice, current \texttt{OpenMP} applications mainly run on CPUs
-  \cite{Oliverio2011271, Amritkar2014501, pop:hal-00786675}. However,
-  in recent years, general purpose computing on graphic processing
-  units (GPGPU), which exploits GPUs and many-core coprocessors for
-  general purpose computation, has gained wide acceptance as an
-  alternative solution for high-performance computing, resulting in a
-  rapid spread of applications in many scientific and engineering
-  fields \cite{Owens200780}. Most implementations are currently based
-  on NVIDIA CUDA (see e.g. \cite{Blecic2013, DAmbrosio2013630,
-    DiGregorio20131183, DAmbrosio201230}), one of the first platforms
-  proposed to exploit GPUs computational power on NVIDIA hardware. An
-  open alternative to CUDA is OpenCL \cite{Stone201066}, an
-  Application Program Inferface (API) originally proposed by Apple and
-  currently managed by Khronos Group for parallel programming on
-  heterogeneous devices like CPUs, GPUs, Digital Signal Processors
-  (DSPs), and Field-Programmable Gate Arrays (FPGAs). Interest in
-  OpenCL is continuously growing and many applications can already be
-  found in literature \cite{Macri2015328, Bedorf20122825, Du2012391,
-    Brown2011898}. However, an OpenCL parallelization of a scientific
-  application is often a non-trivial task and, in many cases, requires
-  a thorough refactorization of the source code. For this reason, many
-  computational layers were proposed, which make many-core
-  coprocessors computational power easier to be exploited. For
-  instance, ArrayFire \cite{Malcolm2012} is a mathematical library for
-  matrix-based computation such as linear algebra, reductions, and
-  Fast Fourier transform; clSpMV \cite{Su2012353} is a sparse matrix
-  vector multiplication library; clBlas \cite{clBlas-2016} is an
-  OpenCL parallelization of the Blas linear algebra library. Examples
-  of higher level computational layers, which provide the abstraction
-  of formal computational paradigms, are OP2 \cite{Giles20131451},
-  which is an open-source framework for the execution of unstructured
-  grid applications on clusters of GPUs or multi-core CPUs, AQUAgpusph
-  \cite{Cercos-Pita2015295}, which is a smoothed-particle
-  hydrodynamics solver, and ASL \cite{asl}, an accelerated
-  multiphysics simulation software based, among others, on the Lattice
-  Boltzmann Method. Such high-level computational layers are briefly
-  overviewed in the next section, together with some other significant
-  examples.
+Different formal paradigms have been proposed to provide the
+abstraction context in which problems are formalized. Partial
+Differential Equations (PDEs) were probably the first to be largely
+employed for describing a wide variety of phenomena. Unfortunately,
+PDEs can be analytically solved only for a small set of simplified
+problems \cite{Mazumder20161} and Numerical Methods have to be
+employed to obtain approximate solutions for real situations. Among
+them, the Finite Differences Method (FDM) was one of the first
+considered, still currently employed, to address a wide variety of
+phenomena such as acoustics \cite{Chaigne19941112, Branski2014},
+heat \cite{Rana2012212, Sahin200619}, computational fluid dynamics
+(CFD) \cite{Chang1990317, Deng201390}, and quantum mechanics
+\cite{Hu2015640, Farrokhabadi201467}.
+ 
+Besides other solutions proposed for numerically approximating PDEs like, for instance, Finite Elements \cite{Hutton:2003} and Finite Volume Methods \cite{Moukalled:2015}, further formal paradigms were more recently proposed for modeling complex systems. Among them, Cellular Automata (CA) \cite{vonNeumann:1966:TSA:1102024} are Turing-equivalent \cite{Codd:1968:CA:1098682, Cook2004} parallel computational models. CA are widely studied from a theoretical point of view \cite{Wolfram-1984, Langton-1990b, wolfram2002, Ninagawa201542}, and their application domains vary from  Artificial Life \cite{Langton-1986, Beer2004309} to Computational  Fluid Dynamics \cite{Frish&al-1986, McNamara&Zanetti-1988,Higuera&Jimenez-1989, Aidun2010439}, besides many others. In the 80s, an extension of the original CA formalism was proposed to better model and simulate a specific set of complex phenomena \cite{DiGregorio&Serra-1999}. Such an extension is known as Complex
+or Multi-Component Cellular Automata and was applied to the simulation of debris flows \cite{D'Ambrosio2003545,avolio2013sciddica}, lava flows \cite{D'Ambrosio2012533,D'Ambrosio2012317, Oliverio2011271, D'Ambrosio2006452},
+pyroclastic flows \cite{Avolio2006897, Crisci20051019}, forest fires spreading \cite{Arca2015, Avolio2014209}, hydrologic and eco-hydrologic modeling \cite{Mendicino2015128,	Ravazzani2011634, Cervarolo2010205}, soil erosion
+\cite{D'Ambrosio200133}, crowd dynamics \cite{Luba2016, Was&al-2015,Was2014199}, urban dynamics \cite{Blecic2015}, besides others. 
+Please refers to Chapter \ref{ch:CA} for an extensive introduction on Cellular Automata and XCA.
 
-This chapter is devoted to the description of \texttt{OpenCAL} which aims to be a portable parallel computing abstraction layer for scientific computing. \texttt{OpenCAL} is released under Lesser GNU Public Licence (LGPL) version 3 and is freely downloadable from GitHub at the following link: \url{https://github.com/OpenCALTeam/opencal}. \texttt{OpenCAL} allows for  the definition of computational models based on CA, XCA and FDM. It is designed to be easily extended and applied to all computational methods based on regular and uniform grids. 
-The implementation descripted in this chapter targets shared multicore, distributed memory and GPUs and is designed to make the parallelism transparent to the user addressing and hiding many aspects of the underlying formal computational model and parallel execution platform. 
+Independently from the adopted formal paradigm, the simulation of
+complex systems often requires Parallel Computing. OpenMP is the
+most widely adopted solution for parallel programming on shared
+memory computers \cite{Chapman:2007:UOP:1370966}. It fully supports
+parallel execution on multi-core CPUs and, starting from the 4.0
+specification, also includes support for accelerators like graphic
+processing units (GPUs) or Xeon Phi co-processors. Unfortunately,
+compilers like gcc currently do not fully support the OpenMP most
+recent specifications and, in practice, OpenMP-based applications
+still mainly run on CPUs \cite{Oliverio2011271, Amritkar2014501,
+pop:hal-00786675}. However, in recent years, general purpose
+computing on graphic processing units (GPGPU), which exploits GPUs
+and many-core co-processors for general purpose computation, has
+gained wide acceptance as an alternative solution for
+high-performance computing, resulting in a rapid spread of
+applications in many scientific and engineering fields
+\cite{Owens200780}. Most implementations are currently based on
+Nvidia CUDA (see e.g. \cite{Blecic2013, D'Ambrosio2013630,
+	DiGregorio20131183, D'Ambrosio201230}), one of the first platforms
+proposed to exploit GPUs computational power on NVIDIA hardware. An
+open alternative to CUDA is OpenCL \cite{Stone201066}, an
+Application Program Interface (API) originally proposed by Apple and
+currently managed by Khronos Group for parallel programming on
+heterogeneous devices like CPUs, GPUs, Digital Signal Processors
+(DSPs), and Field-Programmable Gate Arrays (FPGAs). Interest in
+OpenCL is continuously growing and many applications can already be
+found in literature \cite{Macri2015328, Bedorf20122825, Du2012391,
+	Brown2011898}. However, an OpenCL parallelization of a scientific
+application is often a non-trivial task and, in many cases, requires
+a thorough refactorization of the source code. For this reason, many
+computational layers were proposed, which make many-core
+co-processors computational power easier to be exploited. For
+instance, ArrayFire \cite{Malcolm2012} is a mathematical library for
+matrix-based computation such as linear algebra, reductions, and
+Fast Fourier transform; clSpMV \cite{Su2012353} is a sparse matrix
+vector multiplication library; clBlas \cite{clBlas-2016} is an
+OpenCL parallelization of the Blas linear algebra library. Examples
+of higher level computational layers, which provide the abstraction
+of formal computational paradigms, are: OPS~\cite{Reguly201458,
+	Jammy2016450} and OP2 \cite{Giles20131451, Reguly20161265}, which
+are open-source frameworks for the execution of structured and
+unstructured grid applications, respectively, on clusters of GPUs or
+multi-core CPUs; AQUAgpusph \cite{Cercos-Pita2015295}, which is a
+smoothed-particle hydrodynamics solver; ASL \cite{asl}, an
+accelerated multi-physics simulation software based, among others,
+on the Lattice Boltzmann Method; CAMELot
+\cite{dattilo2003simulation, d2007parallel} and libAuToti
+\cite{spingola2008modeling}, which are a proprietary simulation
+environment and an efficient parallel library for XCA model
+development, respectively.
 
-%\subsection{An Overview on Scientific Simulation Software}
-%In this section, we present a non-exhaustive overview of some
-%  interesting and widely adopted parallel computing simulation software, which provide a high-level approach for the modeling of complex systems, hiding  low-level implementation issues such as memory allocation/de-allocation, thread management, and I/O  operations.General purpose simulation software,
-%  like Mathematica or Matlab, are intentionally not considered here.
-%\subsubsection{DEVS}
-%  DEVS \cite{Zeigler:1997:DEH:615253.615512, Zeigler:2000:TMS:580780},
-%  abbreviation of Discrete Event System Specification, is a modular
-%  and hierarchical formalism for modeling and analyzing general
-%  systems which can be described in terms of state transition
-%  tables. It also allows to describe continuous state systems (which
-%  can be formalized in terms of differential equations), and hybrid-
-%  continuous state and discrete event systems. The basic DEVS
-%  formalism allows to describe the inputs, outputs and states of a
-%  model (called atomic), besides the relationships among
-%  them. Furthermore, atomics can be used as building blocks for larger
-%  coupled models. Both atomic and coupled models adopt the same
-%  interface protocol, allowing to use a model as a component in
-%  another, larger model. Several extensions to the original DEVS
-%  formalism have been developed. Among these, P-DEVS
-%  \cite{Chow:1994:PDP:193201.194336} is a modeling formalism which
-%  provides both conceptual and parallel execution benefits with
-%  respect to the original DEVS formalism, while Cell-DEVS
-%  \cite{Wainer:2009:DMS:1611320} is an extension of the DEVS formalism
-%  that allows the definition of Cellular Automata models. A wide
-%  variety of models have been developed using this approach, such as
-%  fire spreading models with different conditions, formation of a
-%  watershed and robots in a manufacturing plant
-%  \cite{Troccoli:2001:MCP:882496.884491}.
-%\subsubsection{OP2}
-%  OP2 \cite{Giles20131451} is an open-source framework for the
-%  execution of unstructured grid applications on clusters of GPUs or
-%  multi-core CPUs. The main characteristic of the library is the use
-%  of source-to-source translation to generate efficient back-end code
-%  for state-of-the-art hardware for the different target
-%  platforms. Specifically, OP2 aims to separate the scientific
-%  specification of an application from its parallel implementation to
-%  achieve code endurance and near-optimal performance by re-targeting
-%  the back-end to different multi-core/many-core hardware. The OP2
-%  \emph{active} library approach uses program transformation tools, so
-%  that a single application code written using the OP2 API is
-%  transformed into the appropriate form that can be linked against a
-%  target parallel implementation (e.g. OpenMP, CUDA, OpenCL, MPI,
-%  etc.) enabling execution on different back-end hardware
-%  platforms. In order to facilitate the development of unstructured
-%  mesh applications at a higher hardware agnostic level, OP2 provides
-%  both a C/C++ and a Fortran API. This enables application developers
-%  to focus on solving problems at a higher level and not worry about
-%  architecture specific optimisations. As a consequence, the problem
-%  domain space can be separated into both a higher application level
-%  to concentrate on solving domain specific problems and write code
-%  that remains unchanged for different underlying hardware, and in the
-%  meanwhile consider a lower implementation level, that focuses on how
-%  a computation can be executed most efficiently on a given platform
-%  by carefully analysing the data access patterns.  The performance
-%  impact of the library design choices have been quantified on a range
-%  of NVIDIA GPUs using the end-to-end performance of an industrial
-%  representative CFD application (Airfoil) developed using the OP2
-%  API. The full OP2 source, the Airfoil test case code and the
-%  auto-tuning framework are available as open source software
-%  \cite{OP2Web}.
-%\subsubsection{CAMELot}
-%  CAMELot \cite{dattilo2003simulation, Mendicino2006, d2007parallel}
-%  is a proprietary CA and XCA high performance simulation environment
-%  derived from CAMEL \cite{cannataro1995parallel}. The system supports
-%  CARPET, a purpose-built language for CA programming based on C with
-%  additional constructs to describe the rule of the state transition
-%  function of a single cell of a cellular automaton and, eventually, to steer the
-%  application. Specifically, a CARPET program is composed of a declaration part that
-%  describes the properties of CA (dimension, radius, state, neighbour,
-%  parameters, region), a body program that implements the transition
-%  function, and a steering part that contains a set of commands for
-%  extracting and analysing system information and performing
-%  computational steering (i.e., global operations). The steering
-%  section is performed by the runtime system at each iteration, after
-%  the transition functions of all cells have been evaluated.  The
-%  state of a cell is defined as a record of typed \emph{substates}
-%  (char, shorts, integers, floats, doubles and one-dimensional
-%  arrays), and even complex neighbourhoods (e.g., hexagonal, Margolus)
-%  can be simply defined by means of a CARPET
-%  statement. Non-deterministic, time-dependent and non-uniform
-%  transition functions can also be defined. Camelot offers an
-%  integrated programming environment, an interactive user interface
-%  and permits the efficient and seamless simulation of XCA on
-%  distributed memory computers.
-%\subsubsection{libAuToti}
-%  An open-source alternative to CAMELot is libAuToti
-%  \cite{spingola2008modeling}, an efficient and flexible parallel XCA
-%  library. Similarly to CAMELot, libAuToti allows for a simple and
-%  concise definition of both the transition function and the other
-%  characteristics of XCA model definition. It allows for both
-%  sequential and parallel execution, both on shared and distributed
-%  memory machines (thanks to the adoption of the Message Passing
-%  paradigm for the interprocesses communications), by hiding parallel
-%  implementation issues to the user. The library also implements a
-%  dynamic load balancing algorithm to better exploit computational
-%  resources and reduce overall execution time
-%  \cite{DBLP:conf/csc/ZitoDSSRA09}. A multithread version was also
-%  developed to better exploit multi-core architectures, coupled with
-%  an interactive 2D/3D visualization system based on VTK
-%  \cite{spataro2010multithread}.
-%\subsubsection{ASL}
-%  The Advanced Simulation Library (ASL) \cite{asl} is a free and open
-%  source hardware accelerated multiphysics simulation software. It is
-%  based, among others, on the Lattice Boltzmann Method and is written
-%  in OpenCL, which enable efficient deployment on a variety of
-%  massively parallel architectures. However, no OpenCL knowledge is
-%  strictly required to develop ASL-based applications, thanks to a
-%  simplified C++ API. ASL can be used to model various coupled
-%  physical and chemical phenomena and employed in a multitude of
-%  fields like computational fluid dynamics, computer-aided
-%  engineering, and crystallography.  Mesh-free, immersed boundary
-%  approach allows to move from CAD directly to computations
-%  eliminating pre-processing efforts and reducing amount of potential
-%  errors.
-%\subsubsection{AQUAgpusph}
-%  Eventually, AQUAgpusph \cite{CercosPita2015295} is a free Smoothed
-%  Particle Hydrodynamics (SPH - a mesh-free Lagrangian method to solve
-%  Navier-Stokes equations) software accelerated with OpenCL. The main
-%  advantages with respect to other existing SPH libraries are the use
-%  of OpenCL instead of CUDA, which allows for parallel execution on a
-%  variety of massively parallel devices, the implementation of the
-%  most popular boundary conditions, the easy customization of the code
-%  to different problems, the extensibility with regard to Python
-%  scripts and the runtime output which allows the tracking of
-%  simulations in real time, or a higher frequency in saving some
-%  results without a significant performance lost. Authors have proven
-%  to improve the solver speed, the results quality, and the usability
-%  for a wider areas of application.
-  
+Among the above cited softwares, OPS, ASL and CAMELot probably are
+the most similar to OpenCAL in terms of modeling and development
+approach, and could be considered as possible alternatives to the
+library proposed in this thesis.
+In particular, OPS provides a straightforward Domain Specific Language for structured grid-based modeling, even if it does not refer to any specific abstract computational formalism.  
+Its main characteristic consists in
+allowing to obtain different parallel versions of a computational
+model starting from its serial implementation, thanks to a seamless
+code-generator approach.  MPI-based distributed memory, as well as
+CUDA and OpenCL many-core versions can be obtained in this way, with
+a minimal effort by the developer.  Conversely, ASL provides
+different higher level modeling abstractions among which the Lattice
+Boltzmann Method, that is eventually a Cellular Automata-based
+paradigm. Nevertheless, it currently does not allow for parallel
+execution on distributed memory systems, which can be a great
+limitation in some cases. Eventually, CAMELot offers an integrated
+simulation environment for XCA development and allows for parallel
+execution on both shared and distributed memory systems thanks to
+the message passing paradigm, not permitting however the
+exploitation of modern many-core devices.
+
+
+This chapter is devoted to the description of \texttt{OpenCAL} which aims to be a portable parallel computing abstraction layer for scientific computing.
+It provides the Extended Cellular Automata general formalism as a Domain
+Specific Language, allowing for the straightforward parallel
+implementation of a wide range of complex systems. Cellular
+Automata, Finite Differences and, in general, other structured
+grid-based methods are therefore supported. Different versions of
+the library allow to exploit both multi- and many-core shared
+memory devices, as well as distributed memory systems. Specifically,
+OpenMP- and OpenCL-based implementations have been developed, both
+of them providing optimized data structures and algorithms to
+speed-up the execution and allowing for a transparent parallelism to
+the user. A MPI-based implementation is also currently under
+development and allows to exploit many-core accelerators on
+interconnected systems. With respect to the above cited softwares,
+OpenCAL therefore provides both the higher CAMELot modeling approach
+and, similarly to OP2, allows for the execution on a wide range of
+shared and distributed parallel platforms (even if by adopting a
+classic library approach). In addition, OpenCAL provides different
+embedded strategies and optimization algorithms which allow to
+progressively improve the computational performance of different
+kinds of models and simulations.
+\texttt{OpenCAL} is released under Lesser GNU Public License (LGPL) version 3 and is freely down-loadable from GitHub at the following link: \url{https://github.com/OpenCALTeam/opencal}. \texttt{OpenCAL} allows for  the definition of computational models based on CA, XCA and FDM. It is designed to be easily extended and applied to all computational methods based on regular and uniform grids. 
+The implementation described in this chapter targets shared multi-core, distributed memory and GPUs and is designed to make the parallelism transparent to the user addressing and hiding many aspects of the underlying formal computational model and parallel execution platform. 
+
+In the following, the OpenCAL architecture is presented and the
+OpenMP- and OpenCL-based parallel implementations described.  The implementation of a first simple example of
+application for multi- and many-core devices is also
+presented and discussed in order to show how straightforward the OpenCAL-based model development is. 
+Therefore, the $SciddicaT$ XCA landslide simulation model
+\cite{avolio2000simulation} is then considered as a more complex reference example for correctness and computational performance evaluation on multi-core
+CPUs, many-core GPUs. In particular, three different versions of
+$SciddicaT$ are refeered to in this chapter, which progressively exploit OpenCAL built-in features and, for each of them, different implementations based on the serial and parallel versions of the library are proposed. Eventually, results of a further study performed to devise the best platform for
+execution, depending on the model's computational intensity and the
+domain extent, is presented. A general discussion concerning OpenCAL
+and future outcomes concludes the chapter.
+
+
 \section[Software Architecture]{\texttt{OpenCAL} Software Architecture and the Considered Parallel Computing Paradigms}
-  This section describes the software architecture of the first
-  \texttt{OpenCAL} release. As described in Figure \ref{fig:architecture}, a
-  computational model can be designed at the higher level of
-  abstraction. As already stated, supported computational paradigms
-  are CA, XCA and FDM. At this level, the main features of the
-  computational model like dimensions, neighborhood, boundary
-  conditions, involved substates and elementary processes, are
-  designed. The simulation process, which allows to obtain the model
-  evolution at discrete time steps, is also defined at this level, by
-  specifying the initial condition of the system, global operations
-  (like steering or global reductions), the initial and final
-  computational step and a possible stopping criterion. Eventually,
-  optimizations can be considered, namely the explicit update, which
-  allows to selectively update substates after the application of each
-  elementary process, and the quantization feature, which allows to
-  restrict the computation to a subset of the computational domain, by
-  excluding stationary cells.
-  
-  \begin{figure}
-  	\begin{center}
-    \includegraphics[width=1.0\textwidth]{./images/opencal/Figure05}
-    \caption[\texttt{OpenCAL} architecture.]{\texttt{OpenCAL} architecture. At the higher level of abstraction, the models,
-    	as well as the simulation process, and possible optimizations are
-    	designed. \texttt{OpenCAL} can be found at the implementation abstraction
-    	layer, allowing for a straightforward implementation of the designed
-    	model. In fact, it can be considered as a domain-specific language for
-    	the CA, XCA and FDM computational methods, built on top of the C
-    	language and the \texttt{OpenMP} and OpenCL APIs. \texttt{OpenCAL} applications can be
-    	executed at the hardware level on both multi-core CPUs and many-core
-    	devices, while the execution on cluster is planned but currently not
-    	supported.}
-    \label{fig:architecture}
-  \end{center}
-\end{figure}
-  
-   \texttt{OpenCAL} can be found in the implementation abstraction level. As it
-  can be seen, four different versions can be considered for
-  implementing the previously designed computational model, namely
-  \texttt{OpenCAL}, \texttt{OpenCAL-OMP} and \texttt{OpenCAL-CL} and \texttt{OpenCAL-MPI}. The first one refers to the   serial implementation of the library, while second and the third are \texttt{OpenMP}  and OpenCL-based parallelizations, respectively, as pointed out by
-  the language/low-level library level. The fourth one is a cluster ready implementation that allows to execution on distributed memory cluster where each node can exploit multiple GPUs.
-  All implementations are written in C for the maximum efficiency and provide high-level data types and functions that match the XCA formal components, allowing  for a straightforward implementation of the designed computational
-  model, by also allowing to ignore low-level issues like memory
-  management and I/O operations. In this respect, \texttt{OpenCAL} can be
-  considered as a domain-specific language (DSL) for the CA, XCA and
-  FDM computational methods. Finally, at the hardware level, depending
-  on the adopted version of the library, execution can be performed on
-  single- and multi-core CPUs, or on many-core accelerators like GPUs,
-  almost transparently to the user.
-  
-   Figure \ref{fig:architecture} also shows hybrid MPI+Open-MP and
-  MPI+OpenCL parallel implementations of \texttt{OpenCAL}, which will allows to
-  exploit clusters of CPUs and many-core accelerators. 
 
-  Note that an \texttt{OpenMP}-based parallelization is generally more
-  straightforward with respect to one based on OpenCL or MPI and, when
-  compilers will fully support the 4.0/4.5 \texttt{OpenMP} specifications, it
-  will be possible to execute \texttt{OpenMP}-based applications on both
-  multi-core CPUs and many-core high-performance devices. On the other
-  hand, an OpenCL-based parallelization allows to exploit a wide range
-  of high-performance many-core devices straight away and, with greater control on the underlying hardware and on the execution flow, allowing better exploitation of the hardware capabilities. 
+The OpenCAL architecture is depicted in Figure
+\ref{fig:architecture}. At the higher level of abstraction, the
+Scientist conceptually designs the computational model, by referring
+the Extended Cellular Automata general formalism. Structured
+grid-based models whose evolution is determined by local rules, as
+well as by global laws or even by a combination of local and global
+operations, are therefore fully supported. At this level, domain
+topology and extent, boundary conditions, substates (each of them
+representing the set of admissible values of a given characteristic
+assumed to be relevant for the modeled system and its evolution),
+neighborhood (defining the pattern over which local rules are
+applied), and elementary processes (defining the local rules of
+evolution), are formalized. The simulation process is also designed
+at this level, by specifying the initial conditions of the system,
+optional global operations (e.g. steering or global reductions), and
+a termination criterion to stop the system evolution. 
+Boundary conditions can be implemented by the user by creating ad-hoc code within the transition function which treats the boundary cells (which can be identified to belonging to the boundary, within the code) s.t. the boundary condition is enforced.
+For instance if implementing a heat transfer model, adiabatic walls can be enforced programmatically by setting heat transfer to $0$ only for those cells that make up the walls. Any other boundary condition can be implemented similarly.
+Note that, being supported by OpenCAL, some specific optimizations can be
+accounted at design time. Specifically, the explicit updating
+feature allows to both redefine the elementary processes application
+order and to selectively update substates after the application of
+each elementary process, while the \emph{active cells optimization},
+also known as \emph{quantization}, allows to restrict the
+computation to a subset of the whole computational domain, by
+excluding stationary cells.
+\begin{figure}
+	\begin{center}
+\includegraphics[width=1.0\textwidth]{./images/opencal/Figure05}
+\caption[\texttt{OpenCAL} architecture.]{\texttt{OpenCAL} architecture. At the higher level of abstraction, the models,
+	as well as the simulation process, and possible optimizations are
+	designed. \texttt{OpenCAL} can be found at the implementation abstraction
+	layer, allowing for a straightforward implementation of the designed
+	model. In fact, it can be considered as a domain-specific language for
+	the CA, XCA and FDM computational methods, built on top of the C
+	language and the \texttt{OpenMP} and OpenCL APIs. \texttt{OpenCAL} applications can be
+	executed at the hardware level on both multi-core CPUs and many-core
+	devices, while the execution on cluster is planned but currently not
+	supported.}
+\label{fig:architecture}
+\end{center}
+\end{figure}
+
+\texttt{OpenCAL} can be found in the implementation abstraction level. As it
+can be seen, four different versions can be considered for
+implementing the previously designed computational model, namely
+\texttt{OpenCAL}, \texttt{OpenCAL-OMP} and \texttt{OpenCAL-CL} and \texttt{OpenCAL-MPI}. The first one refers to the  serial implementation of the library, while second and the third are \texttt{OpenMP}  and \texttt{OpenCL}-based parallelizations, respectively, as pointed out by
+the language/low-level library level. The fourth one is a cluster ready implementation that allows to execution on distributed memory cluster where each node can exploit multiple GPUs. All implementations are written in C for the maximum efficiency and provide high-level data types and functions that match the XCA formal components, allowing  for a straightforward implementation of the designed computational  model, by also allowing to ignore low-level issues like memory  management and I/O operations. In this respect, \texttt{OpenCAL} can be  considered as a domain-specific language (DSL) for the CA, XCA and  FDM computational methods. Finally, at the hardware level, depending  on the adopted version of the library, execution can be performed on  single- and multi-core CPUs, or on many-core accelerators like GPUs,  almost transparently to the user. Figure \ref{fig:architecture} also shows hybrid MPI+Open-MP and MPI+OpenCL parallel implementations of \texttt{OpenCAL}, which will allow to exploit clusters of CPUs and many-core accelerators (see Chapter \ref{ch:opencal_cluster}). 
+
+Note that an \texttt{OpenMP}-based parallelization is generally more
+straightforward with respect to one based on OpenCL or MPI and, when
+compilers will fully support the 4.0/4.5 \texttt{OpenMP} specifications, it
+will be possible to execute \texttt{OpenMP}-based applications on both
+multi-core CPUs and many-core high-performance devices. On the other
+hand, an OpenCL-based parallelization allows to exploit a wide range
+of high-performance many-core devices straight away and, with greater control on the underlying hardware and on the execution flow, allowing better exploitation of the hardware capabilities. 
  For these reasons, both the \texttt{OpenMP} and OpenCL versions of \texttt{OpenCAL} have been developed and are maintained. 
-  
+
 \section{The Open Computing Abstraction Layer}
 \label{sec:OpenCAL}
-In this section we describe the API of the serial version of
-\texttt{OpenCAL}, which allows for the definition of 2D and 3D CA, XCA and
-FDM models, and their execution on CPUs. Nevertheless, 1D models can
-also be defined as degenerate case of 2D ones. The implementation of
-a simple 2D CA, namely the \textit{Conway's Game of Life}
-\cite{gardner1970a}, is shown in this section as first and
-straightforward example of application.
-
-\subsection{API naming Convention}
-In \texttt{OpenCAL}, besides the three basic supported scalar data types,
-namely \verb'CALbyte', \verb'CALint', and \verb'CALreal', which
-redefine the \verb'char', \verb'int' and \verb'double' C native
-scalar data types, respectively, the API adopts the following
-conventions:
+The OpenCAL API was designed to be clear and easy to use. For this
+purpose, it follows some naming conventions, the most important of
+which are listed below:
 \begin{itemize}
-	\item Derived data types are characterised by the \verb'CAL' prefix,
-	followed by a type identifier formed by one or more capitalised
-	keywords, an optional suffix identifying the model dimension
-	(\verb'2D' or \verb'3D'), and an eventual optional suffix
-	specifying the basic scalar type (\verb'b', \verb'i', or \verb'r',
-	for \verb'CALbyte', \verb'CALint' and \verb'CALreal' derived
-	types, respectivey);
-	\item Constants and enumerals are characterised by the \verb'CAL_'
-	prefix, followed by one or more uppercase keywords separated by
-	the \verb'_' character (e.g. the \verb'CAL_TRUE' and
-	\verb'CAL_FALSE' boolean-type values);
-	\item Functions are characterised by the \verb'cal' prefix, followed
-	by at least one capitalized keyword, and end with a suffix
-	specifying the model dimension (\verb'2D' or \verb'3D') and the
-	basic datatype (\verb'b', \verb'i', or \verb'r', for
-	\verb'CALbyte', \verb'CALint' and \verb'CALreal' derived types,
-	respectively).
+	\item \verb'CALbyte', \verb'CALint', and \verb'CALreal' redefine
+	the \verb'char', \verb'int' and \verb'double' C native scalar
+	types, respectively;
+	\item Derived data types start with the \verb'CAL' prefix (or
+	\verb'CALCL' for some specifc OpenCAL-CL data types), followed
+	by a type identifier formed by one or more capitalised keywords,
+	an optional suffix identifying the model dimension
+	(e.g. \verb'2D' or \verb'3D'), and an eventual optional suffix
+	specifying the basic scalar type, which can be \verb'b',
+	\verb'i', or \verb'r', for \verb'CALbyte', \verb'CALint' and
+	\verb'CALreal' derived types, respectivey
+	(e.g. \verb'CALSubstate3Dr' represents an example of
+	three-dimensional double precision-based data type - cf. below);
+	\item Constants and enumerals start with the \verb'CAL_' prefix,
+	followed by one or more uppercase keywords separated by the
+	\verb'_' character (e.g. the \verb'CAL_TRUE' and
+	\verb'CAL_FALSE' boolean enumerals);
+	\item Functions are characterised by the \verb'cal' prefix (or
+	\verb'calcl' for some specifc OpenCAL-CL functions), followed by at
+	least one capitalized keyword, and end with a suffix specifying
+	the model dimension and the basic datatype
+	(e.g. \verb'calSet2Di' represents an example of an API function
+	acting on a bi-dimensional integer based data type).
 \end{itemize}
-Moreover, the \verb'{arg1|arg2|...|argn}' and
-\verb'[arg1|arg2|...|argn]' conventions are adopted in the
-following. The first one identifies a list of $n$ mutually exclusive
-arguments, where one of the arguments is needed, while the second a
-list of $n$ non-mutually exclusive optional arguments.
+In the following, the \verb'{arg1|arg2|...|argn}' and
+\verb'[arg1|arg2|...|argn]' conventions will be adopted: the first
+one identifies a list of $n$ mutually exclusive arguments, where one
+of the arguments is needed; the second is used to identify a set of
+$n$ non-mutually exclusive optional arguments. As an example,
+\verb'calGet[X]{2D|3D}{b|i|r}()' function actually identifies a set
+API functions with one optional and two mandatory suffixes: the
+first one, if present, indicates that the fuction is able to access
+naighborhood data (\verb'X' is the symbol commonly used in the XCA
+formalism to refer the neighborhood), while the last two ones
+indicate the domain dimension and the basic type of the data to be
+accessed, respectively.
 
 Among derived data types, \verb'CALParameter{b|i|r}' represents an
 alias for the corresponding basic \texttt{OpenCAL} scalar data type, and can
@@ -372,7 +294,7 @@ the need to provide their relative coordinates, as shown in Figures
 \begin{figure}[!htbp]
 	\begin{center}
 		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure01}
-		\caption[Examples of \textit{Von Neumann} and \textit{Moore} neighborhoods.]{Examples of \textit{Von Neumann} (a) and \textit{Moore} (b) neighborhoods for two-dimensional CA with square cells. Examples of Moore neighborhoods are also shown for hexagonal CA, both for the cases of horizontal (c) and vertical (d) orientations. Central cell is represented in dark gray, while adjacent cells are in light gray. A reference system is here considered to evaluate cells coordinates in terms of row and column indices in a matrix-style representation, and a 0-based numerical identifier assigned to each cell in the neighborhood for straightforward access}
+		\caption[Examples of \textit{Von Neumann} and \textit{Moore} neighborhoods.]{Examples of \textit{Von Neumann} (a) and \textit{Moore} (b) neighborhoods for two-dimensional CA with square cells. Examples of Moore neighborhoods are also shown for hexagonal CA, both for the cases of horizontal (c) and vertical (d) orientations. Central cell is represented in dark gray, while adjacent cells are in light gray. A reference system is here considered to evaluate cells coordinates in terms of row and column indices in a matrix-style representation, and a $0$-based numerical identifier assigned to each cell in the neighborhood for straightforward access.}
 		\label{fig:2Dneighborhood}
 	\end{center}
 \end{figure}
@@ -438,6 +360,7 @@ explicitly, as well as selectively, updated by means of the
 (cf. below). Obviously, single layer substates do not need to be
 updated.
 
+
 \subsection{The quantization strategy}
 In many grid-based simulations, system's dynamics only affects a
 small region of the whole computational domain. For instance, this
@@ -454,7 +377,7 @@ the naive approach. Among them, the hyper-rectangular bounding box
 (HRBB) optimization, consisting in surrounding the simulated
 phenomenon by means of a fitting rectangle (or a parallelepiped, in
 the case of a 3D model), by contextually restricting the computation
-to this specific sub-region, proved to be a simple but effective
+to this specific sub-region, proved to be a simple but effectiveg
 approach in different cases (see e.g. the work of \citeauthor{D'Ambrosio2013630} \cite{D'Ambrosio2013630}). However, HRBB demonstrated its limit
 in the simulation of scattered phenomena, where the hyper-rectangle
 can easily grow up to the whole domain, by however embedding a
@@ -473,7 +396,7 @@ if more complex to be implemented, in many cases it outperforms the
 HRBB approach and, for this reason, it was chosen over HRBB in OpenCAL.
 
 The \texttt{OpenCAL} quantization feature\footnote{The term quantization has been chosen to refer to this optimization as when enabled, it treats the grid space as a group of quanta of computation instead of as a single massive computation.} is implemented by considering a
-dynamic array of active cells, $A$, which is initially empty. An
+dynamic array of active cells, $A$ of the size of the grid-space, which is initially empty. An
 array of flags, $F$, having the same dimension of the computational
 domain is also considered, which is initially set to
 \verb'CAL_FALSE' in each position. Eventually, an integer variable,
@@ -503,7 +426,7 @@ computation and substates updating take place on the active
 cells. As substates, even $A$ is implicitly updated at the end of
 each elementary process. 
 
-  Using the quantization optimization is quite
+Using the quantization optimization is quite
 straightforward. Firstly, it must be enabled at model object
 definition time by means of the \verb'calCADef{2D|3D}()'
 function. Subsequently, the \verb'calAddActiveCell[X]{2D|3D}()'
@@ -536,6 +459,7 @@ states, and the resulting value in $F$ before the stream compaction
 execution would depend on the application order of the elementary
 process to the cells.
 
+There are other ways to implementation the quantization strategy s.t. less time or space space is used and some of them have also been investigated as for instance a strategy that allows to use space proportional to the number of active cells, which consist of a dynamic list of active cells. The one shipped with this release of OpenCAL guarantees uniform performance on all platforms and is for this reason adopted. future versions will feature multiple implementation from which the user can choose from.
 
 
 %However, active cells update can also be
@@ -675,8 +599,8 @@ step of computation is met.
 	  	\Steering \tcp*{Call the \Steering global function}
 	  	 \If{quantization}{
 	  	 	 \Update($A$) \tcp*{Update the array of active cells}
-  	 	  } 
-   	  	\ForAll{$q \in Q$}{
+	 	  } 
+ 	  	\ForAll{$q \in Q$}{
 			\Update($q$) \tcp*{Update the substate $q$}
 		 }
 		 $halt \gets $\Stop \tcp*{Check the stop condition} $step \gets step + 1$\;
@@ -705,7 +629,7 @@ by defining both the CA model and the simulation object, needed to
 let the CA evolve step by step.
 
 %%%% GOL listing C serial implementation %%%%
-    \lstset{language=[OpenCL]C,
+\lstset{language=[OpenCL]C,
 	caption=An \texttt{OpenCAL} implementation of the Conway's Game of
 	Life., 
 	label=lst:cal_life, 
@@ -772,10 +696,13 @@ respectively, as implemented in Listing \ref{lst:cal_life}. As
 expected, the glider initially defined has evolved into the new
 correct configuration.
 
-\begin{figure}
+  \begin{figure}
 	\begin{center}
-		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure07.pdf}
-		\caption{An \texttt{OpenGL/GLUT} version of the Game of Life, as implemented in Listing \ref{lst:cal_life}, showing the (a) initial and (b) final configurations of the system. Alive cells are represented in white, dead cells in blue.}
+		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure04_new}
+		\caption{Graphical representation of one computational step of
+			the Game of Life, showing the (a) initial and (b) final
+			configurations of the system. Alive cells are represented in
+			grey, dead cells in white.}
 		\label{fig:cal_life_glut}
 	\end{center}
 \end{figure}
@@ -892,7 +819,7 @@ the initial and final configuration of the system.
 
 \section{The \texttt{OpenCAL} OpenCL-based Parallel Implementation}
 \label{sec:OpenCAL-CL}
-  In this section, we present the OpenCL-based parallel implementation
+In this section, we present the OpenCL-based parallel implementation
 of OpenCAL, which allows for the parallel execution on both shared
 memory computing systems and many-core acceleration devices in a
 SIMD fashion, by highlighting the differences with respect to the
@@ -919,7 +846,7 @@ global memory is therefore copied back to the host at the end of
 the simulation process. This latter if equivalent to that of OpenCAL
 and OpenCAL-OMP (cf. Algorithm \ref{algo:simuloop}), with the
 exception that kernels are executed device-side and the simulation
-process can not be currently, in this first OpenCAL release, made explicit.
+process can not be currently, in this first OpenCAL release, made explicit, because the \textit{explicit} API is not entirely correctly implemented.
 
 Grid of work-items can be two- or three-dimensional, depending on
 the dimension of computational model, if 2D or 3D, respectively. In
@@ -1032,7 +959,7 @@ efficiency of the algorithm.
 		values of the array $S$, where $s_p$ is the number of cells to be
 		added to $A$ by the $p^{th}$ wor-item. The array $O$ is therefore
 		efficiently processed by a set of work-items and, at the end of the
-		phase, the last cell of the array contains the total number of active cells to be considered for the next computational step. The down-sweep fase follows, in which dotted arrows are used to set the pointed cell of the array $O$ to 0, while continuous arrows to evaluate the sum of the source cells and then to write the computed value to the pointed position, as in the previous phase. Offsets are eventually obtained at the end of the down-sweep phase. The first work item will therefore start adding $s_0$ cells to $A$ from the index 0, the second adding $s_1$ cells starting from the offset $s_0$, the third adding $S_2$ cells from the offset $S_0+S_1$, up to the latter, which will add $S_7$ cells starting from the offset $S_0+S_1+\ldots+S_6$.}
+		phase, the last cell of the array contains the total number of active cells to be considered for the next computational step. The down-sweep phase follows, in which dotted arrows are used to set the pointed cell of the array $O$ to $0$, while continuous arrows to evaluate the sum of the source cells and then to write the computed value to the pointed position, as in the previous phase. Offsets are eventually obtained at the end of the down-sweep phase. The first work item will therefore start adding $S_0$ cells to $A$ from the index $0$, the second adding $S_1$ cells starting from the offset $S_0$, the third adding $S_2$ cells from the offset $S_0+S_1$, up to the latter, which will add $S_7$ cells starting from the offset $S_0+S_1+\ldots+S_6$.}
 		\label{fig:prefixsum}
 	\end{center}
 \end{figure}
@@ -1491,14 +1418,12 @@ where:
 	cell towards the neighbor 1, $q_{o_1}$ the outflow towards the
 	neighbor 2, and so on.
 	
-	\item $P$ is set of parameters ruling the model dynamics:
-	
+	\item $P$ is the set of parameters ruling the model
+	dynamics where:	
 	\begin{itemize}
-		\item $p_\epsilon$ is the parameter which specifies the thickness
-		of the fluid that cannot leave the cell due to the effect of
-		adherence;
-		\item $p_r$ is the outflows damping factor the relaxation rate
-		parameter, which is used for outflows damping.
+		\item $p_\epsilon$ is the parameter which specifies the minimum thickness of fluid below which it cannot leave the cell due to the effect of adherence;
+		\item $p_r$ is the relaxation rate parameter,
+		which essentially is an outflow damping factor.
 	\end{itemize}
 	
 	\item $\sigma : Q^5 \rightarrow Q$ is the deterministic cell
@@ -1508,7 +1433,7 @@ where:
 		\item $\sigma_1 : (Q_z \times Q_h)^5 \times p_\epsilon \times
 		p_r\rightarrow Q_o^4$ determines the outflows from the central
 		cell to the neighboring ones by applying the \emph{minimization
-			algorithm of the differences} \cite{DiGregorio&Serra-1999}. In
+			algorithm of the differences} \cite{Gregorio1999}. In
 		its simplest form, here considered, the algorithm is able to
 		lead the neighborhood to the hydrostatic equilibrium in a single
 		computational step. In the $\sigma_1$ elementary process, a
@@ -1734,7 +1659,7 @@ sciddicaT_simulation = calRunDef2D(sciddicaT,
 first parameter, the initial and final computational step and the
 substates update policy. In this case, the implicit scheme is
 considered, which demands the substates updating entirely to
-OpenCAL/OpenCAL-OMP, transparently to the user. The simulation
+\texttt{OpenCAL/OpenCAL-OMP}, transparently to the user. The simulation
 object therefore registers two global callbacks for initialization
 and steering purposes through the \verb'calRunAddInitFunc2D()' and
 \verb'calRunAddSteeringFunc2D()' functions, respectively:
@@ -2074,7 +1999,7 @@ final configuration of the Tessina landslide, as obtained by the
 $SciddicaT_{naive}$ simulation. It is worth to note that, even if
 $SciddicaT_{naive}$ is a simplified model and parameters were
 preliminary evaluated, simulation outcome is in agreement with that
-of Avolio et al. \cite{avolio2000simulation}.
+of \citeauthor{avolio2000simulation}\cite{avolio2000simulation}.
 \begin{table}
 	\centering
 	\begin{tabular}{ccc}
@@ -2088,8 +2013,8 @@ of Avolio et al. \cite{avolio2000simulation}.
 
 \begin{figure}
 	\begin{center}
-		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure12.pdf}
-		\caption[$SciddicaT$ simulation of the 1992 Tessina (Italy) landslide.]{$SciddicaT$ simulation of the 1992 Tessina (Italy) landslide: (a) landslide source; (b) final landslide path. Topographic altitudes are represented in gray and vary between 1220 and 625 m a.s.l. Debris
+		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure05_new}
+		\caption[The $SciddicaT$ simulation of the 1992 Tessina (Italy) landslide.]{The $SciddicaT$ simulation of the 1992 Tessina (Italy) landslide: (a) landslide source; (b) final landslide path. Topographic altitudes are represented in gray and vary between 1220 and 625 m a.s.l. Debris
 		thickness is represented with colors ranging from red (lower values)
 		to yellow (higher values).}
 		\label{fig:sciddicaT-simulation}
@@ -2394,11 +2319,10 @@ is increased.
 In this section we show the OpenCAL and OpenCAL-OMP implementations
 of the further computationally improved $SciddicaT_{ac+asl}$
 fluid-flow XCA model, which exploit both the active cell
-optimization and the explicit simulation loop feature. The model
-formal definition does not differ from $SciddicaT_{ac}$, as well as
+optimization and the explicit simulation loop feature. The formal definition of the model does not differ from $SciddicaT_{ac}$, as well as
 the application to the simulation of the 1992 Tessina (Italy)
-landslide, and therefore are here omitted. Key implementation
-sections are reported and commented in the next section.
+landslide, and are not, therefore, reported in this section again.
+The key implementation sections are reported and commented in the following section.
 
 \subsection{The $SciddicaT_{ac+esl}$ OpenCAL and OpenCAL-OMP implementations}
 Here we highlight the OpenCAL/OpenCAL-OMP few implementation
@@ -2505,68 +2429,68 @@ each global functions.
 \section{Validation, and Performance Results}
 \label{sec:computational-results}
 
-In order to evaluate OpenCAL, OpenCAL-OMP and OpenCAL-CL from
-computational points of view, the different versions of $SciddicaT$
-presented in the previous sections were considered and the Tessina
-landslide taken into account as simulation reference case study for
-a first set of tests (\emph{standard tests}). In particular, a total
-of 10 benchmark simulations were executed for each implemented
-version and the resulting elapsed times averaged. Based on the
-resulting times, both the relative speed-up (i.e., computed with
-respect to the execution time of the same $SciddicaT$ version) and
-the absolute speed-up (i.e., computed with respect to the execution
-time of the OpenCAL implementation of $SciddicaT_{naive}$) were
-evaluated. Furthermore, in order to better understand the impact of
-local memory usage in OpenCAL-CL, a further implementation based on
-$SciddicaT_{naive}$ was considered, namely $SciddicaT_{local}$. In
-this version, which implementation details are here omitted since
-OpenCAL-CL currently does not support transparent management of the
-fast local memory, a 8x8 work-group size was employed and data,
-i.e., the substates values of the cells belonging to the
-neighbourhood, have been explicitly transferred between the global
-and the local memory using OpenCL functions.
-
-In addition, due to the low transition function computational
-complexity of the different versions of $SciddicaT$ and the small
-dataset dimension, additional stress tests were carried out: the
-transition functions of the different versions of $SciddicaT$ were
-fictitiously made computationally heavier by reapplying them for a
-total of 200 times (\emph{transition function stress tests}), and
-the landslide source replicated for a total of 100 times over a
-wider computational domain by considering a DEM of a total of
-13,401,890 cells (\emph{computational domain stress tests}).
+In order to evaluate OpenCAL from a computational point of view, the
+different versions of $SciddicaT$ presented in the previous Section
+were considered and the Tessina landslide taken into account as
+simulation reference case study for a first set of tests
+(\emph{standard tests}). In particular, a total of ten benchmark
+simulations were executed for each of the nine $SciddicaT$
+implemented versions, and the speed-up evaluated with respect to the
+serial implementation of $SciddicaT_{naive}$, by considering the
+minimum recorded execution times. Furthermore, in order to better
+assess the impact of local memory usage in OpenCAL-CL, a further
+implementation based on $SciddicaT_{naive}$ was considered, namely
+$SciddicaT_{local}$. In this version, a 8 $\times$ 8 work-group size was
+considered and data, i.e., the substates values of the cells
+belonging to the neighborhood, transparently transferred
+from the global to the fast local device memory by using the
+\verb'calclGlobaltoLocal[X]()' API function (cf. Section
+\ref{sec:OpenCAL}). In addition, due to the low transition function
+computational intensity of $SciddicaT$ (i.e., the model is a more memory-bound rather than compute-bound application) and the data-set dimension,
+which are not adequate to take significant advantage of the adopted
+GPUs, two additional stress tests were carried out: the transition
+functions were fictitiously made computationally heavier by
+reapplying them, at each step, for a total of 200 times
+(\emph{transition function stress tests}), and the landslide source
+replicated for a total of 100 times over a wider computational
+domain by considering a DEM of a total of 13,401,890 cells
+(\emph{computational domain stress tests}). These latter tests were
+also considered to evaluate the preliminary OpenCAL-MPI versions of $SciddicaT$,
+both in terms of correctness and performance.
 
 In all cases, OpenCAL and OpenCAL-OMP benchmarks were executed on a
 8-core/16 threads Intel Xeon 2.0GHz E5-2650 CPU based
-workstation. One thread of the CPU was adopted for testing the
-different OpenCAL versions of $SciddicaT$, while 2, 4, 8 and 16
-threads were employed for benchmark experiments concerning
-OpenCAL-OMP implementations. Moreover, two devices were adopted for
-testing different versions of the OpenCAL-CL implementations of
-$SciddicaT$, namely a GTX 980 (Maxwell architecture) and a Tesla K40
-(Kepler architecture) graphic processor. In particular, the former
-has 2048 CUDA cores, 4 GB global memory and 224 GB/s high-bandwidth
-communication between CPU and GPU, while the latter device has 2880
-cores, 12 GB global memory and 288 GB/s high-bandwidth.
+workstation. One thread was considered for testing the different
+OpenCAL versions of $SciddicaT$, while 2, 4, 8 and 16 threads were
+employed for benchmark experiments concerning OpenCAL-OMP
+implementations. Moreover, two devices were adopted for testing the
+different versions of the OpenCAL-CL implementations of $SciddicaT$,
+namely a GTX 980 (Maxwell architecture) and a Tesla K40 (Kepler
+architecture) graphic processor. In particular, the former has 2048
+CUDA cores, 4 GB global memory and 112 GB/s theoretical bandwidth
+communication for double precision data between CPU and GPU, while
+the latter device has 2880 cores, 12 GB global memory and 144 GB/s
+double precision high-bandwidth. Eventually, a Gigabit Ethernet
+interconnected dual node test system with a GTX 980 GPU per node,
+which is the configuration used for development purposes, was
+considered for preliminary evaluating the OpenCAL-MPI versions of
+$SciddicaT$ .
+
 
 \subsection{Standard Tests}
 \label{sec:standard_tests}
-The execution times of the Tessina landslide simulation related to
-the OpenCAL and OpenCAL-OMP different versions of $SciddicaT$ are
-reported in Table \ref{tab:sciddicaT-OMP-execution-times}. Here,
-it is worth to note how the optimizations progressively introduced
-in the different versions of $SciddicaT$ are effective and, as
-expected, execution times decrease steadily in all cases. In fact,
-even in the case of the serial OpenCAL-based implementations, the
-execution time decreases significantly from about 78 seconds,
-registered by $SciddicaT_{naive}$, to about 5 seconds, for the
-fully optimized $SciddicaT_{ac+esl}$ version. This value further
-decreases to about 1.5 seconds for the case of 16 threads
-execution of $SciddicaT_{ac+esl}$. Note that, this can be
-considered a very good result, in consideration of the fact that
-only few years ago, despite the low computational complexity of
-the $SciddicaT$ model, the simulation of the Tessina Landslide
-required several minutes on standard PCs.
+\begin{figure}
+	\begin{center}
+		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure07_new}
+		\caption{Speed-up obtained by the different OpenCAL-OMP
+			versions of the $SciddicaT$ fluid-flow model. Elapsed times
+			in seconds are also shown in correspondence of each speed-up
+			vertex. The considered case study is the Tessina Landslide
+			(cf. Figure \ref{fig:sciddicaT-simulation}). The adopted CPU
+			was an Intel Xeon 2.0GHz E5-2650 CPU.}
+		\label{gr:sciddicaT-OMP-absolute-speed-up}
+	\end{center}
+\end{figure}
 
 \begin{table}
 	\centering
@@ -2583,91 +2507,33 @@ required several minutes on standard PCs.
 	\label{tab:sciddicaT-OMP-execution-times}
 \end{table}
 
-Figures \ref{gr:sciddicaT-OMP-relative-speed-up} and
-\ref{gr:sciddicaT-OMP-absolute-speed-up} show relative and
-absolute speed-ups of all the performed experiments,
-respectively. Relative speed-up values increase sub-linearly, up
-to about 5 for the case of $SciddicaT_{naive}$, probably due to
-the undersized dataset and low transition function computational
-complexity. Here, note that the naive implementation of
-$SciddicaT$ has the better scalability even if, in absolute terms,
-$SciddicaT_{ac+esl}$ results the faster one in terms of execution
-time. In fact, when the absolute speed-up is considered, it can be
-observed that $SciddicaT_{naive}$ runs about 5 times faster on 16
-threads with respect to the reference simulation, while
-$SciddicaT_{ac+esl}$ is the version exhibiting the best
-performance, still on 16 threads, running about 51 times faster
-with respect to the same reference simulation.
+The speed-up and execution times of the Tessina landslide
+simulation related to the OpenCAL and OpenCAL-OMP different
+versions of $SciddicaT$ are shown in Figure
+\ref{gr:sciddicaT-OMP-absolute-speed-up} and reported Table \ref{tab:sciddicaT-OMP-execution-times}. Here, it is worth to
+note how the optimizations progressively introduced are effective
+and, as expected, execution times decrease steadily in all
+cases. In fact, even in the case of the serial OpenCAL-based
+implementations, the execution time decreases significantly from
+about 78 seconds, registered by $SciddicaT_{naive}$, to about 5
+seconds, for the fully optimized $SciddicaT_{ac+esl}$ version. As
+expected, $SciddicaT_{ac+esl}$ is the version exhibiting the best
+performance, running about 51 times faster on 16 threads with
+respect to the reference simulation.
 
 \begin{figure}
 	\begin{center}
-		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure14.pdf}
-		\caption[\textbf{Relative} speed-up obtained by the different OpenCAL-OMP versions of
-		the $SciddicaT$ fluid-flow model.]{\textbf{Relative} speed-up obtained by the different OpenCAL-OMP versions of
-			the $SciddicaT$ fluid-flow model. The considered case study is the
-			Tessina Landslide (cf. Figure \ref{fig:sciddicaT-simulation}). The
-			adopted CPU was an Intel Xeon 2.0GHz E5-2650 CPU.}
-		\label{gr:sciddicaT-OMP-relative-speed-up}
+		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure08_new}
+		\caption{Speed-up obtained by the different OpenCAL-CL
+			versions of the $SciddicaT$ fluid-flow model. Elapsed times
+			in seconds are also shown on top of each speed-up bar. The
+			considered case study is the Tessina Landslide (cf. Figure
+			\ref{fig:sciddicaT-simulation}). The adopted OpenCL
+			compliant devices were a Nvidia Tesla K40 and an Nvidia GTX
+			980.}
+		\label{gr:sciddicaT-CL-absolute-speed-up}
 	\end{center}
 \end{figure}
-
-\begin{figure}
-	\begin{center}
-		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure15.pdf}
-		\caption[\textbf{Absolute} speed-up obtained by the different OpenCAL-OMP versions of
-		the $SciddicaT$ fluid-flow model.]{\textbf{Absolute} speed-up obtained by the different OpenCAL-OMP versions of
-			the $SciddicaT$ fluid-flow model. The considered case study is the
-			Tessina Landslide (cf. Figure \ref{fig:sciddicaT-simulation}). The
-			adopted CPU was an Intel Xeon 2.0GHz E5-2650 CPU.}
-		\label{gr:sciddicaT-OMP-absolute-speed-up}
-	\end{center}
-\end{figure}
-
-The execution times of the benchmarks of the OpenCAL-CL different
-versions of $SciddicaT$ on the available graphic hardware are
-reported in Table
-\ref{tab:sciddicaT-CL-execution-times}. Unexpectedly, all
-experiments executed on the GTX 980 have outclassed simulations
-that were performed on the Tesla K40, despite this latter is
-considered to be way more performing (in terms of GFlops). Many
-considerations have to be taken into account for a plausible
-explanation for this result. First, this is probably due to the
-adopted non-optimal thread occupancy (due to the small considered
-data set) for the considered hardware \cite{Kirk-2010}. Another
-reason might be that the K40, though having more cores with
-respect to the GTX 980, has a lower CUDA core clock-rate (1126MHz
-vs 745MHz). Even cache issues could justify the results, since the
-K40 has less of both L1 and L2 level cache memories than the GTX
-980, this latter benefiting from Nvidia's hardware improvements
-carried out in the more recent Maxwell architectures with respect
-to the Kepler ones. In all cases, these experiments show that, for
-small datasets and low computationally intense transition
-functions, the adoption of a gaming-oriented card like the GTX 980
-can produce more performing results, despite the lower cost with
-respect to high-end graphic processors.
-
-Moreover, independently from the adopted device, the $SciddicaT$
-version exploiting the GPU local memory does not result faster of
-the corresponding global memory version. Even in this case, this
-result can be justified by the low computationally intense
-transition function, were work-items do not access data in local
-memory a sufficient number of times to result in better tradeoff
-and thus better performances.
-
-Eventually, it is worth to note that, the lowest time registered
-on the GPU was about 3 seconds, which is about the double with
-respect to the best result obtained on the CPU using 16
-threads. Even in this case, both the dimensions of the data set
-and the simple transition function makes the usage of GPGPU
-inappropriate, by also considering costs and power
-consumptions. Figures \ref{gr:sciddicaT-CL-relative-speed-up} and
-\ref{gr:sciddicaT-CL-absolute-speed-up} show results in terms of
-relative and absolute speed-up, respectively, based on timings in
-Table \ref{tab:sciddicaT-CL-execution-times}. Even in this case,
-better relative speed-up values were obtained for the naive
-implementations of $SciddicaT$, even if, in absolute terms, is the
-implementation exploiting the active cells optimization the faster
-one, as evidenced by the absolute speed-up values.
 
 \begin{table}
 	\centering
@@ -2684,59 +2550,82 @@ one, as evidenced by the absolute speed-up values.
 	\label{tab:sciddicaT-CL-execution-times}
 \end{table}
 
-\begin{figure}
-	\begin{center}
-		\includegraphics{./images/opencal/Figure16.pdf}
-		\caption[\textbf{Relative} speed-up obtained by the different OpenCAL-CL versions of the
-		$SciddicaT$ fluid-flow model.]{\textbf{Relative} speed-up obtained by the different OpenCAL-CL versions of the
-			$SciddicaT$ fluid-flow model. The considered case study is the Tessina
-			Landslide (cf. Figure \ref{fig:sciddicaT-simulation}). The adopted
-			OpenCL compliant devices were a Nvidia Tesla K40 and an Nvidia GTX
-			980.}
-		\label{gr:sciddicaT-CL-relative-speed-up}
-	\end{center}
-\end{figure}
-\begin{figure}
-	\begin{center}
-		\includegraphics{./images/opencal/Figure17.pdf}
-		\caption[\textbf{Absolute} speed-up obtained by the different OpenCAL-CL versions of the
-		$SciddicaT$ fluid-flow model.]{\textbf{Absolute} speed-up obtained by the different OpenCAL-CL versions of the
-			$SciddicaT$ fluid-flow model. The considered case study is the Tessina
-			Landslide (cf. Figure \ref{fig:sciddicaT-simulation}). The adopted
-			OpenCL compliant devices were a Nvidia Tesla K40 and an Nvidia GTX
-			980.}
-		\label{gr:sciddicaT-CL-absolute-speed-up}
-	\end{center}
-\end{figure}
+The benchmark results of the OpenCAL-CL versions of $SciddicaT$
+are instead shown in Figure
+\ref{gr:sciddicaT-CL-absolute-speed-up} and reported in Table \ref{tab:sciddicaT-CL-execution-times}. Here, as expected,
+$SciddicaT_{ac}$ resulted the more performing on both
+devices. Unexpectedly, however, all the experiments executed on
+the GTX 980 have outclassed simulations that were performed on the
+Tesla K40, notwithstanding the first one being a gaming oriented
+GPU, while the latter a HPC dedicated device. Even GPU hardware
+issues might be taken into account: for instance, the K40, though
+having more cores with respect to the GTX 980, has a lower CUDA
+core clock-rate (745MHz vs 1126MHz) and lower memory clock-rate
+(6008 MHz vs 7012 MHz). Also cache issues could justify the
+results, since the K40 has less of both L1 and L2 level cache
+memories than the GTX 980, this latter benefiting from Nvidia's
+hardware improvements carried out in the more recent Maxwell
+architectures with respect to the Kepler ones. Moreover,
+independently from the adopted device, the $SciddicaT$ version
+exploiting the GPU local memory did not resulted faster than the
+corresponding global memory version. This can be justified by the
+low transition function computational intensity, whereby
+work-items do not access data in local memory a sufficient number
+of times to result in better trade-off and thus better
+performances.
 
-
-
+In addition, in the case of $SciddicaT_{ac}$, it is worth to note
+that the CPU performs better than the considered GPUs: 2.70
+seconds on 16 threads, against 2.98 and 3.96 seconds on the GTX
+980 and the Tesla K40, respectively. This can be explained by
+considering that the mesh generated by the quantization algorithm
+is too small to exploit the GPU latency thread hiding mechanism at
+best \cite{Kirk2010}. In fact, the mean number of cells processed
+per step is 3,277 (cf. Section \ref{sec:SciddicaT-ac}),
+which is of the same order of magnitude of the number of cores of
+the adopted GPUs (cf. above in this Section). This also leads to a
+waste of bandwidth. In fact, while the other versions were able
+able to adequately exploit the available bandwidth (e.g. the
+$SciddicaT_{naive}$ version reached about 88 GB/s on the Tesla K40
+GPU), the one exploiting the quantization optimization was not
+able to take advantage of it (achieving 10 GB/s only). Eventually,
+a further study performed on the most time consuming kernels has
+shown that the achieved bandwidth is significantly higher for the
+CPU. Particularly indicative is the value measured for the more
+time consuming kernel, i.e. the one implementing the stream
+compaction algorithm. This latter, which takes alone about the
+55\% of the overall execution time on both the adopted CPU and
+GPUs versions, exploits the bandwidth the 35\% better on the CPU,
+while the other kernels are bandwidth equivalent or perform better
+on the GPUs, all having however in this latter case a negligible
+percentage of the overall execution time (about the 3\%). In other
+words, the standard test case here considered is simply too small
+to make decent use of the considered GPUs and, consequently it not
+surprising that the CPU performs better in this specific case.
 
 \subsection{Transition Function Stress Tests}    
-In order to evaluate performances when considering
+As anticipated, in order to evaluate performances when considering
 computationally intensive state transitions, further tests were
-carried out by fictitiously slowing-down the $SciddicaT$
-transition functions, i.e. by reapplying $\sigma$ for a total of
-200 times during each simulation step, data transfer excluded
-(e.g. from global to local memory, in the case of
-$SciddicaT_{local}$).
+carried out by fictitiously increasing the complexity of the
+$SciddicaT$ transition function. This was done by reapplying the
+transition function $\sigma$ for a total of 200 times during each
+simulation step, excluding data transfer (e.g. from global to
+local memory, in the case of $SciddicaT_{local}$).
 
-The transition function stress tests execution times for the
-OpenCAL and OpenCAL-OMP different versions of $SciddicaT$ are
-reported in Table \ref{tab:sciddicaT-OMP-execution-times-stress},
-while Figures \ref{gr:sciddicaT-OMP-relative-speed-up-stress} and
-\ref{gr:sciddicaT-OMP-absolute-speed-up-stress} show relative and
-absolute speed-up, respectively. A more pronounced timings
-decrease is here observed for each $SciddicaT$ version as the
-number of threads is increased. This is confirmed by the relative
-speed-up, where the highest value of 10.3 is obtained by the
-$SciddicaT_{ac+esl}$ version over 16 threads. Note that,
-differently from the previous tests, here is the fully optimized
-version showing the best speed-up trend, while the naive one is
-the worst. The same holds the absolute speed-up where, in
-particular, $SciddicaT_{ac+esl}$ runs about 289 times faster on 16
-threads with respect to the reference serial version of
-$SciddicaT_{naive}$.
+\begin{figure}
+	\begin{center}
+		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure09_new}
+		\caption{Speed-up obtained during the \emph{transition
+				function stress test} by the different OpenCAL-OMP
+			versions of the $SciddicaT$ fluid-flow model. Elapsed times
+			in seconds are also shown in correspondence of each speed-up
+			vertex. The considered case study is the Tessina Landslide
+			(cf. Figure \ref{fig:sciddicaT-simulation}). The adopted CPU
+			was an Intel Xeon 2.0GHz E5-2650 CPU.}
+		\label{gr:sciddicaT-OMP-absolute-speed-up-stress}
+	\end{center}
+\end{figure}
+
 \begin{table}
 	\centering
 	\begin{tabular}{cccc}
@@ -2754,56 +2643,31 @@ $SciddicaT_{naive}$.
 	\label{tab:sciddicaT-OMP-execution-times-stress}
 \end{table}
 
-\begin{figure}
-	\begin{center}
-		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure18.pdf}
-		\caption[\textbf{Relative} speed-up obtained during the \emph{transition function stress	test} by the different OpenCAL-OMP versions of the $SciddicaT$ fluid-flow model.]{\textbf{Relative} speed-up obtained during the \emph{transition function stress
-				test} by the different OpenCAL-OMP versions of the $SciddicaT$
-			fluid-flow model. The considered case study is the Tessina Landslide
-			(cf. Figure \ref{fig:sciddicaT-simulation}). The adopted CPU was an
-			Intel Xeon 2.0GHz E5-2650 CPU.}
-		\label{gr:sciddicaT-OMP-relative-speed-up-stress}
-	\end{center}
-\end{figure}
+
+Results of the benchmarks executed on the CPU are shown in Figure
+\ref{gr:sciddicaT-OMP-absolute-speed-up-stress}, both in terms of
+execution time and speed-up. Raw execution times for this benchmark are also reported in Table \ref{tab:sciddicaT-OMP-execution-times-stress}.
+A more pronounced
+timings decrease is here observed for each $SciddicaT$ version as
+the number of threads is increased, with a maximum speed-up of
+about 289 for the $SciddicaT_{ac+esl}$ execution on 16
+threads. Here, the implementations exploiting the active cells
+optimization outperform the naive one of two orders of magnitude.
 
 \begin{figure}
 	\begin{center}
-		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure19.pdf}
-		\caption[\textbf{Absolute} speed-up obtained during the \emph{transition function stress test} by the different OpenCAL-OMP versions of the $SciddicaT$
-		fluid-flow model.]{\textbf{Absolute} speed-up obtained during the \emph{transition function stress test} by the different OpenCAL-OMP versions of the $SciddicaT$
-			fluid-flow model. The considered case study is the Tessina Landslide
-			(cf. Figure \ref{fig:sciddicaT-simulation}). The adopted CPU was an
-			Intel Xeon 2.0GHz E5-2650 CPU.}
-		\label{gr:sciddicaT-OMP-absolute-speed-up-stress}
+		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure10_new}
+		\caption{Speed-up obtained during the \emph{transition
+				function stress test} by the different OpenCAL-CL versions
+			of the $SciddicaT$ fluid-flow model. Elapsed times in
+			seconds are also shown on top of each speed-up bar. The
+			considered case study is the Tessina Landslide (cf. Figure
+			\ref{fig:sciddicaT-simulation}). The adopted OpenCL
+			compliant devices were a Nvidia Tesla K40 and an Nvidia GTX
+			980.}
+		\label{gr:sciddicaT-CL-absolute-speed-up-stress}
 	\end{center}
 \end{figure}
-
-
-The execution timings for the stress tests of the \texttt{OpenCAL-CL}
-different versions of $SciddicaT$ on the considered graphic
-hardware are reported in Table
-\ref{tab:sciddicaT-CL-execution-times-stress}, while Figures
-\ref{gr:sciddicaT-CL-relative-speed-up-stress} and
-\ref{gr:sciddicaT-CL-absolute-speed-up-stress} show relative and
-absolute speed-up, respectively. Here, conversely from the
-standard tests, the $SciddicaT$ version exploiting the GPU local
-memory ($SciddicaT_{local}$) resulted significantly faster with
-respect to the corresponding global memory version on both the
-considered devices. In particular, in this case, the Tesla K40
-reported the best result, evidencing a better local memory system
-(i.e., better tradeoff between local memory access/transfer) with
-respect to the GTX 980 GPU. Nevertheless, the $SciddicaT_{ac}$
-versions performances resulted always better than any CPU/GPU
-version (the GTX 980 performing better), demonstrating even in
-this case the validity of the active cells
-optimization. Eventually, note that, this time the best GPU
-performance registered by the $SciddicaT$ OpenCAL-CL versions
-significantly overcame the one registered on the CPU. In
-particular, the $SciddicaT_{ac}$ ran about 441 times faster than
-the serial version of $SciddicaT_{naive}$, against the best 289
-absolute speed-up registered on the CPU, pointing out, as
-expected, the usefulness of GPGPU solutions in the case of enough
-computational intense simulation models.
 \begin{table}
 	\centering
 	\begin{tabular}{cccc}
@@ -2820,68 +2684,64 @@ computational intense simulation models.
 		compliant devices are a NVIDIA Tesla K40 and a Nvidia GTX 980.}
 	\label{tab:sciddicaT-CL-execution-times-stress}
 \end{table}
-\begin{figure}
-	\begin{center}
-		\includegraphics{./images/opencal/Figure20.pdf}
-		\caption[\textbf{Relative} speed-up obtained during the \emph{transition function stress test} by different OpenCAL-CL versions of the $SciddicaT$ fluid-flow model.]{\textbf{Relative} speed-up obtained during the \emph{transition function stress
-				test} by the different OpenCAL-CL versions of the $SciddicaT$
-			fluid-flow model. The considered case study is the Tessina Landslide
-			(cf. Figure \ref{fig:sciddicaT-simulation}). The adopted OpenCL
-			compliant devices were a Nvidia Tesla K40 and an Nvidia GTX 980.}
-		\label{gr:sciddicaT-CL-relative-speed-up-stress}
-	\end{center}
-\end{figure}
+Figure \ref{gr:sciddicaT-CL-absolute-speed-up-stress} shows
+instead, the benchmark results of the different OpenCAL-CL versions
+of $SciddicaT$ on the considered graphic hardware for the
+transition function stress test. Raw execution times are also reported in Table \ref{tab:sciddicaT-CL-execution-times-stress}. Here, conversely from the
+standard tests, the $SciddicaT$ version exploiting the GPU local
+memory resulted significantly faster with respect to the
+corresponding global memory version on both the considered
+devices. In particular, in this case, the Tesla K40 reported the
+best result, evidencing a better local memory system (i.e., better
+tradeoff between local memory access/transfer) with respect to the
+GTX 980 GPU. Nevertheless, the $SciddicaT_{ac}$ performances
+resulted always better than any CPU/GPU version (the GTX 980
+performing better), demonstrating even in this case the validity
+of the active cells optimization. It is worth to note that this time
+the best GPU performance registered by the $SciddicaT$ OpenCAL-CL
+versions significantly overcame the one registered on the CPU. In
+particular, the $SciddicaT_{ac}$ ran about 441 times faster than
+the serial version of $SciddicaT_{naive}$, against the best 289
+speed-up registered on the CPU, pointing out, as expected, the
+full suitability of GPGPU solutions in the case of sufficiently
+computational intense simulation models.
 
 \begin{figure}
 	\begin{center}
-		\includegraphics{./images/opencal/Figure21.pdf}
-		\caption[\textbf{Absolute} speed-up obtained during the \emph{transition function stress test} by different OpenCAL-CL versions of the $SciddicaT$ fluid-flow model.]{Absolute speed-up obtained during the \emph{transition function stress
-				test} by the different OpenCAL-CL versions of the $SciddicaT$
-			fluid-flow model. The considered case study is the Tessina Landslide
-			(cf. Figure \ref{fig:sciddicaT-simulation}). The adopted OpenCL
-			compliant devices were a Nvidia Tesla K40 and an Nvidia GTX 980.}
-		\label{gr:sciddicaT-CL-absolute-speed-up-stress}
-	\end{center}
-\end{figure}
-\subsection{Computational Domain Stress Tests}
-\label{sec:opencal_stress_testR}
-In order to evaluate performances when wider computational domains
-are taken into account, futher tests were carried out by
-considering a DEM of 3,593 rows per 3,730 columns, with square
-cells of 10 m side. Moreover, the landslide source were replicated
-for a total of 100 times over the extended DEM and a simulation
-executed for each combination of $SciddicaT$ versions and
-available devices. Figure \ref{fig:stresstestR} show the
-simulation outcome obtained by considering the wider DEM and the
-100 landslide sources.
-
-\begin{figure}
-	\begin{center}
-		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure22.pdf}
-		\caption[$SciddicaT$ simulation stress test of 100 landslide sources]{$SciddicaT$ simulation stress test of 100 landslide sources
-			distributed over a DEM of 3593 rows per 3730 columns, with square
-			cells of 10 m side. Topographic altitudes are represented in gray
-			scale (black for lower altitude, white for the highest
-			elevation). Landslides paths are represented in red.}
+		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure11_new}
+		\caption{$SciddicaT$ simulation stress test of 100 landslide
+			sources distributed over a DEM of 3593 rows per 3730
+			columns, with square cells of 10 m side. Landslides paths
+			are represented in black.}
 		\label{fig:stresstestR}
 	\end{center}
 \end{figure}
 
-The computational domain stress tests execution times for the
-OpenCAL and OpenCAL-OMP different versions of $SciddicaT$ are
-reported in Table \ref{tab:sciddicaT-OMP-execution-times-stressR},
-while Figures \ref{gr:sciddicaT-OMP-relative-speed-up-stressR} and
-\ref{gr:sciddicaT-OMP-absolute-speed-up-stressR} show relative and
-absolute speed-up, respectively. Similarly to the standard tests,
-a slight timings decrease is observed for each $SciddicaT$ version
-as the number of threads is increased. This is confirmed by the
-relative speed-up, where the highest value of 3 is obtained by the
-$SciddicaT_{ac+esl}$ version over 16 threads. Note that,
-differently from the previous tests, here is $Sciddica_{ac}$ the
-version showing the best speed-up trend, while the naive one is
-the worst. At the contrary, in terms of absolute speed-up, values
-increase accordingly to the adopted optimizations, resulting
-$Sciddica_{ac+esl}$ the fastest version with a value of about 21.
+\subsection{Computational Domain Stress Tests}
+\label{sec:opencal_stress_testR}
+In order to evaluate performances when larger computational
+domains are taken into account, further tests were carried out by
+considering a DEM of 3,593 rows per 3,730 columns, with square
+cells of 10 m side. Moreover, the landslide source was uniformly
+replicated 100 times over the extended DEM and a simulation
+executed for each combination of $SciddicaT$ versions and
+available devices. Figure \ref{fig:stresstestR} shows the
+simulation outcomes obtained by considering the wider DEM and the
+100 landslide sources.
+
+\begin{figure}
+	\begin{center}
+		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure12_new}
+		\caption{Speed-up obtained during the \emph{computational
+				domain stress test} by the different OpenCAL-OMP versions
+			of the $SciddicaT$ fluid-flow model. Elapsed times in
+			seconds are also shown in correspondence of each speed-up
+			vertex. The considered case study is the simulation shown in
+			Figure \ref{fig:stresstestR}. The adopted CPU was an Intel
+			Xeon 2.0GHz E5-2650 CPU.}
+		\label{gr:sciddicaT-OMP-absolute-speed-up-stressR}
+	\end{center}
+\end{figure}
 \begin{table}
 	\centering
 	\begin{tabular}{cccc}
@@ -2893,67 +2753,31 @@ $Sciddica_{ac+esl}$ the fastest version with a value of about 21.
 	\end{tabular}
 	\caption[Elapsed times obtained for the \emph{computational domain stress test} by different OpenCAL and OpenCAL-OMP versions
 	of the $SciddicaT$ fluid-flow model.]{Elapsed times (in seconds) obtained for the \emph{computational domain stress test} based on the simulation shown in Figure \ref{fig:stresstestR}) by different OpenCAL and OpenCAL-OMP versions
-	of the $SciddicaT$ fluid-flow model. The adopted CPU is an Intel Xeon
-	2.0GHz E5-2650.}
+		of the $SciddicaT$ fluid-flow model. The adopted CPU is an Intel Xeon
+		2.0GHz E5-2650.}
 	\label{tab:sciddicaT-OMP-execution-times-stressR}
 \end{table}
+Computational results of the OpenCAL-OMP versions of $SciddicaT$
+are reported in Figure
+\ref{gr:sciddicaT-OMP-absolute-speed-up-stressR} and Table \ref{tab:sciddicaT-OMP-execution-times-stressR}. Similarly to the
+standard tests, a slight timings decrease is observed for all
+cases as the number of threads is increased. Values increase
+accordingly to the adopted optimizations, resulting
+$Sciddica_{ac+esl}$ the fastest version with a value of about 21.
 
 \begin{figure}
 	\begin{center}
-		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure23.pdf}
-		\caption[\textbf{Relative} speed-up obtained during the \emph{computational domain stress test} by the different OpenCAL-OMP versions of the
-		$SciddicaT$ fluid-flow model.]{\textbf{Relative} speed-up obtained during the \emph{computational domain
-				stress test} by the different OpenCAL-OMP versions of the
-			$SciddicaT$ fluid-flow model. The considered case study is the
-			simulation shown in Figure \ref{fig:stresstestR}). The adopted CPU was
-			an Intel Xeon 2.0GHz E5-2650 CPU.}
-		\label{gr:sciddicaT-OMP-relative-speed-up-stressR}
+		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure13_new}
+		\caption{Speed-up obtained during the \emph{computational
+				domain stress test} by the different OpenCAL-CL versions
+			of the $SciddicaT$ fluid-flow model. Elapsed times in
+			seconds are also shown on top of each speed-up bar. The
+			considered case study is the simulation shown in Figure
+			\ref{fig:stresstestR}. The adopted OpenCL compliant devices
+			were a Nvidia Tesla K40 and an Nvidia GTX 980.}
+		\label{gr:sciddicaT-CL-absolute-speed-up-stressR}
 	\end{center}
 \end{figure}
-
-\begin{figure}
-	\begin{center}
-		\includegraphics[width=1.0\textwidth]{./images/opencal/Figure24.pdf}
-		\caption[\textbf{Absolute} speed-up obtained during the \emph{computational domain
-			stress test} by the different OpenCAL-OMP versions of the
-		$SciddicaT$ fluid-flow model.]{\textbf{Absolute} speed-up obtained during the \emph{computational domain
-				stress test} by the different OpenCAL-OMP versions of the
-			$SciddicaT$ fluid-flow model. The considered case study is the
-			simulation shown in Figure \ref{fig:stresstestR}). The adopted CPU was
-			an Intel Xeon 2.0GHz E5-2650 CPU.}}
-		\label{gr:sciddicaT-OMP-absolute-speed-up-stressR}
-	\end{center}
-\end{figure}
-
-
-The execution timings for the computational domain stress tests of
-the OpenCAL-CL different versions of $SciddicaT$ on the considered
-graphic hardware are reported in Table
-\ref{tab:sciddicaT-CL-execution-times-stressR}, while Figures
-\ref{gr:sciddicaT-CL-relative-speed-up-stressR} and
-\ref{gr:sciddicaT-CL-absolute-speed-up-stressR} show relative and
-absolute speed-up, respectively. Here, as for the standard tests,
-the $SciddicaT$ version exploiting the GPU local memory
-($SciddicaT_{local}$) does not resulted significantly faster than
-the corresponding global memory version on both the considered
-devices, by confirming that local memory have to be accessed an
-elevated number of times to take an effective advantage compared
-to the global one (and thus can result more useful for higher
-computationally complex models). However, the $SciddicaT_{ac}$
-versions performances resulted always better than any CPU/GPU
-version (the GTX 980 performing better), demonstrating even in
-this case the validity of the active cells optimization. Moreover,
-even in this case, the best GPU performance registered by the
-$SciddicaT$ OpenCL versions significantly overcame the one
-registered on the CPU. In particular, the $SciddicaT_{ac}$ ran
-about 122 times faster than the serial version of
-$SciddicaT_{naive}$, against the best 21 absolute speed-up
-registered on the CPU, pointing out, as expected, the usefulness
-of GPGPU solutions in the case of extended computational
-domains. Eventually, it is worth to note that, as in the standard
-tests, the GTX 980 reported the best result with respect to the
-Tesla K40, confirming that a gaming-oriented solution is probably
-the best choice in case of low-intense computational models.
 \begin{table}
 	\centering
 	\begin{tabular}{cccc}
@@ -2962,40 +2786,45 @@ the best choice in case of low-intense computational models.
 		95.939\\ GTX 980 & 518.479 & 392.300 & 41.019\\ \hline
 	\end{tabular}
 	\caption{Elapsed times (in seconds) obtained for the \emph{computational domain stress test} based on the simulation shown in Figure
-	\ref{fig:stresstestR} by different OpenCAL-CL versions of the
-	$SciddicaT$ fluid-flow model. The adopted OpenCL compliant devices are
-	a Nvidia Tesla K40 and a Nvidia GTX 980.}
+		\ref{fig:stresstestR}) by different OpenCAL-CL versions of the
+		$SciddicaT$ fluid-flow model. The adopted OpenCL compliant devices are
+		a Nvidia Tesla K40 and a Nvidia GTX 980.}
 	\label{tab:sciddicaT-CL-execution-times-stressR}
 \end{table}
+Benchmark results of the OpenCAL-CL different versions of
+$SciddicaT$ on the computational domain stress tests are instead
+reported in Figure
+\ref{gr:sciddicaT-CL-absolute-speed-up-stressR} and Table \ref{tab:sciddicaT-CL-execution-times-stressR}. Here, as for the
+standard tests, the $SciddicaT$ version exploiting the GPU local
+memory did not result significantly faster than the corresponding
+global memory version on both the considered devices, by
+confirming that local memory has to be accessed an elevated number
+of times to take an effective advantage compared to the global one
+(and thus can result more useful for higher computationally
+complex models). However, the $SciddicaT_{ac}$ versions
+performances resulted always better than any CPU/GPU version (the
+GTX 980 performing better), demonstrating even in this case the
+validity of the active cells optimization. Moreover, even in this
+case, the best GPU performance overcame the one registered on the
+CPU. In particular, the $SciddicaT_{ac}$ ran about 122 times
+faster on the GTX 980 than the serial version of
+$SciddicaT_{naive}$, against the best 21 absolute speed-up
+registered on the CPU pointing out, as expected, the usefulness of
+GPGPU solutions also in the case of extended computational domains. The
+result is justified by the same evaluations performed for the
+standard test case. In particular, the higher dimension of the
+computational domain stress test mesh permits the GPUs to always
+perform better than the CPU in terms of achiewed bandwidth for all
+the considered $SciddicaT$ versions (the $SciddicaT_{ac}$ version
+included, which achieves about 77 GB/s of bandwidth on the Tesla
+K40, against the 10 GB/s achieved on the smaller mesh), by
+consequently allowing to hide the thread latency in all cases, and
+thus to better exploit the GPU computational power. Eventually, it
+is worth to note that, as in the standard tests, the GTX 980
+outperformed the Tesla K40, confirming that a gaming-oriented
+device is a preferable solution in case of low-intense
+computational models.
 
-
-\begin{figure}
-	\begin{center}
-		\includegraphics{./images/opencal/Figure25.pdf}
-		\caption[\textbf{Relative} speed-up obtained during the \emph{computational domain
-			stress test} by the different OpenCAL-CL versions of the $SciddicaT$
-		fluid-flow model.]{\textbf{Relative} speed-up obtained during the \emph{computational domain
-				stress test} by the different OpenCAL-CL versions of the $SciddicaT$
-			fluid-flow model. The considered case study is the simulation shown in
-			Figure \ref{fig:stresstestR}). The adopted OpenCL compliant devices
-			were a Nvidia Tesla K40 and an Nvidia GTX 980.}
-		\label{gr:sciddicaT-CL-relative-speed-up-stressR}
-	\end{center}
-\end{figure}
-
-\begin{figure}
-	\begin{center}
-		\includegraphics{./images/opencal/Figure26.pdf}
-		\caption[\textbf{Absolute} speed-up obtained during the \emph{computational domain
-			stress test} by the different OpenCAL-CL versions of the $SciddicaT$
-		fluid-flow model.]{\textbf{Absolute} speed-up obtained during the \emph{computational domain
-				stress test} by the different OpenCAL-CL versions of the $SciddicaT$
-			fluid-flow model. The considered case study is the simulation shown in
-			Figure \ref{fig:stresstestR}). The adopted OpenCL compliant devices
-			were a Nvidia Tesla K40 and an Nvidia GTX 980.}
-		\label{gr:sciddicaT-CL-absolute-speed-up-stressR}
-	\end{center}
-\end{figure}
 
 \section{Discussion and Outlooks}
 
