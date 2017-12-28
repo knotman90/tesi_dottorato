@@ -28,21 +28,20 @@ Results show that the framework is effective in reducing programmer effort in pr
 \let\cleardoublepage\relax
 \let\cleardoublepage\relax
 
-%\begin{otherlanguage}{nitalian}
+\begin{otherlanguage}{nitalian}
 \pdfbookmark[1]{Sommario}{Sommario}
 \chapter*{Sommario}
 
-
-Over the last two decades, a lot has changed regarding the way modern scientific applications are designed, written and executed, especially in the field of data-analytics, scientific computing and visualization. Dedicated computing machines are nowadays large, powerful agglomerates of hundreds or thousands of multi-core computing nodes interconnected via  network each coupled with multiple accelerators. Those kinds of parallel machines are very complex and their efficient programming is hard, bug-prone and time-consuming. 
-In the field of scientific computing, and of modeling and simulation especially, parallel machines are used to obtain approximate numerical solutions to differential equations
-for which the classical approach often fails to solve them analytically making a numerical computer-based approach absolutely necessary.
-An approximate numerical solution of a partial differential equation can be obtained by applying a number of methods, as the finite element or finite difference method which yields approximate values of the unknowns at a discrete number of points over the domain.
-When large domains are considered, big parallel machines are required in order to process the resulting huge amount of mesh nodes. Parallel programming is notoriously complex, often requiring great programming efforts in order to obtain efficient solvers targeting large computing cluster. This is especially true since heterogeneous hardware and GPGPU has become mainstream.
-The main thrust of this work is the creation of a programming abstraction and a runtime library for seamless implementation of numerical methods on regular grids targeting different computer architecture: from commodity single-core laptops to large clusters of heterogeneous accelerators. A framework, \texttt{OpenCAL} had been developed, which exposes a domain specific language for the definition of a large class of numerical models and their subsequent deployment on the targeted machines. Architecture programming details are abstracted from the programmer that with little or no intervention at all can obtain a \textit{serial, multi-core, single-GPU, multi-GPUs and cluster of GPUs} \texttt{OpenCAL} application. 
-Results show that the framework is effective in reducing programmer effort in producing efficient parallel numerical solvers.
-
-
-%\end{otherlanguage}
+Durante l'ultimo ventennio il modo in cui le moderne applicazioni scientifiche sono scritte e progettate è cambiato radicalmente, specialmente in campi come la data-analytics, il calcolo scientifico e la visualizzazione. Systemi di calcolo dedicate sono oggigiorno grandi e potenti agglomerati di centinaia o migliaia di nodi di calcolo interconnessi l'uno all'altro tramite reti ad alta velocità ed ognuno dotato di uno o più acceleratori.
+Questa macchine parallela sono complesse e la loro programmazione efficiente è difficile, bug-prone e richiede tempo e denaro.
+Nel campo del calcolo scientifico e della modellazione e simulazione specialmente, macchine parallele sono usate per ottenere soluzioni numeriche approssimate a equazioni differenziali per cui gli approcci classici, basati sul calcolo differenziale, falliscono nel risolverle analiticamente rendendo le soluzioni numeriche calcolate tramite sistemi computerizzati assolutamente indispensabili.
+Le soluzioni numeriche per equazioni differenziali possono essere ottenute attraverso l'utilizzo di una serie di metodi, tra cui il metodo degli elementi o delle differenze finite, quest'ultimo ad esempio, fornisce valori approssimati della incognite in un numero discreto e finito di punti nel dominio.
+Al crescere delle dimensioni dei domini, crescono le dimensioni delle macchine parallele che sono necessarie a processare l'incredibile numero di punti che costituisce la griglia di nodi che discretizza il dominio.
+La programmazione parallela è notoriamente difficile, e richiede uno sforzo da parte del programmatore per ottenere solvers efficienti e che siano in grado di essere eseguiti su grandi cluster di calcolo. Questo è diventato un problema ancora più centrale da quando la GPGPU è diventata mainstream.
+Il contributo principale di questa tesi è la creazione di una programming abstraction e una libreria runtime per l'implementazione seamless di modelli numerici su griglia regolare che possano essere eseguiti su svariate architetture, a partire da personal computers o laptops fino a grandi cluster di calcolo eterogenei dotati di acceleratori.
+Il framework \texttt{OpenCAL} è il risultato di questo lavoro, ed è sostanzialmente composto da un domain specific language per la definizione e l'implementazione di una famiglia di modelli numerici e il loro successivo deployment sulla macchina target.
+Dettagli architetturali sono totalmente astratti dal programmatore che con pochissimo sforzo di programmazione può ottenere diverse versioni della stessa applicazione \texttt{OpenCAL}: \textit{seriale, multi-core, single-GPU, multi-GPU, distributed memory-multi-GPU}. I risultati mostrano che il framework è realmente in grado di ridurre lo sforzo di programmazione per lo sviluppo di solvers numerici paralleli efficienti.
+\end{otherlanguage}
 
 \endgroup
 

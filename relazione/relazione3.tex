@@ -40,14 +40,28 @@ International Conference on Parallel, and Network-Based Computing
 
 \section{Attività di Ricerca}
 
-Durante l'ultimo ventennio, il modo in cui le moderne applicazioni di calcolo scientifico sono progettate, scritte ed eseguito è cambiato in maniera radicale, specialmente in campi come la data-analitycs, il calcolo scientifico e la visualizzazione.
-Tra le ragioni principali a causa troviamo la dimensione del problemi che vengono studiato oggigiorno è vanno sempre ad aumentare e che la quantità di dati disponibili ad essere analizzati hanno aumentato lo spettro di applicazione del calcolo scientifico oltre quello che non era immaginabile prima.
-Grandi macchine parallele sono necessarie per processare le enormi griglie di calcolo che le applicazioni moderne di calcolo si trovano a manipolare e che sono il risultato della modelliazione di complessi problemi reali attraverlo l0utilizzo di modelli computazionali come il \textit{metodo degli elementi/volumi/differenze}  finiti o gli automi cellulari.
-Questa tipologia di macchine è notoriamente complessa da programmare e richiede uno sforzo di programmazione non indifferente affinchè ne vengano sfruttate a pieno le prestazioni di questi grandi cluster, specialmente dopo l'avvento di hardware eterogeneo e la GPGPU.
-Durante il mio \RNum{3} anno di dottorato mi sono quindi occupato principalmente di concludere, ottimizzare e testare il lavoro  portato avanti nei due anni precedenti sulla libreria OpenCAL, che è una progetto open-source che fornisce un layer di astrazione ed un domain specific language per la definizione di una famiglia di modelli numerici e poi, il loro deployment ed esecuzione su macchine parallele con hardware eterogeneo.
-La libreria nasconde i dettagli di basso livello (come la gestione della memoria o il threading) legati all'hardware per il quale si vuole produrre l'applicazione.
-Il risultato è che con poco sforzo il programmatore può produrre diverse versioni della stessa applicazione utilizzado lo stesso codice: dalla seriale a quella che ha come target cluster di GPU.
-La librerie è stata testata su applicazioni che mostrano  caratteristiche di compute che memory bound e i risultati dimostrano che la librerie  in grado di accelerare i modelli numerici considerati in maniera efficace.
+
+Durante l’ultimo ventennio, il modo in cui le moderne applicazioni di calcolo scientifico sono progettate, scritte ed eseguite è cambiato in maniera 
+radicale, specialmente in campi come la data-analitycs, la simulazione e la 
+visualizzazione. Tra le ragioni principali a causa di ciò troviamo che la dimensione dei problemi che vengono studiati oggigiorno è maggiore che in 
+passato (e va aumentando anche il tasso di crescita) e che la quantità di dati 
+disponibili ad essere analizzati hanno aumentato lo spettro di applicazione 
+del calcolo scientifico oltre quello che non era immaginabile prima (basti 
+pensare ad esempio, ai dati provenienti dai sensori delle moderne smart-city). Grandi macchine parallele sono necessarie per processare le enormi 
+griglie di calcolo che le applicazioni moderne di calcolo si trovano a manipolare e che sono il risultato della modellazione di complessi problemi 
+reali attraverso l’utilizzo di modelli computazionali come il metodo degli elementi/volumi/differenze finiti o gli automi cellulari. Questa tipologia di 
+macchine è notoriamente complessa da programmare e richiede uno sforzo 
+di programmazione non indifferente affinchè ne vengano sfruttate a pieno 
+le prestazioni di questi grandi cluster, specialmente dopo l’avvento di hardware eterogeneo e la GPGPU. Durante il mio III anno di dottorato mi sono 
+quindi occupato principalmente di concludere, ottimizzare e testare il lavoro 
+portato avanti nei due anni precedenti sulla libreria OpenCAL, che è una 
+progetto open-source che fornisce un layer di astrazione ed un domain specific language per la definizione di una famiglia di modelli numerici, il loro 
+deployment ed esecuzione su macchine parallele con hardware eterogeneo. 
+La libreria nasconde i dettagli di basso livello come la gestione della memoria 
+o il threading legati all’hardware per il quale si vuole produrre l’applicazione. 
+Il risultato è che con poco sforzo (nella maggioranza dei casi una ricompilazione) il programmatore può ottenere diverse versioni della stessa modello utilizzando lo stesso codice: dalla seriale a quella che ha come target cluster 
+di GPU. La libreria è stata testata su applicazioni che mostrano caratteristiche sia \textit{compute} che \textit{memory bound} e i risultati dimostrano che è in grado 
+di accelerare i modelli numerici considerati in maniera efficace.
 
 I tre benchmark sono stati adottati:
 \begin{enumerate}
@@ -59,12 +73,12 @@ La sezione \ref{sec:convolutional_filters} mostra un esempio di implementazione 
 
 \subsection{Convolutional Filters}
 \label{sec:convolutional_filters}
-La convoluzione di un immagine può essere espressa in modo generico mediante la seguente formula:
+La convoluzione di un'immagine può essere espressa in modo generico mediante la seguente formula:
 \begin{equation}
 f'_{ij} = \sum_{i'=0}^n (\sum_{j'i'=0}^m f_{(i+i')(j+j')}\times d_{ij})
 \label{eq:convolution}
 \end{equation}
-dover 
+dove
 \begin{itemize}
 	\item $m,n$ sono le dimensioni verticali ed orizzonatali del kernel
 	\item $f_{ij}$ e $f'_{ij}$ sono rispettivamente il vecchio ed il nuovo valore della cella alla posizione $(i,j)$,
@@ -81,7 +95,7 @@ Il filtro di Sobel è facilmente implementabile in \texttt{OpenCAL} seguendo gli
 \begin{enumerate}
 	\item L'immagine viene decomposta nei canali di colore rosso, verde e blu, e ognuno di esso è letto in un sottostato di tipo short.
 	\item Un \textit{cluster} file viene definito il quale specifica (si veda Listato \ref{code:sobel_cluster_file}) come il dominio deve essere diviso tra le risorse computazionali a disposizione.
-	\item Il codice che implementa l'applicazione di un kernel (si veda Listato \ref{code:sobel_kernel}) a un signolo punto del dominio viene specificato dal programmatore e automaticamente eseguito in parallelo su tutto il dominio. Se un device necessita di dati che sono stati assegnati ad un altro device, questi vengono automaticamente trasferiti in maniera trasparente, anche quando essi sono fisicamente installati su nodi separati (in quel caso attraverso anche una comunicazione MPI).
+	\item Il codice che implementa l'applicazione di un kernel (si veda Listato \ref{code:sobel_kernel}) a un signolo punto del dominio viene specificato dal programmatore e automaticamente eseguito in parallelo su tutto il dominio. Se un device necessità di dati che sono stati assegnati ad un altro device, questi vengono automaticamente trasferiti in maniera trasparente, anche quando essi sono fisicamente installati su nodi separati (in quel caso attraverso anche una comunicazione MPI).
 \end{enumerate}
 \begin{figure}
 	\centering
@@ -90,7 +104,7 @@ Il filtro di Sobel è facilmente implementabile in \texttt{OpenCAL} seguendo gli
 	\includegraphics[width=0.6\textwidth]{../plots/sobel_scaling}
 \end{figure}
 \lstset{language=[OpenCL]C,frame=tb,
-	caption=Adopted cluster file for the Sobel filtering example. The image is decomposed equally among 3 devices. , 
+	caption=Cluster file utilizzato per il benchmark Sobel. L'immagine è decomposta in maniera uniforme su $3$ devices., 
 	basicstyle=\footnotesize\ttfamily,
 	label={code:sobel_cluster_file}
 }
@@ -102,14 +116,13 @@ Il filtro di Sobel è facilmente implementabile in \texttt{OpenCAL} seguendo gli
 0 1 3600
 0 2 3600
 \end{lstlisting}
-Figure \ref{fig:sobel_scaling} mostra come il filtro Sobel scala al crescere del numero delle GPU utilizzate. Si noti come schede diversi tipi di schede (marca ed architettura) possono essere utilizzate allo stesso momento.
-La  Figura \ref{fig:sobel_2nodes_performance} mostra lo stesso codice eseguito su due nodi differenti. Come si può vedere anche in questo caso, in cui una comunicazione via rete è necessaria, buone performance sono ottenute, con un picco di $\approx 81\times$ quando tre devices sono utilizzati in modo concorrente.
-La libreria supporta anche architetture distributed memory e,la Figura \ref{fig:sobel_2nodes_k40+980-K20+980} mostra tempi e speedups per un esecuzione su due nodi, ognuno dei quali equipaggiato con due acceleratori (per un totale di $4$). 
-In questo caso è stato ottenuto un miglioramento di circa $\apoprox 22 \times$ e $\approx 103$ rispetto ad un esecuzione su $3$ GPU su un singolo nodo (si veda Figura \ref{fig:sobel_scaling}) e l'esecuzione \textbf{seriale} su un singolo core.
+Figure \ref{fig:sobel_scaling} mostra  come il filtro Sobel scala al crescere del numero delle GPU utilizzate (su un singolo nodo). Si noti come diversi tipi di schede (marca ed architettura) possono essere utilizzate allo stesso momento.
+La libreria supporta anche architetture distributed memory e la Figura \ref{fig:sobel_2nodes_k40+980-K20+980} mostra proprio i tempi e speedups per un esecuzione su due nodi, ognuno dei quali equipaggiato con due acceleratori (per un totale di $4$). Anche se in questo caso una comunicazione via rete è necessaria, buone performance sono comunque ottenute, con un picco di $\approx 103\times$ quando $4$ devices sono utilizzati in modo concorrente.
+E' stato ottenuto un miglioramento di circa $\apoprox 22 \times$ e $\approx 103 \times $ rispetto ad un esecuzione su $3$ GPU su un singolo nodo (si veda Figura \ref{fig:sobel_scaling}) e l'esecuzione \textbf{seriale} su un singolo core.
 \begin{figure}[!htb]
 	\minipage{1.0\textwidth}
 	\begin{subfigure}{1.0\textwidth}
-		\caption{Performance on $2$ nodes and $2$ GPUs: \texttt{NVIDIA K40}(\textit{node 1}) and $1$ \texttt{GTX980}(\textit{node 2}).}
+		\caption{Performance su $2$ nodi e $2$ GPUs: \texttt{NVIDIA K40}(\textit{node 1}) e $1$ \texttt{GTX980}(\textit{node 2}).}
 		\label{fig:sobel_2nodes_k40_980}
 		\includegraphics[width=1.0\textwidth]{../plots/sobel_2nodes_k40_980}
 		
@@ -119,18 +132,18 @@ In questo caso è stato ottenuto un miglioramento di circa $\apoprox 22 \times$ 
 	\vspace{5mm}
 	\begin{subfigure}{1.0\textwidth}
 		\includegraphics[width=1.0\textwidth]{../plots/sobel_2nodes_k40+980-K20+980}
-		\caption{Performance on $2$ nodes each with $2$ GPUs.}
+		\caption{Performance su $2$ nodi ognuno con $2$ GPUs.}
 		\label{fig:sobel_2nodes_k40+980-K20+980}
 	\end{subfigure}
 	\endminipage\hfill
-	\caption[\textit{Sobel} filter benchmark performance metrics on two nodes.]{\textit{Sobel} filter benchmark performance metrics on two Ethernet interconnected nodes. (a) reefers to the case where node 1 is equipped with $1$ $K40$ and node 2 with a $GTX980$. (b) to the case where \textit{node 1} uses a $K40$ and a $GTX980$ while \textit{node 2} a $K20$ and a $GTX980$. Time in red (lower is better), speed-up in blue (higher is better).}
+	\caption[Performance del benchmark \textit{Sobel}  su due nodi.]{Performance del filtro Sobel su due nodi interconnessi tramite rete ethernet. (a) si riferisce al caso in cui \textit{node 1} è quipaggiato con $1$ $K40$ e \textit{node 2} con una $GTX980$. (b) al caso in cui \textit{node 1} usa una $K40$ e una $GTX980$ mentre \textit{node 2} una $K20$ ed una $GTX980$. Tempi in rosso, speed-up in blue.}
 	\label{fig:sobel_2nodes_performance}
 \end{figure}
 \begin{minipage}{1.0\textwidth}
 
 
 \lstset{language=[OpenCL]C,frame=tb,
-	caption=\texttt{OpenCAL} Sobel edge detection filter kernel., 
+	caption=\texttt{OpenCAL} Kernel per il filtro Sobel di edge detection., 
 	label={code:sobel_kernel}, 
 	basicstyle=\footnotesize\ttfamily,
 	keywordstyle=\color{blue}\ttfamily,

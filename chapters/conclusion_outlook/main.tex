@@ -5,137 +5,58 @@
    Forse l'immobilità delle cose intorno a noi è loro imposta dalla nostra certezza che sono esse e non altre, dall'immobilità del nostro pensiero nei loro confronti.}
 \vskip 1em
 
-1- riassumi capitolo per capitolo cosa hai visto nella tesi
-2- riassumi il contributo più importante e.g. opencal riesci a parallelizare modelli fdm e XCA in modo trasparente su architetture multicore differenti
-3- mostra che i risultati sono buono
-4- dici che ci sta tanto da fare (prendi outlooks and future works dai capitolo opencal.tex e opencalcluster.tex e bacteria)
+Computers performance improvements  have usually come from adding more transistors onto silicon or increasing the clock speed of the chips.
+As stated by the Moore's law, computer systems performance has growth steadily since the 70's at a pace of almost a twofold improvement every two years.
+But this trend is not sustainable since cramming more transistors or increasing the clock speed require more power, which in turn generates more heat.
+Modern chips have already a ratio of heat over cm$^2$ that is higher of that of nuclear reactor core and transistors size is also hard to shrink since their size is already almost of the same order of magnitude of a single atom.
 
 
-This chapter introduced the preliminary implementation of the distributed memory and multi-GPU  version of \texttt{OpenCAL}: \texttt{OpenCAL-CLUST}.
-It has been shown that it allows deploying numerical applications on regular grid on machines composed by several computational nodes interconnected by network each armed with multiple accelerators. Thanks to the adoption of \texttt{OpenCL}, different kinds of accelerators can be employed seamlessly.
-The performance benchmarks that have been used to test \texttt{OpenCAL-CLUST} ( Section \ref{sec:perfomance}) show that it effectively use the computational power of multiple devices in order to speedup the computation.
+Demand for speed did not stop over the years and thus in order to be able to create computer systems able to tackle the challenges posed by the modern big-data and scientific computing fields. it is necessary to use multiple computing cores and nodes concurrently. Parallel computing is ubiquitous as even low-end smartphones feature, multi-core processors but parallel dedicated machines have evolved over years into complex and hardware heterogeneous agglomerate of computing devices in order to be able to solve bigger and bigger instances. Programming this ecosystem of devices, each with its own peculiarity in terms of hardware architecture and programming model and tools, at his full efficiency is notoriously hard, especially for non specialized computer scientist because specialized knowledge (algorithms, tools, programming languages, systems tools, high-speed networking, etc.) is absolutely necessary.
 
-As regarding future developments, \texttt{OpenCAL-CLUST} will be  extended allowing domain decomposition on multiple dimensions. As shown in Section \ref{sec:domain_decomposition}, decomposing the domain on a single dimension is not always optimal, as in order to obtain better load balancing among the devices different decomposition may be necessary.
-The programmer would be able to decompose the domain multidimensional cubic portions and assign one to each available device.
-Another important issue that will be addressed is that the current implementation serializes communications at each step execution taking advantages of possible computation-communication overlapping.
-Another limitation that the current implementation exposed is that boundaries are always exchanged among intra-node devices. This might not be optimal in cases where boundaries grid cells between two devices or nodes do not change and thus, the communication of such cells avoided. This mechanism can be accomplished by performing boundaries exchange only if there is a relevant update i.e. by means of the so called \textit{dirty-bits} mechanism. 
-A scaling benchmark will be performed on a proper \textit{HPC} cluster with at least $16$ nodes interconnected by fast network (\texttt{Infiniband} et. similia for instance) in order to obtain information about the scalability of \texttt{OpenCAL-CLUST} as the number of nodes is increased.
-
-\section{Discussion and Outlooks}
-
-In this chapter the first release of OpenCAL is presented, a new
-open source computing abstraction layer for Scientific Computing,
-currently supporting Cellular Automata, Extended Cellular Automata
-and the Finite Differences computational methods.
-
-Besides the serial implementation, two different parallel versions
-were developed, namely OpenCAL-OMP and OpenCAL-CL, based on OpenMP
-and OpenCL, respectively. The first one allows to exploit multi-core
-CPUs on shared memory computers, while the second a wide range of
-heterogeneous devices like GPUs, FPGAs and other many-core
-coprocessors.
-
+This work aimed at the design of a programming abstraction for seamless implementation of numerical methods on regular grid targeting a plethora of different parallel computer architectures: from commodity PC, to large clusters of accelerators. The \texttt{OpenCAL} framework has been developed which exposes a domain specific language for the definition of a large class of numerical models and their subsequent deployment on the targeted machines.
+At this stage of development there are a number of specialized implementation of \texttt{OpenCAL} each targeting a different architecture (or a mix of them).
 Each version was designed to be the most reliable and fast possible
-and, for this purpose, the C language was adopted and efficient data
+and, for this purpose, the C/C++ language was adopted and efficient data
 types and algorithms considered. In particular, also to permit a
 more straightforward OpenCL parallelization, linearized arrays were
 adopted to represent both one-dimensional and higher order
-structures like substates and neighbourhoods. Moreover, the
-quantization optimization, which allows to define the set $A$ of
-non-stationary cells to which restrict the application of the
-transition function, was implemented in each version. Specifically,
-a straightforward stream compaction was considered in OpenCAL, which
-serially checks the state of the cells in the computational domain,
-by placing the coordinates of non-stationary cells in
-$A$. OpenCAL-OMP essentially implements the same strategy, even if a
-pool of threads preliminarily build a set of sub-arrays of active
-cells in parallel, which are eventually assembled together to form
-the final array $A$. A different algorithm was implemented in
-OpenCAL-CL, where the parallel stream compaction relies on a
-parallel prefix sum algorithm used to preliminary evaluate the
-offsets to be used by work-items to fill the array of active cells
-$A$ in parallel. In addition to the quantization optimization,
-OpenCAL and OpenCAL-OMP were designed to allow for the explicitation
-of the global transition function, by also allowing selective
-updating of substates.
+structures like substates and neighborhoods. 
 
-The SciddicaT XCA landslide simulation model was considered to show
-the straightforward implementation of a computational model and also
-to assess numerical correctness and computational efficiency of each
-OpenCAL implementation. Specifically, the OpenCAL and OpenCAL-OMP
-implementations of three different versions of $SciddicaT$ were
-shown, from a naive one, $SciddicaT_{naive}$, to a version
-supporting the quantization optimization, $SciddicaT_{ac}$, up to a
-fully optimized version, $SciddicaT_{ac+esl}$, supporting both the
-quantization and the explicitation of the global transition
-function. The first two versions of $SciddicaT$ were also
-implemented in OpenCAL-CL. In addition, a naive version of
-$SciddicaT$ exploiting the local memory, namely $SciddicaT_{local}$,
-was implemented in OpenCL to evaluate the role of different GPUs
-memory levels.
-
-For each $SciddicaT$ version, the Tessina landslide was considered
-and a total of ten benchmarks (simulations) executed to evaluate
-correctness and timings on each considered hardware configuration,
-namely a 16 threads Intel Xeon CPU based workstation and two Nvidia
-GPUs. Numerical correctness was confirmed by all the simulation
-outcomes, which perfectly matched to the one of the OpenCAL
-implementation of $SciddicaT_{naive}$ that was selected for
-reference. Regarding computational performance, the different
-$SciddicaT$ versions demonstrated to be able to efficiently exploit
-the computational power of the heterogeneous devices considered in
-this work, by reducing the execution time of all the performed
-benchmarks accordingly to the progressively adopted
-optimizations. However, the best result obtained by
-$SciddicaT_{ac+esl}$ using 16 threads on the CPU surprisingly
-doubled the best one obtained by $SciddicaT_{ac}$ on the GPU in
-terms of absolute speed-up (i.e. computed with respect to the timing
-of the reference simulation), probably due to the very low
-computational complexity of the transition function and the
-dimension of the computational domain. Nevertheless, subsequent
-stress tests performed by fictitiously complicating the transition
-function execution, and a further set of tests where the
-computational domain was considerably increased with respect to the
-one originally considered, overturned the results, and GPUs
-significantly resulted faster than the CPU, pointing out their
-usefulness in case of the simulation of computationally heavy
-models. Eventually, as regards GPU local memory, it showed to
-provide an actual advantage only in the case of the first set of
-stress tests, pointing out that data must be accessed an adequate
-number of times to be effective. Here, in particular, the Tesla K40
-resulted more efficient with respect to the GTX 980, even if based
-on the previous Nvidia hardware architecture, probably due to a
-better management of the local memory.
 
 Though preliminary, obtained results confirm correctness and
-efficiency of the different OpenCAL versions here presented, by
+efficiency of the different \texttt{OpenCAL} versions here presented, by
 highlighting their goodness for numerical model development of
 complex systems in the field of Scientific Computing and their
-execution on parallel heterogeneous devices. Moreover, since the
-implementations do not significantly differ from an OpenCAL
-implementation to another, it is easily possible to obtain two
-different CPU/GPU parallel versions of the same model with a minimum
-effort and, therefore, to test them on the available hardware to
-select the best platform for execution. In fact, as shown for the
-case of $SciddicaT$, the best choice can deeply depend on both the
-computational complexity of the transition function and on the
-extent of the computational domain, and the best solution can not be
-determined \emph{a priori}.
+execution on parallel heterogeneous devices.
+Among all versions,  \texttt{OpenCAL-CLUST} targets distributed memory machines and multi-accelerators architectures.
+Results show that \texttt{OpenCAL} allows deploying numerical applications on regular grid on machines composed by several computational nodes interconnected by network each armed with multiple accelerators. Thanks to the adoption of \texttt{OpenCL}, different kinds of accelerators can be employed seamlessly and efficently.
+The performance benchmarks that have been used to test OpenCAL-CLUST show that it effectively use the computational power of multiple devices in order to speedup the computation.
 
+As regarding future developments, \texttt{OpenCAL} will be  extended allowing domain decomposition on multiple dimensions. As shown in Section \ref{sec:domain_decomposition}, decomposing the domain on a single dimension is not always optimal, as in order to obtain better load balancing among the devices different decomposition may be necessary.
+The programmer would be able to decompose the domain multidimensional cubic portions and assign one to each available device.
+Another important issue that will be addressed is that the current implementation serializes communications at each step execution taking advantages of possible computation-communication overlapping.
+Another limitation that the current implementation exposed is that boundaries are always exchanged among intra-node devices. This might not be optimal in cases where boundaries grid cells between two devices or nodes do not change and thus, the communication of such cells avoided. This mechanism can be accomplished by performing boundaries exchange only if there is a relevant update i.e. by means of the so called \textit{dirty-bits} mechanism. 
+A scaling benchmark will be performed on a proper \textit{HPC} cluster with at least $16$ nodes interconnected by fast network (\texttt{Infiniband} et. similia for instance) in order to obtain information about the scalability of \texttt{OpenCAL} as the number of nodes is increased.
 Nevertheless, a fine tuning of underlying data structures and
-algorithms will be performed in order to make OpenCAL still more
-performing and MPI will be adopted to allow OpenCAL to exploit the
-computational power of distributed memory systems. As regard the
-OpenCL implementation, the seamless management of GPUs local memory
-will be introduced in the next releases, and Multi-GPU support added
-to intelligently scale the overall system performances. Subsequent
-releases will also progressively support further computational
+algorithms. As regard the OpenCL implementation, the seamless management of GPUs local memory will be introduced in the next releases.
+Subsequent releases will also progressively support further computational
 paradigms, like the Lattice Boltzmann, the Smoothed Particle
 Hydrodynamics (SPH), as well as other mesh-free numerical methods,
 with the aim to become a general software abstraction layer for
 computation.
 
-The OpenCAL software libraries, together with a comprehensive
+The \texttt{OpenCAL} software libraries, together with a comprehensive
 installation and user manual accompanied by numerous examples, are
 currently freely available on GitHub, at \url{https://github.com/OpenCALTeam/opencal}.
+
+
+
+
+%1- riassumi capitolo per capitolo cosa hai visto nella tesi
+%2- riassumi il contributo più importante e.g. opencal riesci a parallelizare modelli fdm e XCA in modo trasparente su architetture multicore differenti
+%3- mostra che i risultati sono buono
+%4- dici che ci sta tanto da fare (prendi outlooks and future works dai capitolo opencal.tex e opencalcluster.tex e bacteria)
+
+
+
 

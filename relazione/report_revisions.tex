@@ -1,0 +1,176 @@
+\documentclass[a4paper,11pt]{paper}
+\usepackage{blindtext, graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{subfig}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage[table]{xcolor}
+
+
+\usepackage[firstinits=true,
+bibencoding=inputenc,
+hyperref=auto,
+%style=standard,
+refsection=section]{biblatex}
+\usepackage{amssymb,amsmath}
+\usepackage{tikz}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+		\node[shape=circle,draw,inner sep=0.3pt] (char) {#1};}}
+\usetikzlibrary{positioning,chains,fit,shapes,calc}
+\usepackage{wrapfig}
+\usepackage{paralist}
+
+\newcommand{\RNum}[1]{\uppercase\expandafter{\romannumeral #1\relax}}
+\usepackage{graphics}
+
+\input{listing.tex}
+
+  \let\oldemptyset\emptyset
+\let\emptyset\varnothing
+\newtheorem{mydef}{Definition}
+\renewcommand{\floatpagefraction}{.72}
+\begin{document}
+	\title{Report on Thesis Revisions - \\
+		Ph.D. in Mathematics and Computer Science }
+	\author{
+		Davide Spataro \\
+		Dipartimento di Matematica e Informatica\\
+		Università della Calabria\\
+		Via Ponte P. Bucci Rende 87036, \underline{Italia}
+	}
+	
+	\maketitle
+	 
+\part{ Prof. Giuseppe A. Trunfio}
+\section*{Minor Revisions}
+\subsection*{Title Modification}
+
+	\fbox{\begin{minipage}{\linewidth}
+\textit{In my opinion, although, as mentioned above, the developed work includes a significant range of applications, the title of the thesis (i.e., “SEAMLESS ACCELERATION OF NUMERICAL SIMULATIONS ON MANYCORE SYSTEMS”) is too broad.  I suggest considering the more precise definition given in the introduction, where it is stated that the proposed framework can address “numerical methods on regular grids targeting different computer architectures”.}
+	\end{minipage}}\hfill \\\hfill \\
+The suggestion has been accepted and the new title is 
+\begin{center}
+\textbf{Seamless acceleration of numerical grid methods on manycore systems.}
+\end{center}
+
+\subsection*{Add definition for XCA}
+	\fbox{\begin{minipage}{\linewidth}
+		\textit{Apparently, in section 3.4 the acronym XCA was not defined before its use. Although from the title of section 3.4 section I can guess it stands for “Extended Cellular Automata”, in Section 2 it would be better to clearly define the concept of XCA.
+		}
+\end{minipage}}\hfill \\\hfill \\
+The suggestion has been accepted and a new section has been added with a formal description of the Extended Cellular Automata (XCA) computational model.
+
+\subsection*{Clarify the term \texttt{quantization strategy}}
+\fbox{\begin{minipage}{\linewidth}
+		\textit{In Section 5.2, the “quantization feature” is mentioned, which allows to restrict the computation to a subset of the computational domain, by excluding stationary cells. In this regard, it would be better to motivate the adopted name “quantization”, which is not immediately clear to the reader.
+		}
+\end{minipage}}\hfill \\\hfill \\
+The suggestion has been accepted and the mentioned section is now enriched with a rationale behind the name \textit{quantization strategy} 
+
+\subsection*{Why explicit methods cannot be implemented in OpenCAL-CL?}
+\fbox{\begin{minipage}{\linewidth}
+		\textit{ In section 5.5, I suggest explaining and motivating in more detail the following sentence “the simulation process can not be currently, in this first OpenCAL release, made explicit.”
+		}
+\end{minipage}}\hfill \\\hfill \\
+The suggestion has been accepted and now section 5.5 clearly states that the current implementation of the OpenCL version of OpenCAL has not yet implemented the API calls implementing features related to explicit numerical models.
+
+
+
+\subsection*{How flags are managed?}
+\fbox{\begin{minipage}{\linewidth}
+		\textit{ In section 5.3.2 (API), it is explained the way in which the dynamic array A of active cells is managed in the case of sequential computation. In this regard, it is not clear why the array A is updated using an array of flags F, having the size of the entire automaton, with the help of a serial stream compaction algorithm. In fact, while this can be a reasonable approach in the GPU case (not necessarily the most efficient, however), I suspect that in the sequential case there are more efficient and direct ways to maintain an array of active cells. I suggest better motivating such an aspect (I can understand that the sequential version of the library was only developed as a reference implementation for comparison purposes, and that the actual target of the framework are HPC applications).  
+		}
+\end{minipage}}\hfill \\\hfill \\
+The suggestion has been accepted and now section 5.3 clearly states that the there are two branches of the current version of OpenCAL each adopting a different approach in managing the array of flags. The version adopted for the tests is the one that uses an array of flags of the size of the automaton (but  the other one features a more space and time efficient strategy).
+
+
+\subsection*{Typos}
+\fbox{\begin{minipage}{\linewidth}
+		\textit{As a final remark, in the manuscript there are still some minor writing problems (typos, punctuation errors, LaTex errors etc.). However, I am confident that such type of issues will be easily tackled by the author in the final version of the manuscript.}
+\end{minipage}}\hfill \\\hfill \\
+The suggestion has been accepted and a through proofreading has been carried out in order to fix all typos and numbering problems.
+
+
+
+\part{Prof. Georgios Sirakoulis}
+\section*{Minor Revisions - }
+
+\subsection*{Title Modification}
+	\fbox{\begin{minipage}{\linewidth}
+		\textit{The title of the thesis could be also somehow reconsidered taking into account the work performed with the development of suitable frameworks for appropriate computational models and methods resulting to the advancement of HPC systems.}
+\end{minipage}}\hfill \\\hfill \\
+As per the revision suggested by Prof. Giuseppe A. Trunfio.
+
+
+\subsection*{Add section \texttt{Conclusion and Future works}}
+\fbox{\begin{minipage}{\linewidth}
+		\textit{A new section named Conclusions and Future Work, should be also considered for the final Section of the Ph.D. thesis summarizing in an appropriate way the conclusions and possible future work in correspondence to the whole work performed in the context of this thesis, instead of the small subsections as now found in the text, In particular, the most important conclusions as well as the most promising future directions for the entire work should be clearly pointed out.}
+\end{minipage}}\hfill \\\hfill \\
+The revisions has been accepted and a new Chapter as been added to the thesis, which contains the conclusions originally placed at the end of Chapter 6.
+
+
+\subsection*{Add List of Publications}
+\fbox{\begin{minipage}{\linewidth}
+		\textit{A list of publications related with the specifif Ph.D Thesis should be also found together with the references list but in different page, for readibility reasons but also for the potential reader to much better appreciate the proposed approaches.}
+\end{minipage}}\hfill \\\hfill \\
+The revisions has been accepted and a separate reference list as been added with all the publications related to the thesis.
+
+
+\subsection*{Improve CA Section}
+\fbox{\begin{minipage}{\linewidth}
+		\textit{In a more technical point of view, I suggest that a clearer but also more detailed presentation of Extended Cellular Automata (XCA) is needed. The provided definition as arrived from Chapter 2 and namely extension of CA - Probabilist CA is not exactly enough and should be properly enriched at this point to help the reader to trail better the OpenCAL presented later in the thesis.}
+\end{minipage}}\hfill \\\hfill \\
+The revisions has been accepted and a much formal definition to XCA has been added together with more detailed review of probabilistic CA.
+
+\subsection*{Difference in Performance between GTX980 and K40}
+\fbox{\begin{minipage}{\linewidth}
+		\textit{Furthemore, a more detailed explanation of the results concerning the GTX980 and Tesla K40 for Sciddica CA model implementations should be included with extra effort as well on the focus of the differences concerning the results for Tnaive and Tlocal may be provided in Chapter 5.}
+\end{minipage}}\hfill \\\hfill \\
+The revision has been accepted the paragraph that describes the results of the aforementioned model  better clarify the reason behind the differences in performances on the two devices especially regarding the \textit{Tnaive} and \textit{Tlocal} strategies.
+
+
+\subsection*{Discussion about other computational model}
+\fbox{\begin{minipage}{\linewidth}
+		\textit{In the same context, and in correspondence to the presented results and simulation tests presented in Chapter 5, a more generic discussion concerning different computational models than the proposed specific CA model and applications as well as various devices should be also included in the discussions and outlooks and better placed in the conclusions.}
+\end{minipage}}\hfill \\\hfill \\
+The suggestion has been accepted an the discussion better frames the role of the framework within the context of non-CA application with also the addition of a discussion of an implementation of a Finite difference method numerical model solving a variation of the heat equation in 3D. 
+
+
+\subsection*{Boundary Conditions}
+\fbox{\begin{minipage}{\linewidth}
+	\textit{Referring to the boundary conditions and the proposed topology function, I believe a few more details would be valuable for the potential user when possible considerations of not usual mainly CA boundary conditions, like adiabatic , reflecting, etc is taking into account}
+\end{minipage}}\hfill \\\hfill \\
+The revision has been accepted and the thesis now feature more details regarding the possible implementation, within the proposed framework, of less common boundary conditions as the ones suggested by the Prof. Sirakoulis.
+
+
+\subsection*{Numbering issue}
+\fbox{\begin{minipage}{\linewidth}
+		\textit{It should be also considered that in Chapter 3, there is an issue with the Figure numbering and it should be taken good care. The same issue applies also to the Figure numbering of Chapter 4, and especially after Figure 4.6.}
+\end{minipage}}\hfill \\\hfill \\
+The revision has been accepted and the numbering issues fixed.
+
+\subsection*{Introduction to the part 2}
+\fbox{\begin{minipage}{\linewidth}
+		\textit{An appropriate discussion of the presented HPC applications after Chapter, in the context of the presented earlier framework, would be useful to enable the reader to appreciate both implementations in the best possible manner.}
+\end{minipage}}\hfill \\\hfill \\
+The revision has been partially accepted. In fact the material presented in the part two is only partially related to the content of part 1 and was originally designed to be a test application for the framework but has diverged over time into something self contained. For this reason, the all chapters of part two feature their own introductions and conclusions.
+
+\subsection*{Format of Reference List}
+\fbox{\begin{minipage}{\linewidth}
+		\textit{Referring to the citation, please keep the references format with the same style and provide all the requested (usual) info needed for reasons of completeness.}
+\end{minipage}}\hfill \\\hfill \\
+The revision has been accepted and the citation format is more consistent, and missing \textit{usual} information added.
+
+\subsection*{Typos}
+\fbox{\begin{minipage}{\linewidth}
+		\textit{Finally, I recommend to the author to just take a second look in the Ph.D manuscript since some typos exist and should be carefully handled to advance his Thesis presentation.}
+\end{minipage}}\hfill \\\hfill \\
+The suggestion has been accepted as per the same revision suggested by Prof. Giuseppe A. Trunfio.
+
+
+	
+\end{document}
