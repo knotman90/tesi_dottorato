@@ -10,10 +10,68 @@
 	
 }
 \subsection{Cellular Automata}
-\frame{\frametitle{Motivation}
+\frame{\frametitle{Cellular Automata}
+	\begin{itemize}
+		\item discrete $d$-dimensional lattice of sites
+	\end{itemize}
 	
 }
-\subsection{Finite Differnce Methods}
-\frame{\frametitle{Motivation}
+\subsection{Finite Difference Method}
+\frame{\frametitle{Finite Difference Methods}
+	\begin{itemize}
+		\item A DE is an equation where the unknown is a function
+		\item e.g. Heat Equation: $\rho c\frac{\partial T}{\partial t} - \kappa \nabla^2T +Q=0$
+		\item Boundary/Initial conditions are necessary e.g. temperature field at $t=0$
+	\end{itemize}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\textwidth]{images/heat2d_bc}
+\end{figure}
 	
 }
+
+\frame{\frametitle{Finite Difference Methods}
+	\begin{itemize}
+		\item Discovered by L. Euler and refined by Runge in 1910
+		\item Differential operator is \textbf{approximated locally} using \textbf{finite number of values}
+		\item Domain is partitioned in a grid-like fashion
+		\item Solution is computed for the grid points only
+	\end{itemize}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.8\textwidth]{images/gridcustom_shape2}
+	\end{figure}
+	
+}
+
+\frame{\frametitle{Finite Difference Formulas}
+	\begin{itemize}
+		\item Function approximating differential operator at a point using a finite number of neighbors
+		\item Its arity determines the \textit{truncation order} of the formula
+		\item The error is function of spacing between points in each direction 
+		\item First order forward schema $\frac{\partial T(t,x)}{\partial x}  = \frac{T^n_{j+1} - T^n_{j}}{\Delta x} + \mathcal{O}(\Delta x)$ is obtained from: 
+		 \[
+		 T^n_{j+1} = T^n_{j} +
+		\frac{\partial T}{\partial x}\bigg\rvert^n_j \Delta x +
+		\frac{1}{2!}  \frac{\partial^2 T}{\partial x^2}\bigg\rvert_j \Delta x^2 + \ldots + 
+		\frac{1}{k!}  \frac{\partial^k T}{\partial x^k}\bigg\rvert_j \Delta x^k + \ldots
+		\]
+		truncating at $k=1$ and solving for $\frac{\partial T}{\partial x}$
+
+	\end{itemize}
+}
+
+\frame{\frametitle{Finite Difference Approximation of The Heat Equation}
+	Given the initial value problem: $	\frac{\partial T(t,x)}{\partial t}=\kappa\frac{\partial^2 T(t,x)}{\partial x^2}$
+\begin{itemize}
+	\item Discretize the domain in a  1D regular uniform mesh
+ 	\item  first and second order derivative are substituted by forward and central difference formulas, respectively.
+	\item Solving for $T^{n+1}_{j}$ leads to (explicit formula)
+	\[
+		 T^{n+1}_{j} = T^n_{j} + \frac{k \Delta t}{\Delta x^2} (T^n_{j+1}+T^n_{j-1}-2T^n_{j})
+	\]
+	\item The value for point at space coordinate $j$ at time $n+1$ can be obtained by using values of neighboring points i.e. $T^n_{j+1},T^n_{j-1},T^n_{j}$
+\end{itemize}
+}
+
+
