@@ -8,6 +8,18 @@
 
 \documentclass{beamer}
 \usetheme{Goettingen}
+
+\AtBeginSection[]{
+	\begin{frame}
+	\vfill
+	\centering
+	\begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+		\usebeamerfont{title}\insertsectionhead\par%
+	\end{beamercolorbox}
+	\vfill
+\end{frame}
+}
+
 \begin{document}
 \title{Seamless Acceleration of numerical regular grid methods on manycore systems.}
 \subtitle{Ph.D. in Mathematics and Computer Science\\ Universit\`a della Calabria}

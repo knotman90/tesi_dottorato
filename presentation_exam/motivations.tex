@@ -19,9 +19,11 @@
  
 
 \section{Motivations} 
-\frame{\frametitle{IoT }
+\frame{\frametitle{Introduction and Motivations}
 \centering
-\begin{block}{}%{The amount of raw information available has increased dramatically}
+\begin{block}{}
+	\centering 
+\textbf{The amount of raw information available has increased dramatically during the last 10 years.}
 	\begin{figure}
 		\centering
 			\includegraphics[scale=0.25]{images/broucer}
@@ -38,16 +40,30 @@
 	\includegraphics[width=8cm,height=4cm]{images/vni-hyperconnectivity-wp_7}
 }
 
-\frame{\frametitle{}
+\frame{\frametitle{Need for Computational Power}
+\begin{itemize}
+	\item More data to process 
+	\item Requirements for higher precision solvers
+	
+\end{itemize}
+	\begin{figure}
 	\centering
-	\includegraphics[width=8cm,height=4cm]{images/vni-hyperconnectivity-wp_2}
-	\pause
-	\includegraphics[width=8cm,height=4cm]{images/vni-hyperconnectivity-wp_1}
+	\includegraphics[width=0.8\textwidth]{images/material}
+	\caption{Atomic Scale Material Simulation}
+\end{figure}
+
 }
 
-\frame{\frametitle{Parallel}
+%\frame{\frametitle{}
+%	\centering
+%	\includegraphics[width=8cm,height=4cm]{images/vni-hyperconnectivity-wp_2}
+%	\pause
+%	\includegraphics[width=8cm,height=4cm]{images/vni-hyperconnectivity-wp_1}
+%}
+
+\frame{\frametitle{Performance Improvements}
 	\begin{center}
-		\begin{block}{Performance Improvements}
+		\begin{block}{}
 		 \begin{itemize}
 		 	\item More Functional Units
 		 	\item Higher Clock Speed
@@ -58,7 +74,8 @@
 	\end{center}
 \begin{figure}
 	\centering
-	\includegraphics[width=\textwidth]{images/moore_law2}
+	\includegraphics[width=0.8\textwidth]{images/moore_law2}
+	\caption{Moore's law}
 \end{figure}
 
 }
@@ -84,6 +101,57 @@
 \end{block}
 
 }
+
+\frame{\frametitle{Parallelism}
+		\begin{itemize}
+			\item Computational power demans is increasing
+			\item Parallelism is the answer
+			\item Almost every device has multiple computing core: phone, cars, laptop etc.
+			\item Especially true for dedicated computing machine
+		\end{itemize}	
+	
+	\begin{figure}
+		\centering
+		\includegraphics[width=\textwidth]{images/GoogleDataCenter}
+	\end{figure}
+}
+
+\frame{\frametitle{Parallelism}
+	\begin{block}{Trend in Scientific Computing HW}
+		\begin{itemize}
+			\item Large cluster of heterogeneous HW
+			\item Heavy use of Accelerators (FPGA, Intel MIC, GPUs)
+			\item Programming this machine is \textbf{very} hard
+			\item Especially true for non parallel computing specialist
+			\item One needs to master low-level details in order to write efficient solvers for such HW
+		\end{itemize}	
+	\end{block}
+\begin{block}{Programming heterogeneous HW}
+	\begin{itemize}
+		\item is \textbf{very} complex
+		\item Especially true for non parallel computing specialist
+		\item One needs to master low-level details in order to write efficient solvers for such HW
+	\end{itemize}	
+\end{block}
+
+
+}
+
+\frame{\frametitle{Scope of the Thesis}
+	\centering
+	\textbf{The main goal of my work} 
+	
+\begin{itemize}
+	\item a software framework for
+	\item writing efficient solvers for regular grid methods
+	\item targeting heterogeneous HW
+\end{itemize} 
+		\begin{figure}
+		\centering
+		\includegraphics[width=\textwidth]{images/heterogen_modular_mapping}
+	\end{figure}
+}
+
 
 %
 
