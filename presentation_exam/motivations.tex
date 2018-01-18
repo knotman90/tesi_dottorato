@@ -24,6 +24,7 @@
 \begin{block}{}
 	\centering 
 \textbf{The amount of raw information available has increased dramatically during the last 10 years.}
+\pause
 	\begin{figure}
 		\centering
 			\includegraphics[scale=0.25]{images/broucer}
@@ -35,9 +36,10 @@
 
 \frame{\frametitle{}
 	\centering
-	\includegraphics[width=8cm,height=4cm]{images/vni-hyperconnectivity-wp_0}
-	\pause
 	\includegraphics[width=8cm,height=4cm]{images/vni-hyperconnectivity-wp_7}
+	\includegraphics[width=8cm,height=4cm]{images/vni-hyperconnectivity-wp_0}
+	
+	
 }
 
 \frame{\frametitle{Need for Computational Power}
@@ -49,7 +51,7 @@
 	\begin{figure}
 	\centering
 	\includegraphics[width=0.8\textwidth]{images/material}
-	\caption{Atomic Scale Material Simulation}
+	\caption{Atomic Scale Simulation}
 \end{figure}
 
 }
@@ -83,6 +85,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \frame{\frametitle{This growth is not sustainable}
+	\hfill \\
 \centering
  Higher Clock and More Transistors = \textbf{More Heat}
  
@@ -96,7 +99,7 @@
 	\item $7nm$ transistor is already possible
 	\item $5nm$ will be in $4$ years
 	\pause
-	\item \textbf{Silicon atomic size is $0.2nm$}
+	\item \textbf{Silicon atomic size is $0.2nm$!}
 \end{itemize}	
 \end{block}
 
@@ -104,7 +107,7 @@
 
 \frame{\frametitle{Parallelism}
 		\begin{itemize}
-			\item Computational power demans is increasing
+			\item Computational power demand is increasing
 			\item Parallelism is the answer
 			\item Almost every device has multiple computing core: phone, cars, laptop etc.
 			\item Especially true for dedicated computing machine
@@ -123,9 +126,10 @@
 			\item Heavy use of Accelerators (FPGA, Intel MIC, GPUs)
 		\end{itemize}	
 	\end{block}
+\pause
 \begin{block}{Programming heterogeneous HW}
 	\begin{itemize}
-		\item is \textbf{very} complex
+		\item Is \textbf{very} complex
 		\item Especially true for non parallel computing specialist
 		\item One needs to master low-level details in order to write efficient solvers for such HW
 	\end{itemize}	
